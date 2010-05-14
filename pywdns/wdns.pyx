@@ -138,7 +138,7 @@ cdef class rrset(object):
     cdef public str name
     cdef public int rrclass
     cdef public int rrtype
-    cdef public int rrttl
+    cdef public unsigned int rrttl
     cdef public list rdata
 
     def __init__(self):
