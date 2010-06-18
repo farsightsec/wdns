@@ -5,6 +5,8 @@ ANSWER = 1
 AUTHORITY = 2
 ADDITIONAL = 3
 
+from wdns_constants import *
+
 class WreckException(Exception):
     pass
 
