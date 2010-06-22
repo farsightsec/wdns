@@ -100,36 +100,36 @@ _wdns_parse_rdata(const uint8_t *p, const uint8_t *eop, const uint8_t *ordata,
 
 			case rdf_int8:
 				VERBOSE("parsing int8, %zd bytes left\n", bytes_remaining);
-				copy_bytes(1U);
+				copy_bytes(1);
 				break;
 
 			case rdf_int16:
 				VERBOSE("parsing int16, %zd bytes left\n", bytes_remaining);
-				copy_bytes(2U);
+				copy_bytes(2);
 				break;
 
 			case rdf_int32:
 			case rdf_ipv4:
 				VERBOSE("parsing int32, %zd bytes left\n", bytes_remaining);
-				copy_bytes(4U);
+				copy_bytes(4);
 				break;
 
 			case rdf_ipv6:
 				VERBOSE("parsing ipv6, %zd bytes left\n", bytes_remaining);
-				copy_bytes(16U);
+				copy_bytes(16);
 				break;
 
 			case rdf_string:
 				VERBOSE("parsing string, %zd bytes left\n", bytes_remaining);
 				oclen = *rdata;
-				copy_bytes(oclen + 1U);
+				copy_bytes(oclen + 1);
 				break;
 
 			case rdf_repstring:
 				VERBOSE("parsing repstring, %zd bytes left\n", bytes_remaining);
 				while (bytes_remaining > 0) {
 					oclen = *rdata;
-					copy_bytes(oclen + 1U);
+					copy_bytes(oclen + 1);
 				}
 				break;
 
@@ -138,7 +138,7 @@ _wdns_parse_rdata(const uint8_t *p, const uint8_t *eop, const uint8_t *ordata,
 				oclen = *rdata;
 				if (oclen > 16U)
 					WDNS_ERROR(wdns_msg_err_parse_error);
-				copy_bytes(oclen + 1U);
+				copy_bytes(oclen + 1);
 				break;
 
 			default:
