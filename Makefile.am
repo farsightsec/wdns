@@ -10,7 +10,7 @@ SUBDIRS += wdns examples
 
 include_HEADERS = wdns.h
 
-pywdns/wdns_constants.py: wdns/constants.h
+pywdns/wdns_constants.py: wdns/constants.h pywdns/gen_pywdns_constants
 	pywdns/gen_pywdns_constants
 
 EXTRA_DIST = \
