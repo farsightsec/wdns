@@ -102,6 +102,27 @@ const record_descr record_descr_array[] = {
 
 	[WDNS_TYPE_SRV] =
 		{ class_in, { rdf_int16, rdf_int16, rdf_int16, rdf_name, rdf_end } },
+
+	/* RFC 4034 DNSSEC types */
+
+	[WDNS_TYPE_DNSKEY] =
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes } },
+			/* flags, protocol, algorithm, public key */
+
+	[WDNS_TYPE_RRSIG] =
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_int32, rdf_int32, rdf_int32,
+				    rdf_int16, rdf_uname, rdf_bytes } },
+			/* rrtype covered, algorithm, labels, original TTL,
+			 * signature expiration, signature inception, key tag, signer's name,
+			 * signature */
+
+	[WDNS_TYPE_NSEC] =
+		{ class_un, { rdf_uname, rdf_bytes } },
+			/* next domain name, rrtype bit maps */
+
+	[WDNS_TYPE_DS] =
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes } },
+			/* key tag, algorithm, digest type, digest */
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);
