@@ -259,6 +259,36 @@ wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdata_len,
 				}
 				break;
 
+			case rdf_rrtype:
+				if (src_bytes < 2)
+					break;
+				if (dstsz)
+					*dstsz += sizeof("NSEC3PARAM");
+				if (dst) {
+					const char *s_rrtype;
+					uint16_t rrtype;
+
+					memcpy(&rrtype, src, 2);
+					src += 2;
+					src_bytes -= 2;
+					rrtype = ntohs(rrtype);
+
+					s_rrtype = wdns_rrtype_to_str(rrtype);
+					if (s_rrtype != NULL) {
+						strncpy(dst, s_rrtype, strlen(s_rrtype));
+						dst += strlen(s_rrtype);
+						*dst++ = ' ';
+					} else {
+						int n;
+						n = snprintf(dst, sizeof("TYPE65535"),
+							     "TYPE%hu", rrtype);
+						assert(n > 0);
+						dst += n;
+						*dst++ = ' ';
+					}
+				}
+				break;
+
 			default:
 				VERBOSE("ERROR: unhandled rdf type %u\n", *t);
 				abort();

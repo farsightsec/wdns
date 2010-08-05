@@ -21,6 +21,7 @@ typedef enum {
 	rdf_ipv6prefix,	/* IPv6 prefix: length octet followed by 0-16 octets */
 	rdf_string,	/* length octet followed by that many octets */
 	rdf_repstring,	/* one or more strings (terminal) */
+	rdf_rrtype,	/* resource record type */
 	rdf_end		/* sentinel (terminal) */
 } rdf_type;
 

@@ -104,6 +104,7 @@ _wdns_parse_rdata(const uint8_t *p, const uint8_t *eop, const uint8_t *ordata,
 				break;
 
 			case rdf_int16:
+			case rdf_rrtype:
 				VERBOSE("parsing int16, %zd bytes left\n", bytes_remaining);
 				copy_bytes(2);
 				break;
