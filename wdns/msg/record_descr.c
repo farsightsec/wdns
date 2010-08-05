@@ -110,7 +110,7 @@ const record_descr record_descr_array[] = {
 			/* flags, protocol, algorithm, public key */
 
 	[WDNS_TYPE_RRSIG] =
-		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_int32, rdf_int32, rdf_int32,
+		{ class_un, { rdf_rrtype, rdf_int8, rdf_int8, rdf_int32, rdf_int32, rdf_int32,
 				    rdf_int16, rdf_uname, rdf_bytes } },
 			/* rrtype covered, algorithm, labels, original TTL,
 			 * signature expiration, signature inception, key tag, signer's name,
