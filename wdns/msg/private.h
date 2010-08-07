@@ -19,6 +19,7 @@
 #include "../constants.h"
 #include "../msg.h"
 #include "record_descr.h"
+#include "b64_encode.h"
 
 #if DEBUG
 # define VERBOSE(format, ...) do { printf("%s(%d): " format, __FILE__, __LINE__, ## __VA_ARGS__); } while (0)

@@ -22,6 +22,8 @@ libwdns_msg_la_SOURCES = \
 	../buf.h \
 	../msg.h \
 	../../wdns.h \
+	b64_encode.c \
+	b64_encode.h \
 	clear.c \
 	compare_rr_rrset.c \
 	copy_uname.c \
