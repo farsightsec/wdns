@@ -11,6 +11,7 @@ typedef enum {
 typedef enum {
 	rdf_unknown,	/* marker for unpopulated entries */
 	rdf_bytes,	/* byte array (terminal) */
+	rdf_bytes_b64,	/* byte array (terminal) (base64 encoded presentation) */
 	rdf_name,	/* series of labels terminated by zero-length label, possibly compressed */
 	rdf_uname,	/* series of labels terminated by zero-length label, NOT compressed */
 	rdf_int8,	/* 8 bit integer */
