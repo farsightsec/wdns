@@ -106,12 +106,12 @@ const record_descr record_descr_array[] = {
 	/* RFC 4034 DNSSEC types */
 
 	[WDNS_TYPE_DNSKEY] =
-		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes } },
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes_b64 } },
 			/* flags, protocol, algorithm, public key */
 
 	[WDNS_TYPE_RRSIG] =
 		{ class_un, { rdf_rrtype, rdf_int8, rdf_int8, rdf_int32, rdf_int32, rdf_int32,
-				    rdf_int16, rdf_uname, rdf_bytes } },
+				    rdf_int16, rdf_uname, rdf_bytes_b64 } },
 			/* rrtype covered, algorithm, labels, original TTL,
 			 * signature expiration, signature inception, key tag, signer's name,
 			 * signature */
@@ -121,7 +121,7 @@ const record_descr record_descr_array[] = {
 			/* next domain name, rrtype bit maps */
 
 	[WDNS_TYPE_DS] =
-		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes } },
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes_b64 } },
 			/* key tag, algorithm, digest type, digest */
 };
 
