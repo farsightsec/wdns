@@ -59,6 +59,7 @@ wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdata_len,
 	size_t len;
 	size_t src_bytes = rdata_len;
 	uint8_t oclen;
+	wdns_msg_status status;
 
 	if (rrtype < record_descr_len)
 		descr = &record_descr_array[rrtype];
@@ -110,7 +111,6 @@ wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdata_len,
 
 			switch (*t) {
 			case rdf_name:
-			case rdf_uname:
 				len = wdns_domain_to_str(src, src_bytes, domain_name);
 				if (dstsz)
 					*dstsz += strlen(domain_name) + 1;
@@ -121,6 +121,24 @@ wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdata_len,
 				}
 				src += len;
 				src_bytes -= len - 1;
+				break;
+
+			case rdf_uname:
+				status = wdns_len_uname(src, src + src_bytes, &len);
+				if (status != wdns_msg_success) {
+					src_bytes = 0;
+					break;
+				}
+				wdns_domain_to_str(src, len, domain_name);
+				if (dstsz)
+					*dstsz += strlen(domain_name) + 1;
+				if (dst) {
+					strcpy(dst, domain_name);
+					dst += strlen(domain_name);
+					*dst++ = ' ';
+				}
+				src += len;
+				src_bytes -= len;
 				break;
 
 			case rdf_bytes:
