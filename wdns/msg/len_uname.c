@@ -33,9 +33,6 @@ wdns_len_uname(const uint8_t *p, const uint8_t *eop, size_t *sz)
 		WDNS_BUF_ADVANCE(p, len, oclen);
 	}
 
-	if (*p != 0)
-		WDNS_ERROR(wdns_msg_err_overflow);
-
 	*sz = olen - len;
 	return (wdns_msg_success);
 }
