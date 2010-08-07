@@ -159,6 +159,23 @@ wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdata_len,
 				src_bytes = 0;
 				break;
 
+			case rdf_bytes_b64:
+				if (dstsz)
+					*dstsz += src_bytes * 2 + 1;
+				if (dst) {
+					base64_encodestate b64;
+
+					base64_init_encodestate(&b64);
+					len = base64_encode_block((const char *) src, src_bytes, dst, &b64);
+					dst += len;
+					len = base64_encode_blockend(dst, &b64);
+					dst += len;
+
+					*dst++ = ' ';
+				}
+				src_bytes = 0;
+				break;
+
 			case rdf_ipv6prefix:
 				oclen = *src++;
 				if (dstsz)
