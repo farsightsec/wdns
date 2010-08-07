@@ -260,8 +260,10 @@ wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdata_len,
 				break;
 
 			case rdf_rrtype:
-				if (src_bytes < 2)
+				if (src_bytes < 2) {
+					src_bytes = 0;
 					break;
+				}
 				if (dstsz)
 					*dstsz += sizeof("NSEC3PARAM");
 				if (dst) {
@@ -269,8 +271,6 @@ wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdata_len,
 					uint16_t rrtype;
 
 					memcpy(&rrtype, src, 2);
-					src += 2;
-					src_bytes -= 2;
 					rrtype = ntohs(rrtype);
 
 					s_rrtype = wdns_rrtype_to_str(rrtype);
@@ -287,6 +287,8 @@ wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdata_len,
 						*dst++ = ' ';
 					}
 				}
+				src += 2;
+				src_bytes -= 2;
 				break;
 
 			default:
