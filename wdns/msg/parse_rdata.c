@@ -144,8 +144,23 @@ _wdns_parse_rdata(const uint8_t *p, const uint8_t *eop, const uint8_t *ordata,
 				copy_bytes(oclen + 1);
 				break;
 
+			case rdf_type_bitmap: {
+				uint8_t bitmap_len;
+				uint8_t window_block;
+
+				VERBOSE("parsing type bitmap, %zd bytes left\n", bytes_remaining);
+				while (bytes_remaining >= 2) {
+					window_block = *rdata;
+					bitmap_len = *(rdata + 1);
+
+					if (bitmap_len <= (bytes_remaining - 2))
+						copy_bytes(2 + bitmap_len);
+				}
+				break;
+			}
+
 			default:
-				VERBOSE("ERROR: unhandled rdf type %u\n", *t);
+				fprintf(stderr, "%s: unhandled rdf type %u\n", __func__, *t);
 				abort();
 			}
 
