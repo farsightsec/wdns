@@ -23,6 +23,7 @@ typedef enum {
 	rdf_string,	/* length octet followed by that many octets */
 	rdf_repstring,	/* one or more strings (terminal) */
 	rdf_rrtype,	/* resource record type */
+	rdf_type_bitmap,/* rr type bitmap */
 	rdf_end		/* sentinel (terminal) */
 } rdf_type;
 
