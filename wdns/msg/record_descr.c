@@ -117,7 +117,7 @@ const record_descr record_descr_array[] = {
 			 * signature */
 
 	[WDNS_TYPE_NSEC] =
-		{ class_un, { rdf_uname, rdf_bytes } },
+		{ class_un, { rdf_uname, rdf_type_bitmap } },
 			/* next domain name, rrtype bit maps */
 
 	[WDNS_TYPE_DS] =
