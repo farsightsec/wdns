@@ -326,8 +326,60 @@ wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdata_len,
 				src_bytes -= 2;
 				break;
 
+			case rdf_type_bitmap: {
+				const char *s_rrtype;
+				uint8_t window_block;
+				uint8_t bitmap_len;
+				uint16_t lo;
+				uint16_t rrtype;
+				uint8_t a, b;
+
+				while (src_bytes >= 2) {
+					window_block = *src;
+					bitmap_len = *(src + 1);
+
+					src += 2;
+					src_bytes -= 2;
+
+					lo = 0;
+					for (int i = 0; i < bitmap_len; i++) {
+						a = src[i];
+						for (int j = 1; j <= 8; j++) {
+							b = a & (1 << (8 - j));
+							if (b != 0) {
+								rrtype = (window_block << 16) | lo;
+
+								if (dstsz)
+									*dstsz += sizeof("NSEC3PARAM");
+								if (dst) {
+									s_rrtype = wdns_rrtype_to_str(rrtype);
+									if (s_rrtype != NULL) {
+										strncpy(dst, s_rrtype, strlen(s_rrtype));
+										dst += strlen(s_rrtype);
+										*dst++ = ' ';
+									} else {
+										int n;
+										n = snprintf(dst, sizeof("TYPE65535"),
+											     "TYPE%hu", rrtype);
+										assert(n > 0);
+										dst += n;
+										*dst++ = ' ';
+									}
+								}
+							}
+							lo += 1;
+						}
+					}
+
+					src += bitmap_len;
+					src_bytes -= bitmap_len;
+				}
+				fputc('\n', stderr);
+				break;
+			}
+
 			default:
-				VERBOSE("ERROR: unhandled rdf type %u\n", *t);
+				fprintf(stderr, "%s: unhandled rdf type %u\n", __func__, *t);
 				abort();
 			}
 		}
