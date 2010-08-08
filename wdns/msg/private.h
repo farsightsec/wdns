@@ -21,17 +21,6 @@
 #include "record_descr.h"
 #include "b64_encode.h"
 
-#if DEBUG
-# define VERBOSE(format, ...) do { printf("%s(%d): " format, __FILE__, __LINE__, ## __VA_ARGS__); } while (0)
-#else
-# define VERBOSE(format, ...)
-#endif
-
-#define WDNS_ERROR(val) do { \
-	VERBOSE(#val "\n"); \
-	return (val); \
-} while(0)
-
 wdns_msg_status
 _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec);
 

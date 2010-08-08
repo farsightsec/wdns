@@ -17,14 +17,14 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 #define advance_bytes(x) do { \
 	if (src_bytes < ((signed) (x))) \
-		WDNS_ERROR(wdns_msg_err_parse_error); \
+		return (wdns_msg_err_parse_error); \
 	src += (x); \
 	src_bytes -= (x); \
 } while (0)
 
 #define copy_bytes(x) do { \
 	if (src_bytes < (x)) \
-		WDNS_ERROR(wdns_msg_err_parse_error); \
+		return (wdns_msg_err_parse_error); \
 	ustr_add_buf(&s, src, x); \
 	src += (x); \
 	src_bytes -= (x); \
@@ -59,24 +59,20 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 			switch (*t) {
 			case rdf_name:
-				VERBOSE("parsing name, %zd bytes left\n", src_bytes);
-
 				status = wdns_unpack_name(p, eop, src, domain_name, &len);
 				if (status != wdns_msg_success)
-					WDNS_ERROR(wdns_msg_err_parse_error);
+					return (wdns_msg_err_parse_error);
 				src_bytes -= wdns_skip_name(&src, eop);
 				if (src_bytes < 0)
-					WDNS_ERROR(wdns_msg_err_parse_error);
+					return (wdns_msg_err_parse_error);
 
 				ustr_add_buf(&s, domain_name, len);
 				break;
 
 			case rdf_uname:
-				VERBOSE("parsing uname, %zd bytes left\n", src_bytes);
-
 				status = wdns_copy_uname(p, eop, src, domain_name, &len);
 				if (status != wdns_msg_success)
-					WDNS_ERROR(wdns_msg_err_parse_error);
+					return (wdns_msg_err_parse_error);
 				advance_bytes(len);
 
 				ustr_add_buf(&s, domain_name, len);
@@ -84,40 +80,33 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 			case rdf_bytes:
 			case rdf_bytes_b64:
-				VERBOSE("parsing byte array, %zd bytes left\n", src_bytes);
 				copy_bytes(src_bytes);
 				break;
 
 			case rdf_int8:
-				VERBOSE("parsing int8, %zd bytes left\n", src_bytes);
 				copy_bytes(1);
 				break;
 
 			case rdf_int16:
 			case rdf_rrtype:
-				VERBOSE("parsing int16, %zd bytes left\n", src_bytes);
 				copy_bytes(2);
 				break;
 
 			case rdf_int32:
 			case rdf_ipv4:
-				VERBOSE("parsing int32, %zd bytes left\n", src_bytes);
 				copy_bytes(4);
 				break;
 
 			case rdf_ipv6:
-				VERBOSE("parsing ipv6, %zd bytes left\n", src_bytes);
 				copy_bytes(16);
 				break;
 
 			case rdf_string:
-				VERBOSE("parsing string, %zd bytes left\n", src_bytes);
 				oclen = *src;
 				copy_bytes(oclen + 1);
 				break;
 
 			case rdf_repstring:
-				VERBOSE("parsing repstring, %zd bytes left\n", src_bytes);
 				while (src_bytes > 0) {
 					oclen = *src;
 					copy_bytes(oclen + 1);
@@ -125,17 +114,15 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 				break;
 
 			case rdf_ipv6prefix:
-				VERBOSE("parsing ipv6prefix, %zd bytes left\n", src_bytes);
 				oclen = *src;
 				if (oclen > 16U)
-					WDNS_ERROR(wdns_msg_err_parse_error);
+					return (wdns_msg_err_parse_error);
 				copy_bytes(oclen + 1);
 				break;
 
 			case rdf_type_bitmap: {
 				uint8_t bitmap_len;
 
-				VERBOSE("parsing type bitmap, %zd bytes left\n", src_bytes);
 				while (src_bytes >= 2) {
 					bitmap_len = *(src + 1);
 
@@ -152,9 +139,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 		}
 		if (src_bytes != 0) {
-			VERBOSE("ERROR: src_bytes=%zd after parsing rdata\n",
-				src_bytes);
-			WDNS_ERROR(wdns_msg_err_parse_error);
+			return (wdns_msg_err_parse_error);
 		}
 	} else {
 		/* unknown rrtype, treat generically */
