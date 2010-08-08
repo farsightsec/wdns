@@ -32,7 +32,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 {
 
 #define bytes_required(n) do { \
-	if (((unsigned) n) > ((unsigned) src_bytes)) \
+	if (src_bytes < ((signed) (n))) \
 		goto err; \
 } while(0)
 
@@ -45,7 +45,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 	const record_descr *descr;
 	const uint8_t *src;
 	size_t len;
-	size_t src_bytes;
+	ssize_t src_bytes;
 	uint8_t oclen;
 	wdns_msg_status status;
 	
@@ -70,7 +70,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 	}
 
 	src = rdata;
-	src_bytes = rdlen;
+	src_bytes = (ssize_t) rdlen;
 
 	for (const uint8_t *t = &descr->types[0]; *t != rdf_end; t++) {
 		if (src_bytes == 0)
