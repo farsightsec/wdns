@@ -52,6 +52,7 @@ libwdns_msg_la_SOURCES = \
 	opcode_to_str.c \
 	rcode_to_str.c \
 	rdata_to_str.c \
+	rdata_to_ustr.c \
 	record_descr.c \
 	record_descr.h \
 	rr_to_str.c \

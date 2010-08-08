@@ -52,6 +52,10 @@ _wdns_parse_message_rr(unsigned sec, const uint8_t *p, const uint8_t *eop, const
 		       size_t *rrsz, wdns_rr_t *rr);
 
 void
+_wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
+		    uint16_t rrtype, uint16_t rrclass);
+
+void
 _wdns_rr_to_ustr(Ustr **, wdns_rr_t *rr, unsigned sec);
 
 void
