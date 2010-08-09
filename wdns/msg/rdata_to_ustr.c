@@ -126,6 +126,35 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			src_bytes -= oclen + 1;
 			break;
 
+		case rdf_salt:
+			bytes_required(1);
+			len = oclen = *src++;
+			bytes_required(1 + oclen);
+			if (oclen == 0)
+				ustr_add_cstr(s, "-");
+			while (len > 0) {
+				ustr_add_fmt(s, "%02x", *src);
+				src++;
+				len--;
+			}
+			ustr_add_cstr(s, " ");
+			src_bytes -= oclen + 1;
+			break;
+
+		case rdf_hash: {
+			char *buf;
+			bytes_required(1);
+			oclen = *src++;
+			bytes_required(1 + oclen);
+			buf = alloca(2 * oclen + 1);
+			len = base32_encode(buf, 2 * oclen + 1, src, oclen);
+			ustr_add_buf(s, buf, len);
+			ustr_add_cstr(s, " ");
+			src += oclen;
+			src_bytes -= oclen + 1;
+			break;
+		}
+
 		case rdf_int8: {
 			uint8_t val;
 			bytes_required(1);
@@ -246,7 +275,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 				bytes_consumed(bitmap_len);
 			}
 			break;
-		}
+		} /* end case */
 
 		}
 	}
