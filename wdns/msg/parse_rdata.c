@@ -102,6 +102,8 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 				break;
 
 			case rdf_string:
+			case rdf_salt:
+			case rdf_hash:
 				oclen = *src;
 				copy_bytes(oclen + 1);
 				break;
