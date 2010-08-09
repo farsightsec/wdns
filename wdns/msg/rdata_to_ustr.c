@@ -115,12 +115,12 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 
 		case rdf_ipv6prefix:
 			bytes_required(1);
-			oclen = *src++;
-			bytes_required(oclen);
-			while (oclen > 0) {
+			len = oclen = *src++;
+			bytes_required(1 + oclen);
+			while (len > 0) {
 				ustr_add_fmt(s, "%02x", *src);
 				src++;
-				oclen--;
+				len--;
 			}
 			ustr_add_cstr(s, " ");
 			src_bytes -= oclen + 1;
