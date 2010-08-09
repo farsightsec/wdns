@@ -123,6 +123,17 @@ const record_descr record_descr_array[] = {
 	[WDNS_TYPE_DS] =
 		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes_b64 } },
 			/* key tag, algorithm, digest type, digest */
+
+	/* RFC 5155 DNSSEC types */
+
+	[WDNS_TYPE_NSEC3] =
+		{ class_un, { rdf_int8, rdf_int8, rdf_int16, rdf_salt, rdf_hash,
+				    rdf_type_bitmap } },
+			/* hash algorithm, flags, iterations, salt, hash, rrtype bit maps */
+
+	[WDNS_TYPE_NSEC3PARAM] =
+		{ class_un, { rdf_int8, rdf_int8, rdf_int16, rdf_salt } },
+			/* hash algorithm, flags, iterations, salt */
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);
