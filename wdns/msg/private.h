@@ -19,6 +19,7 @@
 #include "../constants.h"
 #include "../msg.h"
 #include "record_descr.h"
+#include "b32_encode.h"
 #include "b64_encode.h"
 
 wdns_msg_status
