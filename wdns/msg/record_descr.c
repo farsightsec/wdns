@@ -121,7 +121,7 @@ const record_descr record_descr_array[] = {
 			/* next domain name, rrtype bit maps */
 
 	[WDNS_TYPE_DS] =
-		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes_b64 } },
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes } },
 			/* key tag, algorithm, digest type, digest */
 
 	/* RFC 5155 DNSSEC types */
