@@ -93,7 +93,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_bytes:
 			len = src_bytes;
 			while (len > 0) {
-				ustr_add_fmt(s, "%02x", *src);
+				ustr_add_fmt(s, "%02X", *src);
 				src++;
 				len--;
 			}
