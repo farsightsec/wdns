@@ -20,7 +20,7 @@ AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
 if test "x$GCC" = xyes; then
-    EXTRA_CFLAGS="-Wall -Wextra -Werror -fgnu89-inline"
+    EXTRA_CFLAGS="-Wall -Wextra -Werror -Wshadow -fgnu89-inline"
 fi
 AC_SUBST([EXTRA_CFLAGS])
 
