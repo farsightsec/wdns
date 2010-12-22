@@ -61,10 +61,10 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 			case rdf_name:
 				status = wdns_unpack_name(p, eop, src, domain_name, &len);
 				if (status != wdns_msg_success)
-					return (wdns_msg_err_parse_error);
+					goto parse_error;
 				src_bytes -= wdns_skip_name(&src, eop);
 				if (src_bytes < 0)
-					return (wdns_msg_err_parse_error);
+					goto parse_error;
 
 				ustr_add_buf(&s, domain_name, len);
 				break;
@@ -72,7 +72,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 			case rdf_uname:
 				status = wdns_copy_uname(p, eop, src, domain_name, &len);
 				if (status != wdns_msg_success)
-					return (wdns_msg_err_parse_error);
+					goto parse_error;
 				advance_bytes(len);
 
 				ustr_add_buf(&s, domain_name, len);
@@ -118,7 +118,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 			case rdf_ipv6prefix:
 				oclen = *src;
 				if (oclen > 16U)
-					return (wdns_msg_err_parse_error);
+					goto parse_error;
 				copy_bytes(oclen + 1);
 				break;
 
@@ -141,7 +141,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 		}
 		if (src_bytes != 0) {
-			return (wdns_msg_err_parse_error);
+			goto parse_error;
 		}
 	} else {
 		/* unknown rrtype, treat generically */
@@ -160,6 +160,10 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 	ustr_free(s);
 
 	return (wdns_msg_success);
+
+parse_error:
+	ustr_free(s);
+	return (wdns_msg_err_parse_error);
 
 #undef advance_bytes
 #undef copy_bytes
