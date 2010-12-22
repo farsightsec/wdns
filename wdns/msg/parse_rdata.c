@@ -128,8 +128,13 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 				while (src_bytes >= 2) {
 					bitmap_len = *(src + 1);
 
+					if (!(bitmap_len >= 1 && bitmap_len <= 32))
+						goto parse_error;
+
 					if (bitmap_len <= (src_bytes - 2))
 						copy_bytes(2 + bitmap_len);
+					else
+						goto parse_error;
 				}
 				break;
 			}
