@@ -164,6 +164,9 @@ wdns_file_load_names(const char *fname, wdns_callback_name cb, void *user);
 wdns_msg_status
 wdns_left_chop(wdns_name_t *name, wdns_name_t *chop);
 
+void
+wdns_reverse_name(const uint8_t *name, size_t len_name, uint8_t *rev_name);
+
 /* Parsing functions. */
 
 wdns_msg_status
