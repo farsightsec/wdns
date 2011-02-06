@@ -28,6 +28,9 @@ wdns_parse_message(wdns_message_t *m, const uint8_t *pkt, size_t len)
 
 	for (unsigned sec = 0; sec < WDNS_MSG_SEC_MAX; sec++) {
 		for (unsigned n = 0; n < sec_counts[sec]; n++) {
+			if (p == pkt_end)
+				return (wdns_msg_success);
+
 			status = _wdns_parse_message_rr(sec, pkt, pkt_end, p, &rrlen, &rr);
 			if (status != wdns_msg_success) {
 				wdns_clear_message(m);
