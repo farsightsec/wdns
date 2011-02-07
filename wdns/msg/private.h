@@ -4,6 +4,8 @@
 # include <alloca.h>
 #endif
 
+#include <sys/types.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <assert.h>
