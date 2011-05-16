@@ -56,6 +56,71 @@ def rrtype_to_str(uint16_t dns_type):
         return str(dns_type)
     return s
 
+def parse_message(bytes pkt):
+    cdef wdns_message_t m
+    cdef wdns_rdata_t *dns_rdata
+    cdef wdns_rrset_t *dns_rrset
+    cdef wdns_rrset_array_t *a
+    cdef wdns_msg_status status
+    cdef uint8_t *p
+
+    p = <uint8_t *> PyString_AsString(pkt)
+    if p == NULL:
+        raise Exception('PyString_AsString() failed')
+
+    status = wdns_parse_message(&m, p, PyString_Size(pkt))
+    if status == wdns_msg_success:
+        msg = message()
+        msg.id = m.id
+        msg.flags = m.flags
+        msg.rcode = m.rcode
+        msg.opcode = (m.flags & 0x7800) >> 11
+
+        if (m.flags >> 15) & 0x01:
+            msg.qr = True
+        if (m.flags >> 10) & 0x01:
+            msg.aa = True
+        if (m.flags >> 9) & 0x01:
+            msg.tc = True
+        if (m.flags >> 8) & 0x01:
+            msg.rd = True
+        if (m.flags >> 7) & 0x01:
+            msg.ra = True
+        if (m.flags >> 5) & 0x01:
+            msg.ad = True
+        if (m.flags >> 4) & 0x01:
+            msg.cd = True
+
+        for i from 0 <= i < 4:
+            a = &m.sections[i]
+            for j from 0 <= j < a.n_rrsets:
+                dns_rrset = &a.rrsets[j]
+                py_rrset = rrset()
+
+                name = PyString_FromStringAndSize(<char *> dns_rrset[0].name.data, dns_rrset[0].name.len)
+                if i == 0:
+                    q = qrr()
+                    q.name = name
+                    q.rrclass = dns_rrset.rrclass
+                    q.rrtype = dns_rrset.rrtype
+                    msg.sec[0].append(q)
+                else:
+                    py_rrset.name = name
+                    py_rrset.rrclass = dns_rrset.rrclass
+                    py_rrset.rrtype = dns_rrset.rrtype
+                    py_rrset.rrttl = dns_rrset.rrttl
+                    for k from 0 <= k < dns_rrset.n_rdatas:
+                        dns_rdata = dns_rrset[0].rdatas[k]
+                        py_rdata = PyString_FromStringAndSize(<char *> dns_rdata.data, dns_rdata.len)
+                        py_rdata_obj = rdata(py_rdata, dns_rrset.rrclass, dns_rrset.rrtype)
+                        py_rrset.rdata.append(py_rdata_obj)
+                    msg.sec[i].append(py_rrset)
+
+        wdns_clear_message(&m)
+        return msg
+    else:
+        raise WreckException('wdns_parse_message() returned %s' % status)
+
 cdef class message(object):
     cdef public int id
     cdef public int flags
@@ -190,68 +255,3 @@ cdef class rdata(object):
         s = PyString_FromString(dst)
         free(dst)
         return s
-
-def parse_message(bytes pkt):
-    cdef wdns_message_t m
-    cdef wdns_rdata_t *dns_rdata
-    cdef wdns_rrset_t *dns_rrset
-    cdef wdns_rrset_array_t *a
-    cdef wdns_msg_status status
-    cdef uint8_t *p
-
-    p = <uint8_t *> PyString_AsString(pkt)
-    if p == NULL:
-        raise Exception('PyString_AsString() failed')
-
-    status = wdns_parse_message(&m, p, PyString_Size(pkt))
-    if status == wdns_msg_success:
-        msg = message()
-        msg.id = m.id
-        msg.flags = m.flags
-        msg.rcode = m.rcode
-        msg.opcode = (m.flags & 0x7800) >> 11
-
-        if (m.flags >> 15) & 0x01:
-            msg.qr = True
-        if (m.flags >> 10) & 0x01:
-            msg.aa = True
-        if (m.flags >> 9) & 0x01:
-            msg.tc = True
-        if (m.flags >> 8) & 0x01:
-            msg.rd = True
-        if (m.flags >> 7) & 0x01:
-            msg.ra = True
-        if (m.flags >> 5) & 0x01:
-            msg.ad = True
-        if (m.flags >> 4) & 0x01:
-            msg.cd = True
-
-        for i from 0 <= i < 4:
-            a = &m.sections[i]
-            for j from 0 <= j < a.n_rrsets:
-                dns_rrset = &a.rrsets[j]
-                py_rrset = rrset()
-
-                name = PyString_FromStringAndSize(<char *> dns_rrset[0].name.data, dns_rrset[0].name.len)
-                if i == 0:
-                    q = qrr()
-                    q.name = name
-                    q.rrclass = dns_rrset.rrclass
-                    q.rrtype = dns_rrset.rrtype
-                    msg.sec[0].append(q)
-                else:
-                    py_rrset.name = name
-                    py_rrset.rrclass = dns_rrset.rrclass
-                    py_rrset.rrtype = dns_rrset.rrtype
-                    py_rrset.rrttl = dns_rrset.rrttl
-                    for k from 0 <= k < dns_rrset.n_rdatas:
-                        dns_rdata = dns_rrset[0].rdatas[k]
-                        py_rdata = PyString_FromStringAndSize(<char *> dns_rdata.data, dns_rdata.len)
-                        py_rdata_obj = rdata(py_rdata, dns_rrset.rrclass, dns_rrset.rrtype)
-                        py_rrset.rdata.append(py_rdata_obj)
-                    msg.sec[i].append(py_rrset)
-
-        wdns_clear_message(&m)
-        return msg
-    else:
-        raise WreckException('wdns_parse_message() returned %s' % status)
