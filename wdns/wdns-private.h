@@ -16,7 +16,7 @@
 #define USTR_CONF_COMPILE_USE_INLINE 0
 #include <ustr.h>
 
-#include <wdns.h>
+#include "wdns.h"
 
 #include "record_descr.h"
 #include "b32_encode.h"
