@@ -51,7 +51,7 @@ wdns_libwdns_la_LDFLAGS = $(AM_LDFLAGS) \
 	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE) \
 	-export-symbols-regex "^(wdns_[a-z].*)"
 wdns_libwdns_la_SOURCES = \
-	wdns/private.h \
+	wdns/wdns-private.h \
 	wdns/wdns.h \
 	wdns/b32_encode.c \
 	wdns/b32_encode.h \
@@ -81,7 +81,6 @@ wdns_libwdns_la_SOURCES = \
 	wdns/print_rr.c \
 	wdns/print_rrset.c \
 	wdns/print_rrset_array.c \
-	wdns/private.h \
 	wdns/opcode_to_str.c \
 	wdns/rcode_to_str.c \
 	wdns/rdata_to_str.c \
