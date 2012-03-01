@@ -18,7 +18,7 @@ static uint64_t count_dump;
 #define advance(p, len, sz) do { (p) += (sz); (len) -= (sz); } while (0)
 #define getu16(dst, src) do { memcpy(&(dst), src, 2); dst = ntohs(dst); } while (0)
 
-void
+static void
 packet_dump(u_char *dumper,
 	    const struct pcap_pkthdr *hdr,
 	    const u_char *pkt)
@@ -28,7 +28,7 @@ packet_dump(u_char *dumper,
 	count_dump += 1;
 }
 
-void
+static void
 packet_handler(u_char *dumper,
 	       const struct pcap_pkthdr *hdr,
 	       const u_char *pkt)

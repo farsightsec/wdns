@@ -2,6 +2,10 @@
 
 #include <wdns.h>
 
+bool loadfunc(uint8_t *, size_t);
+void freefunc(void);
+bool testfunc(void);
+
 wdns_rrset_t rrset;
 
 bool

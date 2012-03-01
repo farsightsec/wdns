@@ -4,6 +4,10 @@
 
 wdns_rrset_t rrset;
 
+bool loadfunc(uint8_t *, size_t);
+void freefunc(void);
+bool testfunc(void);
+
 bool
 loadfunc(uint8_t *data, size_t len)
 {
