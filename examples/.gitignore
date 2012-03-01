@@ -1,0 +1,5 @@
+wdns-dump-pcap
+wdns-test-deserialize-rrset
+wdns-test-downcase-rrset
+wdns-test-print-message
+wdns-test-serialize-rrset
