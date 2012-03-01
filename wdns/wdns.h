@@ -120,6 +120,7 @@ extern "C" {
 #define WDNS_TYPE_NINFO		56
 #define WDNS_TYPE_RKEY		57
 #define WDNS_TYPE_TALINK	58
+#define WDNS_TYPE_CDS		59
 #define WDNS_TYPE_SPF		99
 #define WDNS_TYPE_TKEY		249
 #define WDNS_TYPE_TSIG		250
@@ -128,6 +129,8 @@ extern "C" {
 #define WDNS_TYPE_MAILB		253
 #define WDNS_TYPE_MAILA		254
 #define WDNS_TYPE_ANY		255
+#define WDNS_TYPE_URI		256
+#define WDNS_TYPE_CAA		257
 #define WDNS_TYPE_TA		32768
 #define WDNS_TYPE_DLV		32769
 
