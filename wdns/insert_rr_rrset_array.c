@@ -5,11 +5,11 @@
  * and/or rdata fields are detached from the RR and given to an RRset in the
  * RRset array.  wdns_clear_rr() is called on the RR object.
  *
- * \return wdns_msg_success
- * \return wdns_msg_err_malloc
+ * \return wdns_res_success
+ * \return wdns_res_malloc
  */
 
-wdns_msg_status
+wdns_res
 _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec)
 {
 	bool found_rrset = false;
@@ -24,7 +24,7 @@ _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec)
 	a->rrs = realloc(a->rrs, a->n_rrs * sizeof(wdns_rr_t));
 	if (a->rrs == NULL) {
 		a->rrs = tmp;
-		return (wdns_msg_err_malloc);
+		return (wdns_res_malloc);
 	}
 	new_rr = &a->rrs[a->n_rrs - 1];
 	new_rr->rrttl = rr->rrttl;
@@ -35,14 +35,14 @@ _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec)
 	/* copy the owner name */
 	new_rr->name.data = malloc(rr->name.len);
 	if (new_rr->name.data == NULL)
-		return (wdns_msg_err_malloc);
+		return (wdns_res_malloc);
 	memcpy(new_rr->name.data, rr->name.data, rr->name.len);
 
 	/* copy the rdata */
 	if (sec != WDNS_MSG_SEC_QUESTION) {
 		new_rr->rdata = malloc(sizeof(wdns_rdata_t) + rr->rdata->len);
 		if (new_rr->rdata == NULL)
-			return (wdns_msg_err_malloc);
+			return (wdns_res_malloc);
 		new_rr->rdata->len = rr->rdata->len;
 		memcpy(new_rr->rdata->data, rr->rdata->data, rr->rdata->len);
 	} else {
@@ -64,7 +64,7 @@ _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec)
 						rrset->n_rdatas * sizeof(*(rrset->rdatas)));
 			if (rrset->rdatas == NULL) {
 				rrset->rdatas = tmp;
-				return (wdns_msg_err_malloc);
+				return (wdns_res_malloc);
 			}
 
 			/* detach the rdata from the RR and give it to the RRset */
@@ -86,7 +86,7 @@ _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec)
 		a->n_rrsets += 1;
 		a->rrsets = realloc(a->rrsets, a->n_rrsets * sizeof(wdns_rrset_t));
 		if (a->rrsets == NULL)
-			return (wdns_msg_err_malloc);
+			return (wdns_res_malloc);
 		rrset = &a->rrsets[a->n_rrsets - 1];
 		memset(rrset, 0, sizeof(*rrset));
 
@@ -101,7 +101,7 @@ _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec)
 			rrset->rdatas = malloc(sizeof(*(rrset->rdatas)));
 			if (rrset->rdatas == NULL) {
 				free(rrset);
-				return (wdns_msg_err_malloc);
+				return (wdns_res_malloc);
 			}
 		}
 
@@ -120,5 +120,5 @@ _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec)
 	}
 
 	wdns_clear_rr(rr);
-	return (wdns_msg_success);
+	return (wdns_res_success);
 }

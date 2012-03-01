@@ -5,10 +5,10 @@
  * \param[out] buf the output buffer (may be NULL)
  * \param[out] sz serialized length (may be NULL)
  *
- * \return wdns_msg_success
+ * \return wdns_res_success
  */
 
-wdns_msg_status
+wdns_res
 wdns_serialize_rrset(const wdns_rrset_t *rrset, uint8_t *buf, size_t *sz)
 {
 	if (sz) {
@@ -66,5 +66,5 @@ wdns_serialize_rrset(const wdns_rrset_t *rrset, uint8_t *buf, size_t *sz)
 		}
 	}
 
-	return (wdns_msg_success);
+	return (wdns_res_success);
 }

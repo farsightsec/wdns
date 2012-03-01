@@ -16,10 +16,10 @@ rdata_cmp(const void *e1, const void *e2)
 /**
  * Sort the rdata set of an RRset.
  *
- * \return wdns_msg_success
+ * \return wdns_res_success
  */
 
-wdns_msg_status
+wdns_res
 wdns_sort_rrset(wdns_rrset_t *rrset)
 {
 	if (rrset->n_rdatas > 1)
@@ -27,5 +27,5 @@ wdns_sort_rrset(wdns_rrset_t *rrset)
 		      rrset->n_rdatas,
 		      sizeof(rrset->rdatas[0]),
 		      rdata_cmp);
-	return (wdns_msg_success);
+	return (wdns_res_success);
 }

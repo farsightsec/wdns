@@ -150,23 +150,23 @@ extern "C" {
 /* Data structures and definitions. */
 
 typedef enum {
-	wdns_msg_success,
-	wdns_msg_err_failure,
-	wdns_msg_err_invalid_compression_pointer,
-	wdns_msg_err_invalid_length_octet,
-	wdns_msg_err_invalid_opcode,
-	wdns_msg_err_invalid_rcode,
-	wdns_msg_err_len,
-	wdns_msg_err_malloc,
-	wdns_msg_err_name_len,
-	wdns_msg_err_name_overflow,
-	wdns_msg_err_out_of_bounds,
-	wdns_msg_err_overflow,
-	wdns_msg_err_parse_error,
-	wdns_msg_err_qdcount,
-	wdns_msg_err_unknown_opcode,
-	wdns_msg_err_unknown_rcode,
-} wdns_msg_status;
+	wdns_res_success,
+	wdns_res_failure,
+	wdns_res_invalid_compression_pointer,
+	wdns_res_invalid_length_octet,
+	wdns_res_invalid_opcode,
+	wdns_res_invalid_rcode,
+	wdns_res_len,
+	wdns_res_malloc,
+	wdns_res_name_len,
+	wdns_res_name_overflow,
+	wdns_res_out_of_bounds,
+	wdns_res_overflow,
+	wdns_res_parse_error,
+	wdns_res_qdcount,
+	wdns_res_unknown_opcode,
+	wdns_res_unknown_rcode,
+} wdns_res;
 
 typedef struct {
 	uint8_t			len;
@@ -239,7 +239,7 @@ char *		wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdlen,
 
 /* Functions for converting presentation format strings to objects. */
 
-wdns_msg_status
+wdns_res
 wdns_str_to_name(const char *str, wdns_name_t *name);
 
 uint16_t
@@ -267,30 +267,30 @@ void	wdns_print_rrset_array(FILE *fp, wdns_rrset_array_t *a, unsigned sec);
 
 size_t	wdns_skip_name(const uint8_t **data, const uint8_t *eod);
 
-wdns_msg_status
+wdns_res
 wdns_copy_uname(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 		uint8_t *dst, size_t *sz);
 
-wdns_msg_status
+wdns_res
 wdns_len_uname(const uint8_t *p, const uint8_t *eop, size_t *sz);
 
-wdns_msg_status
+wdns_res
 wdns_sort_rrset(wdns_rrset_t *);
 
-wdns_msg_status
+wdns_res
 wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 		 uint8_t *dst, size_t *sz);
 
-wdns_msg_status
+wdns_res
 wdns_count_labels(wdns_name_t *name, size_t *nlabels);
 
-wdns_msg_status
+wdns_res
 wdns_is_subdomain(wdns_name_t *n0, wdns_name_t *n1, bool *is_subdomain);
 
-wdns_msg_status
+wdns_res
 wdns_file_load_names(const char *fname, wdns_callback_name cb, void *user);
 
-wdns_msg_status
+wdns_res
 wdns_left_chop(wdns_name_t *name, wdns_name_t *chop);
 
 void
@@ -298,17 +298,17 @@ wdns_reverse_name(const uint8_t *name, size_t len_name, uint8_t *rev_name);
 
 /* Parsing functions. */
 
-wdns_msg_status
+wdns_res
 wdns_parse_message(wdns_message_t *m, const uint8_t *pkt, size_t len);
 
 /* Deserialization functions. */
 
-wdns_msg_status
+wdns_res
 wdns_deserialize_rrset(wdns_rrset_t *rrset, const uint8_t *buf, size_t sz);
 
 /* Serialization functions. */
 
-wdns_msg_status
+wdns_res
 wdns_serialize_rrset(const wdns_rrset_t *rrset, uint8_t *buf, size_t *sz);
 
 /* Downcasing functions. */
@@ -316,10 +316,10 @@ wdns_serialize_rrset(const wdns_rrset_t *rrset, uint8_t *buf, size_t *sz);
 void
 wdns_downcase_name(wdns_name_t *name);
 
-wdns_msg_status
+wdns_res
 wdns_downcase_rdata(wdns_rdata_t *rdata, uint16_t rrtype, uint16_t rrclass);
 
-wdns_msg_status
+wdns_res
 wdns_downcase_rrset(wdns_rrset_t *rrset);
 
 #ifdef __cplusplus

@@ -13,7 +13,7 @@
  * \return
  */
 
-wdns_msg_status
+wdns_res
 wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 		 uint8_t *dst, size_t *sz)
 {
@@ -23,14 +23,14 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 	size_t total_len = 0;
 
 	if (p >= eop || src >= eop || src < p)
-		return (wdns_msg_err_out_of_bounds);
+		return (wdns_res_out_of_bounds);
 
 	while ((c = *src++) != 0) {
 		if (c >= 192) {
 			uint16_t offset;
 
 			if (src > eop)
-				return (wdns_msg_err_out_of_bounds);
+				return (wdns_res_out_of_bounds);
 			
 			/* offset is the lower 14 bits of the 2 octet sequence */
 			offset = ((c & 63) << 8) + *src;
@@ -38,7 +38,7 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 			cptr = p + offset;
 
 			if (cptr > eop)
-				return (wdns_msg_err_invalid_compression_pointer);
+				return (wdns_res_invalid_compression_pointer);
 
 			if (cptr == src - 1 && (*(src - 1) == 0)) {
 				/* if a compression pointer points to exactly one octet
@@ -46,27 +46,27 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 				 * is the zero-octet root label. */
 				src = cptr;
 			} else if (cptr > src - 2) {
-				return (wdns_msg_err_invalid_compression_pointer);
+				return (wdns_res_invalid_compression_pointer);
 			} else {
 				src = cptr;
 			}
 		} else if (c <= 63) {
 			total_len++;
 			if (total_len >= WDNS_MAXLEN_NAME)
-				return (wdns_msg_err_name_overflow);
+				return (wdns_res_name_overflow);
 			*dst++ = c;
 
 			total_len += c;
 			if (total_len >= WDNS_MAXLEN_NAME)
-				return (wdns_msg_err_name_overflow);
+				return (wdns_res_name_overflow);
 			if (src + c > eop)
-				return (wdns_msg_err_out_of_bounds);
+				return (wdns_res_out_of_bounds);
 			memcpy(dst, src, c);
 
 			dst += c;
 			src += c;
 		} else {
-			return (wdns_msg_err_invalid_length_octet);
+			return (wdns_res_invalid_length_octet);
 		}
 	}
 	*dst = '\0';
@@ -74,5 +74,5 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 
 	if (sz)
 		*sz = total_len;
-	return (wdns_msg_success);
+	return (wdns_res_success);
 }

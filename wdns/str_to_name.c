@@ -6,16 +6,16 @@ is_digit(char c)
 	return (false);
 }
 
-wdns_msg_status
+wdns_res
 wdns_str_to_name(const char *str, wdns_name_t *name)
 {
 	const char *p;
 	size_t label_len;
 	ssize_t slen;
 	uint8_t c, *oclen, *data;
-	wdns_msg_status status;
+	wdns_res res;
 
-	status = wdns_msg_err_parse_error;
+	res = wdns_res_parse_error;
 
 	p = str;
 	slen = strlen(str);
@@ -24,15 +24,15 @@ wdns_str_to_name(const char *str, wdns_name_t *name)
 		name->len = 1;
 		name->data = malloc(1);
 		if (name->data == NULL)
-			return (wdns_msg_err_malloc);
+			return (wdns_res_malloc);
 		name->data[0] = '\0';
-		return (wdns_msg_success);
+		return (wdns_res_success);
 	}
 
 	name->len = 0;
 	name->data = malloc(WDNS_MAXLEN_NAME);
 	if (name->data == NULL)
-		return (wdns_msg_err_malloc);
+		return (wdns_res_malloc);
 
 	data = name->data;
 	label_len = 0;
@@ -46,7 +46,7 @@ wdns_str_to_name(const char *str, wdns_name_t *name)
 		if (slen == 0) {
 			/* end of input */
 			if (name->len == WDNS_MAXLEN_NAME) {
-				status = wdns_msg_err_name_overflow;
+				res = wdns_res_name_overflow;
 				goto out;
 			}
 			*oclen = --label_len;
@@ -56,7 +56,7 @@ wdns_str_to_name(const char *str, wdns_name_t *name)
 		}
 
 		if (name->len >= WDNS_MAXLEN_NAME) {
-			status = wdns_msg_err_name_overflow;
+			res = wdns_res_name_overflow;
 			goto out;
 		}
 
@@ -118,9 +118,9 @@ wdns_str_to_name(const char *str, wdns_name_t *name)
 		slen--;
 	}
 
-	return (wdns_msg_success);
+	return (wdns_res_success);
 
 out:
 	free(name->data);
-	return (status);
+	return (res);
 }

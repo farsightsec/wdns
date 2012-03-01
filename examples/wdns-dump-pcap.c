@@ -40,7 +40,7 @@ packet_handler(u_char *dumper,
 	uint32_t len = hdr->caplen;
 	uint8_t ihl;
 	wdns_message_t m;
-	wdns_msg_status status;
+	wdns_res res;
 
 	p = pkt;
 	count++;
@@ -87,12 +87,12 @@ packet_handler(u_char *dumper,
 	dns_p = p;
 	dns_len = len;
 
-	status = wdns_parse_message(&m, dns_p, dns_len);
-	if (status == wdns_msg_success) {
+	res = wdns_parse_message(&m, dns_p, dns_len);
+	if (res == wdns_res_success) {
 		wdns_print_message(stdout, &m);
 		wdns_clear_message(&m);
 	} else {
-		VERBOSE("wdns_msg_status=%u\n", status);
+		VERBOSE("wdns_res=%u\n", res);
 		packet_dump(dumper, hdr, pkt);
 	}
 

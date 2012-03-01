@@ -45,7 +45,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 	size_t len;
 	ssize_t src_bytes;
 	uint8_t oclen;
-	wdns_msg_status status;
+	wdns_res res;
 	
 	if (rrtype < record_descr_len)
 		descr = &record_descr_array[rrtype];
@@ -77,10 +77,10 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 		switch (*t) {
 		case rdf_name:
 		case rdf_uname:
-			status = wdns_len_uname(src, src + src_bytes, &len);
-			if (status != wdns_msg_success) {
+			res = wdns_len_uname(src, src + src_bytes, &len);
+			if (res != wdns_res_success) {
 				src_bytes = 0;
-				goto err_status;
+				goto err_res;
 			}
 			wdns_domain_to_str(src, len, domain_name);
 			ustr_add_cstr(s, domain_name);
@@ -288,7 +288,7 @@ err:
 	ustr_add_fmt(s, " ### PARSE ERROR ###");
 	return;
 
-err_status:
-	ustr_add_fmt(s, " ### PARSE ERROR #%u ###", status);
+err_res:
+	ustr_add_fmt(s, " ### PARSE ERROR #%u ###", res);
 	return;
 }

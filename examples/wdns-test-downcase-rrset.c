@@ -11,9 +11,9 @@ wdns_rrset_t rrset;
 bool
 loadfunc(uint8_t *data, size_t len)
 {
-	wdns_msg_status status;
-	status = wdns_deserialize_rrset(&rrset, data, len);
-	if (status != wdns_msg_success)
+	wdns_res res;
+	res = wdns_deserialize_rrset(&rrset, data, len);
+	if (res != wdns_res_success)
 		return (false);
 	return (true);
 }
@@ -27,9 +27,9 @@ freefunc(void)
 bool
 testfunc(void)
 {
-	wdns_msg_status status;
-	status = wdns_downcase_rrset(&rrset);
-	if (status != wdns_msg_success)
+	wdns_res res;
+	res = wdns_downcase_rrset(&rrset);
+	if (res != wdns_res_success)
 		return (false);
 	wdns_print_rrset(stdout, &rrset, WDNS_MSG_SEC_ANSWER);
 	return (true);

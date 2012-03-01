@@ -11,9 +11,9 @@ wdns_message_t m;
 bool
 loadfunc(uint8_t *data, size_t len)
 {
-	wdns_msg_status status;
-	status = wdns_parse_message(&m, data, len);
-	if (status != wdns_msg_success)
+	wdns_res res;
+	res = wdns_parse_message(&m, data, len);
+	if (res != wdns_res_success)
 		return (false);
 	return (true);
 }

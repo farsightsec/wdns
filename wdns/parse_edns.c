@@ -1,4 +1,4 @@
-wdns_msg_status
+wdns_res
 _wdns_parse_edns(wdns_message_t *m, wdns_rr_t *rr)
 {
 	m->edns.present = true;
@@ -12,5 +12,5 @@ _wdns_parse_edns(wdns_message_t *m, wdns_rr_t *rr)
 
 	wdns_clear_rr(rr);
 
-	return (wdns_msg_success);
+	return (wdns_res_success);
 }
