@@ -5,7 +5,9 @@ EXTRA_DIST =
 CLEANFILES =
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
-AM_CPPFLAGS = -include $(top_builddir)/config.h
+AM_CPPFLAGS = \
+	-include $(top_builddir)/config.h \
+	-I${top_srcdir}/wdns
 AM_CFLAGS = ${my_CFLAGS}
 AM_LDFLAGS = -Wl,--as-needed
 
@@ -39,6 +41,15 @@ wdns/rrclass_to_str.c: wdns/wdns.h
 wdns/rrtype_to_str.c: wdns/wdns.h
 	wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
 
+wdns_libwdns_la_CPPFLAGS = \
+	-include $(top_builddir)/wdns/wdns-private.h
+wdns_libwdns_la_CFLAGS = \
+	$(ustr_CFLAGS)
+wdns_libwdns_la_LIBADD = \
+	$(ustr_LIBS)
+wdns_libwdns_la_LDFLAGS = $(AM_LDFLAGS) \
+	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE) \
+	-export-symbols-regex "^(wdns_[a-z].*)"
 wdns_libwdns_la_SOURCES = \
 	wdns/private.h \
 	wdns/wdns.h \
@@ -91,16 +102,6 @@ wdns_libwdns_la_SOURCES = \
 	wdns/skip_name.c \
 	wdns/str_to_name.c \
 	wdns/unpack_name.c
-
-wdns_libwdns_la_CFLAGS = \
-	$(ustr_CFLAGS)
-
-wdns_libwdns_la_LIBADD = \
-	$(ustr_LIBS)
-
-wdns_libwdns_la_LDFLAGS = $(AM_LDFLAGS) \
-	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE) \
-	-export-symbols-regex "^(wdns_[a-z].*)"
 
 install-exec-hook:
 	rm -f $(DESTDIR)$(libdir)/libwdns.la
