@@ -1,5 +1,3 @@
-#include "config.h"
-
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
 #endif
@@ -15,11 +13,11 @@
 #include <stdint.h>
 #include <string.h>
 
+#define USTR_CONF_COMPILE_USE_INLINE 0
 #include <ustr.h>
 
-#include "../buf.h"
-#include "../constants.h"
-#include "../msg.h"
+#include <wdns.h>
+
 #include "record_descr.h"
 #include "b32_encode.h"
 #include "b64_encode.h"
@@ -36,6 +34,40 @@
 	memcpy(&_my_32, buf, sizeof(uint32_t)); \
 	_my_32 = ntohl(_my_32); \
 	*(out) = _my_32; \
+} while (0)
+
+/**
+ * Advance pointer p by sz bytes and update len.
+ */
+#define WDNS_BUF_ADVANCE(p, len, sz) do { \
+	p += sz; \
+	len -= sz; \
+} while (0)
+
+/**
+ * Read an 8 bit integer.
+ */
+#define WDNS_BUF_GET8(dst, src) do { \
+	memcpy(&dst, src, 1); \
+	src++; \
+} while (0)
+
+/**
+ * Read a 16 bit integer.
+ */
+#define WDNS_BUF_GET16(dst, src) do { \
+	memcpy(&dst, src, 2); \
+	dst = ntohs(dst); \
+	src += 2; \
+} while (0)
+
+/**
+ * Read a 32 bit integer.
+ */
+#define WDNS_BUF_GET32(dst, src) do { \
+	memcpy(&dst, src, 4); \
+	dst = ntohl(dst); \
+	src += 4; \
 } while (0)
 
 wdns_msg_status
