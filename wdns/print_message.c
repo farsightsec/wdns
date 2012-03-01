@@ -1,5 +1,3 @@
-#include "private.h"
-
 void
 wdns_print_message(FILE *fp, wdns_message_t *m)
 {

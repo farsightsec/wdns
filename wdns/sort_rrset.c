@@ -1,5 +1,3 @@
-#include "private.h"
-
 static int
 rdata_cmp(const void *e1, const void *e2)
 {

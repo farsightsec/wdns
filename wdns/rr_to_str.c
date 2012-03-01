@@ -1,5 +1,3 @@
-#include "private.h"
-
 char *
 wdns_rr_to_str(wdns_rr_t *rr, unsigned sec)
 {

@@ -1,5 +1,3 @@
-#include "private.h"
-
 wdns_msg_status
 wdns_parse_message(wdns_message_t *m, const uint8_t *pkt, size_t len)
 {

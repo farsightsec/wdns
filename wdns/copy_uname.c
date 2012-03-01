@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Copy an uncompressed domain name from a message.
  *

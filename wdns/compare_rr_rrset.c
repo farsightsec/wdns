@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Compare an RR to a RRset. An RR and an RRset compare true if the name, type,
  * and class match.

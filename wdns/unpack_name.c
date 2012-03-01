@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Uncompress a domain name from a message.
  *

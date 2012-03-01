@@ -1,5 +1,3 @@
-#include "private.h"
-
 wdns_msg_status
 wdns_left_chop(wdns_name_t *name, wdns_name_t *chop)
 {

@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Count the number of labels in an uncompressed domain name.
  *

@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Determine the length of an uncompressed wire format domain name.
  *

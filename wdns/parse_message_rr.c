@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Parse a DNS resource record contained in a DNS message.
  *

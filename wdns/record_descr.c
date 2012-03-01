@@ -1,4 +1,3 @@
-#include "private.h"
 #include "record_descr.h"
 
 const record_descr record_descr_array[] = {

@@ -1,5 +1,3 @@
-#include "private.h"
-
 wdns_msg_status
 wdns_downcase_rrset(wdns_rrset_t *rrset)
 {

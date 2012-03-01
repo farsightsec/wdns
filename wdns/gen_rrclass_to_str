@@ -5,8 +5,7 @@ import sys
 header_fname = sys.argv[1]
 output_fname = sys.argv[2]
 
-header = '''#include "private.h"
-
+header = '''
 const char *
 wdns_rrclass_to_str(uint16_t rrclass)
 {

@@ -1,5 +1,3 @@
-#include "private.h"
-
 static size_t
 rdata_to_str_string(const uint8_t *src, Ustr **s) {
 	size_t len;

@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Serialize a wdns_rrset_t.
  *

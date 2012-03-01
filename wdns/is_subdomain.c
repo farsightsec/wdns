@@ -1,5 +1,3 @@
-#include "private.h"
-
 static wdns_msg_status
 gen_label_offsets(wdns_name_t *name, size_t n_labels, uint8_t *offsets)
 {

@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Skip a possibly compressed domain name.
  *

@@ -1,5 +1,3 @@
-#include "private.h"
-
 void
 wdns_print_rrset_array(FILE *fp, wdns_rrset_array_t *rr, unsigned sec)
 {

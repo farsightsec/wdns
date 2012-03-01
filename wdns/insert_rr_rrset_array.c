@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Insert an RR into an RRset array.
  *

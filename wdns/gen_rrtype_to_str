@@ -7,8 +7,7 @@ output_fname = sys.argv[2]
 
 w = open(output_fname, 'w')
 
-w.write('''#include "private.h"
-
+w.write('''
 const char *
 wdns_rrtype_to_str(uint16_t rrtype)
 {

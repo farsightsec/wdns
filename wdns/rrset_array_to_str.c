@@ -1,5 +1,3 @@
-#include "private.h"
-
 char *
 wdns_rrset_array_to_str(wdns_rrset_array_t *a, unsigned sec)
 {

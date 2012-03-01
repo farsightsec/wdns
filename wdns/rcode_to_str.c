@@ -1,5 +1,3 @@
-#include "private.h"
-
 const char *
 wdns_rcode_to_str(uint16_t rcode)
 {

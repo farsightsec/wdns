@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Parse a serialized wdns_rrset_t.
  *

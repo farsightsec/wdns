@@ -1,5 +1,3 @@
-#include "private.h"
-
 char *
 wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdlen,
 		  uint16_t rrtype, uint16_t rrclass)

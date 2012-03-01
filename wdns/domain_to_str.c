@@ -1,5 +1,3 @@
-#include "private.h"
-
 /**
  * Convert a domain name to a human-readable string.
  *

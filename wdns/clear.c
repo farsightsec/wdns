@@ -1,5 +1,3 @@
-#include "private.h"
-
 void
 wdns_clear_rr(wdns_rr_t *rr)
 {

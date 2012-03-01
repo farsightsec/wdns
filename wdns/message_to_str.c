@@ -1,5 +1,3 @@
-#include "private.h"
-
 char *
 wdns_message_to_str(wdns_message_t *m)
 {

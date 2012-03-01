@@ -1,5 +1,3 @@
-#include "private.h"
-
 void
 _wdns_rrset_to_ustr(Ustr **s, wdns_rrset_t *rrset, unsigned sec)
 {

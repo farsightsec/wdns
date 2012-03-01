@@ -1,5 +1,3 @@
-#include "private.h"
-
 wdns_msg_status
 wdns_file_load_names(const char *fname, wdns_callback_name cb, void *user)
 {
