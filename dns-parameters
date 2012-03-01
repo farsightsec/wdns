@@ -1,7 +1,7 @@
 
 Domain Name System (DNS) Parameters
 
-(last updated 2010-06-15)
+(last updated 2012-01-31)
 
 Registries included below:
 - DNS CLASSes
@@ -18,85 +18,61 @@ Registries included below:
 
 
 Registry Name: DNS CLASSes
-Reference: [RFC5395]
+Reference: [RFC6195]
 Range         
-Decimal
-Hexadecimal    Registration Procedures        Notes
--------------  -----------------------------  ----------------------   
-0              Standards Action
-0x0000
-1-127          IETF Review                    data CLASSes only
-0x000-0x007F
-128-253        IETF Review                    QCLASSes and meta-CLASSes only
-0x0080-0x00FD 
-256-32767      IETF Review                   
-0x0100-0x7FFF
-32768-57343    Specification Required         data CLASSes only
-0x8000-0xDFFF
-57344-65279    Specification Required         QCLASSes and meta-CLASSes only
-0xE000-0xFEFF
-65280-65534    Reserved for Private Use
-0xFF00-0xFFFE
-65535          Standards Action
-0xFFFF
+Decimal      Hexadecimal    Registration Procedures        Notes
+-----------  -------------  -----------------------------  ----------------------   
+0            0x0000         Standards Action
+1-127        0x0000-0x007F  IETF Review                    data CLASSes only
+128-253      0x0080-0x00FD  IETF Review                    QCLASSes and meta-CLASSes only
+256-32767    0x0100-0x7FFF  IETF Review                   
+32768-57343  0x8000-0xDFFF  Specification Required         data CLASSes only
+57344-65279  0xE000-0xFEFF  Specification Required         QCLASSes and meta-CLASSes only
+65280-65534  0xFF00-0xFFFE  Reserved for Private Use
+65535        0xFFFF         Standards Action
 
-Registry:
-Decimal     
-Hexadecimal    Name                            Reference
--------------  ------------------------------  ---------
-0              Reserved                        [RFC5395]
-0x0000
-1              Internet (IN)                   [RFC1035]
-0x0001
-2              Unassigned                      
-0x0002
-3              Chaos (CH)                      [Moon1981]
-0x0003
-4              Hesiod (HS)                     [Dyer1987]
-0x0004
-5-253          Unassigned                    
-0x0005-0x00FD
-254            QCLASS NONE                     [RFC2136]
-0x00FD
-255            QCLASS * (ANY)                  [RFC1035]
-0x00FF
-256-65279      Unassigned                      
-0x0100-0xFEFF
-65280-65534    Reserved for Private Use        [RFC5395]
-0xFF00-0xFFFE
-65535          Reserved                        [RFC5395] 
-0xFFFF
+Note: As noted in [RFC-cheshire-dnsext-multicastdns-15.txt], Multicast DNS can only 
+carry DNS records with classes in the range 0-32767. Classes in the range 32768 to 
+65535 are incompatible with Multicast DNS.
+
+Registry:     
+Decimal      Hexadecimal    Name                            Reference
+-----------  -----------    ------------------------------  ---------
+0            0x0000         Reserved                        [RFC6195]
+1            0x0001         Internet (IN)                   [RFC1035]
+2            0x0002         Unassigned                      
+3            0x0003         Chaos (CH)                      [Moon1981]
+4            0x0004         Hesiod (HS)                     [Dyer1987]
+5-253        0x0005-0x00FD  Unassigned                    
+254          0x00FD         QCLASS NONE                     [RFC2136]
+255          0x00FF         QCLASS * (ANY)                  [RFC1035]
+256-65279    0x0100-0xFEFF  Unassigned                      
+65280-65534  0xFF00-0xFFFE  Reserved for Private Use        [RFC6195]
+65535        0xFFFF         Reserved                        [RFC6195] 
 
 
 Registry Name: Resource Record (RR) TYPEs 
-Reference: [RFC5395][RFC1035]
+Reference: [RFC6195][RFC1035]
 Range        
-Decimal
-Hexadecimal    Registration Procedures                                         Notes
--------------  --------------------------------------------------------------  --------------
-0              RRTYPE zero is used as a special indicator for the SIG RR
-0x0000         [RFC2931], [RFC4034] and in other circumstances and must never
-               be allocated for ordinary use.
-1-127          DNS RRTYPE Allocation Policy                                    data TYPEs
-0x0001-0x007F
-128-255        DNS RRTYPE Allocation Policy                                    Q TYPEs, Meta TYPEs
-0x0080-0x00FF
-256-61439      DNS RRTYPE Allocation Policy                                    data RRTYPEs
-0x0100-0xEFFF
-61440-65279    IETF Review
-0xF000-0xFEFF  
-65280-65534    Reserved for Private Use
-0xFF00-0xFFFE
-65535          Reserved (Standards Action)
-0xFFFF
+Decimal      Hexadecimal    Registration Procedures                                         Notes
+-----------  -------------  --------------------------------------------------------------  --------------
+0            0x0000         RRTYPE zero is used as a special indicator for the SIG RR
+                            [RFC2931], [RFC4034] and in other circumstances and must never
+                            be allocated for ordinary use.
+1-127        0x0000-0x007F  DNS RRTYPE Allocation Policy                                    data TYPEs
+128-255      0x0080-0x00FF  DNS RRTYPE Allocation Policy                                    Q TYPEs, Meta TYPEs
+256-61439    0x0100-0xEFFF  DNS RRTYPE Allocation Policy                                    data RRTYPEs
+61440-65279  0xF000-0xFEFF  IETF Review
+65280-65534  0xFF00-0xFFFE  Reserved for Private Use
+65535        0xFFFF         Reserved (Standards Action)
 
 Registry:
 TYPE         Value and meaning                              Reference
 -----------  ---------------------------------------------  ---------
 A            1 a host address                               [RFC1035]
 NS           2 an authoritative name server                 [RFC1035]
-MD           3 a mail destination (Obsolete - use MX)       [RFC1035]
-MF           4 a mail forwarder (Obsolete - use MX)         [RFC1035]
+MD           3 a mail destination (OBSOLETE - use MX)       [RFC1035]
+MF           4 a mail forwarder (OBSOLETE - use MX)         [RFC1035]
 CNAME        5 the canonical name for an alias              [RFC1035]
 SOA          6 marks the start of a zone of authority       [RFC1035]
 MB           7 a mailbox domain name (EXPERIMENTAL)         [RFC1035]
@@ -110,30 +86,30 @@ MINFO        14 mailbox or mail list information            [RFC1035]
 MX           15 mail exchange                               [RFC1035]
 TXT          16 text strings                                [RFC1035]
 RP           17 for Responsible Person                      [RFC1183]
-AFSDB        18 for AFS Data Base location                  [RFC1183]
+AFSDB        18 for AFS Data Base location                  [RFC1183][RFC5864]
 X25          19 for X.25 PSDN address                       [RFC1183]
 ISDN         20 for ISDN address                            [RFC1183]
 RT           21 for Route Through                           [RFC1183]
 NSAP         22 for NSAP address, NSAP style A record       [RFC1706]
-NSAP-PTR     23 for domain name pointer, NSAP style         [RFC1348] 
-SIG          24 for security signature                      [RFC4034][RFC3755][RFC2535]
-KEY          25 for security key                            [RFC4034][RFC3755][RFC2535]
+NSAP-PTR     23 for domain name pointer, NSAP style         [RFC1348][RFC1637][RFC1706]
+SIG          24 for security signature                      [RFC4034][RFC3755][RFC2535][RFC2536][RFC2537][RFC2931][RFC3110][RFC3008]
+KEY          25 for security key                            [RFC4034][RFC3755][RFC2535][RFC2536][RFC2537][RFC2539][RFC3008][RFC3110]
 PX           26 X.400 mail mapping information              [RFC2163]
 GPOS         27 Geographical Position                       [RFC1712]
 AAAA         28 IP6 Address                                 [RFC3596]
 LOC          29 Location Information                        [RFC1876]
-NXT          30 Next Domain - OBSOLETE                      [RFC3755][RFC2535]
-EID          31 Endpoint Identifier                         [Patton]
-NIMLOC       32 Nimrod Locator                              [Patton]
+NXT          30 Next Domain (OBSOLETE)                      [RFC3755][RFC2535]
+EID          31 Endpoint Identifier                         [Patton][Patton1995]
+NIMLOC       32 Nimrod Locator                              [Patton][Patton1995]
 SRV          33 Server Selection                            [RFC2782]
 ATMA         34 ATM Address                                 [ATMDOC]
 NAPTR        35 Naming Authority Pointer                    [RFC2915][RFC2168][RFC3403]
 KX           36 Key Exchanger                               [RFC2230]
 CERT         37 CERT                                        [RFC4398]
-A6           38 A6 (Experimental)                           [RFC3226][RFC2874]
+A6           38 A6 (OBSOLETE - use AAAA)                    [RFC3226][RFC2874][RFC-jiang-a6-to-historic-00.txt]
 DNAME        39 DNAME                                       [RFC2672]
-SINK         40 SINK                                        [Eastlake]
-OPT          41 OPT                                         [RFC2671]
+SINK         40 SINK                                        [Eastlake][Eastlake2002]
+OPT          41 OPT                                         [RFC2671][RFC3225]
 APL          42 APL                                         [RFC3123]
 DS           43 Delegation Signer                           [RFC4034][RFC3658]
 SSHFP        44 SSH Key Fingerprint                         [RFC4255]
@@ -149,7 +125,8 @@ HIP          55 Host Identity Protocol                      [RFC5205]
 NINFO        56 NINFO                                       [Reid]
 RKEY         57 RKEY                                        [Reid]
 TALINK       58 Trust Anchor LINK                           [Wijngaards]
-Unassigned   59-98
+CDS          59 Child DS                                    [Barwood]
+Unassigned   60-98
 SPF          99                                             [RFC4408]
 UINFO        100                                            [IANA-Reserved]
 UID          101                                            [IANA-Reserved]
@@ -159,11 +136,13 @@ Unassigned   104-248
 TKEY         249 Transaction Key                            [RFC2930]
 TSIG         250 Transaction Signature                      [RFC2845]
 IXFR         251 incremental transfer                       [RFC1995]
-AXFR         252 transfer of an entire zone                 [RFC1035][RFC-ietf-dnsext-axfr-clarify-14.txt]
+AXFR         252 transfer of an entire zone                 [RFC1035][RFC5936]
 MAILB        253 mailbox-related RRs (MB, MG or MR)         [RFC1035]
-MAILA        254 mail agent RRs (Obsolete - see MX)         [RFC1035]
+MAILA        254 mail agent RRs (OBSOLETE - see MX)         [RFC1035]
 *            255 A request for all records                  [RFC1035]
-Unassigned   256-32767
+URI          256 URI                                        [Faltstrom]
+CAA          257 Certification Authority Authorization      [Hallam-Baker]
+Unassigned   258-32767
 TA           32768   DNSSEC Trust Authorities               [Weiler]           2005-12-13
 DLV          32769   DNSSEC Lookaside Validation            [RFC4431]
 Unassigned   32770-65279  
@@ -177,14 +156,14 @@ are in use, though if so their assignment does conflict with those above.
 
 
 Registry Name: DNS OpCodes
-Reference: [RFC5395][RFC1035]
+Reference: [RFC6195][RFC1035]
 Registration Procedures: Standards Action as modified by [RFC4020]
 
 Registry:
 OpCode  Name                               Reference
 ------  ---------------------------------  ---------
 0       Query                              [RFC1035]
-1       IQuery  (Inverse Query, Obsolete)  [RFC3425]
+1       IQuery  (Inverse Query, OBSOLETE)  [RFC3425]
 2       Status                             [RFC1035]
 3       Unassigned
 4       Notify                             [RFC1996]
@@ -193,13 +172,12 @@ OpCode  Name                               Reference
 
 
 Registry Name: DNS RCODEs
-Reference: [RFC5395][RFC1035]
+Reference: [RFC6195][RFC1035]
 Registration Procedures: IETF Review
 
 Registry: 
 RCODE
-Decimal
-Hexadecimal  Name        Description                          Reference
+Decimal      Name        Description                          Reference
 -----------  ----------  -----------------------------------  ---------
 0            NoError     No Error                             [RFC1035]
 1            FormErr     Format Error                         [RFC1035]
@@ -222,42 +200,30 @@ Hexadecimal  Name        Description                          Reference
 21           BADALG      Algorithm not supported              [RFC2930]
 22           BADTRUNC    Bad Truncation                       [RFC4635]
 23-3840      Unassigned
-3841-4095    Reserved for Private Use                         [RFC5395]
+3841-4095    Reserved for Private Use                         [RFC6195]
 4096-65534   Unassigned
-65535        Reserved, can be allocated by Standards Action   [RFC5395]     
+65535        Reserved, can be allocated by Standards Action   [RFC6195]     
 
 
 Registry Name: AFSDB RR Subtype
-Reference: [RFC5395][RFC1035]
+Reference: [RFC6195][RFC1035]
 Range        
-Decimal
-Hexadecimal    Registration Procedures               
--------------  --------------------------------------
-0              Standards Action
-0x0000
-1-65279        IETF Review
-0x0001-0xFEFF
-65280-65534    Private Use
-0xFF00-0xFFFE
-65535          Standards Action
-0xFFFF
+Decimal      Hexadecimal    Registration Procedures               
+-----------  -------------  --------------------------------------
+0            0x0000         Standards Action
+1-65279      0x0001-0xFEFF  IETF Review
+65280-65534  0xFF00-0xFFFE  Private Use
+65535        0xFFFF         Standards Action
 
 Registry:
-Decimal
-Hexadecimal    Description                                 Reference
--------------  ------------------------------------------  ---------
-0              Reserved                                    [RFC5395]
-0x0000
-1              Andrews File Service v3.0 Location Service  [RFC1183]
-0x0001 
-2              DCE/NCA root cell directory node            [RFC1183]
-0x0002
-3-65279        Unassigned
-0x0003-0xFEFF
-65280-65534    Reserved for Private Use                    [RFC5395]
-0xFF00-0xFFFE
-65535          Reserved                                    [RFC5395]
-0xFFFF
+Decimal      Hexadecimal    Description                                 Reference
+-----------  -------------  ------------------------------------------  ---------
+0            0x0000         Reserved                                    [RFC6195]
+1            0x0001         Andrews File Service v3.0 Location Service  [RFC1183]
+2            0x0002         DCE/NCA root cell directory node            [RFC1183]
+3-65279      0x0003-0xFEFF  Unassigned
+65280-65534  0xFF00-0xFFFE  Reserved for Private Use                    [RFC6195]
+65535        0xFFFF         Reserved                                    [RFC6195]
 
 
 Registry Name: DHCID RR Identifier Type Codes
@@ -283,8 +249,8 @@ Identifier Type Code  Identifier                                        Referenc
                       DHCPv6 client's Client Identifier option  
                       or the DUID field from a DHCPv4 client's       
                       Client Identifier option).                 
-0x0003-0xfffe         Unassigned                                        [RFC4701] 
-0xffff                Reserved                                          [RFC4701] 
+0x0003-0xFFFE         Unassigned                                        [RFC4701] 
+0xFFFF                Reserved                                          [RFC4701] 
 
 
 Registry Name: DNS Label types 
@@ -324,7 +290,7 @@ Value     Name       Status        Reference
 
 
 Registry Name: DNS Header Flags
-Reference: [RFC5395][RFC1035]
+Reference: [RFC6195][RFC1035]
 Registration Procedures: Standards Action
 
 Note: 
@@ -370,14 +336,21 @@ References
 ----------
 [ATMDOC]   ATM Forum Technical Committee, "ATM Name System, V2.0",
            Doc ID: AF-DANS-0152.000, July 2000. Available from
-           http://www.ipmplsforum.org/ftp/pub/approved-specs/af-dans-0152.000.pdf
+           http://broadband-forum.org/ftp/pub/approved-specs/af-saa-0069.000.pdf
            and held in escrow by IANA.
 
 [Dyer1987] Dyer, S., and F. Hsu, "Hesiod", Project Athena Technical
            Plan - Name Service, April 1987.
 
+[Eastlake2002] http://bgp.potaroo.net/ietf/all-ids/draft-eastlake-kitchen-sink-02.txt
+
 [Moon1981] D. Moon, "Chaosnet", A.I. Memo 628, Massachusetts Institute of 
            Technology Artificial Intelligence Laboratory, June 1981.
+
+[Patton1995] http://ana-3.lcs.mit.edu/~jnc/nimrod/dns.txt   
+
+[RFC1002]  "PROTOCOL STANDARD FOR A NetBIOS SERVICE ON A TCP/UDP TRANSPORT:
+           DETAILED SPECIFICATIONS", RFC 1002, March 1987.
 
 [RFC1034]  Mockapetris, P., "Domain Names - Concepts and
            Facilities", STD 13, RFC 1034, USC/Information Sciences
@@ -391,6 +364,10 @@ References
            Editors, "New DNS RR Definitions", RFC 1183, Transarc,
            University of Maryland, Prime Computer, USC/Information
            Sciences Institute, October 1990.
+
+[RFC1348]  B. Manning, "DNS NSAP RRs", RFC 1348, July 1992.
+
+[RFC1637]  B. Manning, R. Colella, "DNS NSAP Resource Records", June 1994.
 
 [RFC1706]  Manning, B., and R. Colella, "DNS NSAP Resource Records",
            RFC 1706, USC/ISI and NIST, October 1994.
@@ -429,8 +406,23 @@ References
 [RFC2535]  Eastlake, D., "Domain Name System Security Extensions", RFC
            2535, IBM, March 1999.
 
+[RFC2536]  D. Eastlake, "DSA KEYs and SIGs in the Domain Name System (DNS)", 
+           RFC 2536, March 1999.
+
+[RFC2537]  D. Eastlake, "RSA/MD5 KEYs and SIGs in the Domain Name System 
+           (DNS)", RFC 2537, March 1999.
+
+[RFC2539]  D. Eastlake, "Storage of Diffie-Hellman Keys in the Domain Name 
+           System (DNS)", RFC 2539, March 1999.
+
 [RFC2671]  Vixie, P., "Extension Mechanisms for DNS (EDNS0)", RFC 2671,
            August 1999.
+
+[RFC2672]  M. Crawford, "Non-Terminal DNS Name Redirection", RFC 2672, 
+           August 1999.
+
+[RFC2673]  M. Crawford, "Binary Labels in the Domain Name System", 
+           RFC 2673, August 1999.
 
 [RFC2782]  Gulbrandsen, A., Vixie, P. and L. Esibov, "A DNS RR for
            Specifying the Location of Services (DNS SRV)", RFC 2782,
@@ -453,6 +445,12 @@ References
 [RFC2931]  D. Eastlake, "DNS Request and Transaction Signatures ( SIG(0)s )",
            RFC 2931, September 2000.
 
+[RFC3008]  B. Wellington, "Domain Name System Security (DNSSEC) Signing 
+           Authority", RFC 3008, November 2000.
+
+[RFC3110]  D. Eastlake, "RSA/SHA-1 SIGs and RSA KEYs in the Domain Name 
+           System (DNS)", RFC 3110, May 2001.
+
 [RFC3123]  P. Koch, "A DNS RR Type for Lists of Address Prefixes (APL RR)",
            RFC 3123, June 2001.
 
@@ -461,6 +459,13 @@ References
         
 [RFC3226]  O. Gudmundsson, "DNSSEC and IPv6 A6 aware server/resolver message
            size requirements", RFC 3226, December 2001.
+
+[RFC3363]  R. Bush, A. Durand, B. Fink, O. Gudmundsson, T. Hain, Eds., 
+           "Representing Internet Protocol version 6 (IPv6) Addresses in 
+           the Domain Name System (DNS)", RFC 3363, August 2002.
+
+[RFC3364]  R. Austein, "Tradeoffs in Domain Name System (DNS) Support 
+           for Internet Protocol version 6 (IPv6)", RFC 3364, August 2002.
 
 [RFC3403]  M. Mealling, "Dynamic Delegation Discovery System (DDDS) Part 
            Three: The Domain Name System (DNS) Database", RFC 3403, October 
@@ -518,21 +523,35 @@ References
 [RFC5205]  P. Nikander, J. Laganier, "Host Identity Protocol (HIP) 
            Domain Name System (DNS) Extensions", RFC 5205, April 2008.
 
-[RFC5395]  D. Eastlake, "Domain Name System (DNS) IANA Considerations", 
-           BCP 42, RFC 5395, November 2008.
-
 [draft-cheshire-edns0-owner-option]  work in progress
 
-[RFC-ietf-dnsext-axfr-clarify-14.txt]
-           E. Lewis, A. Hoenes, Ed., "DNS Zone Transfer Protocol (AXFR)", 
-           RFC XXXX, Month Year.
+[RFC5864]  R. Allbery, "DNS SRV Resource Records for AFS", RFC 5864, April 2010.
 
+[RFC5936]  E. Lewis, A. Hoenes, Ed., "DNS Zone Transfer Protocol (AXFR)", 
+           RFC 5936, June 2010.
+
+[RFC6195]  D. Eastlake, "Domain Name System (DNS) IANA 
+           Considerations", RFC 6195, March 2011.
+
+[RFC-cheshire-dnsext-multicastdns-15.txt]
+           S. Cheshire, M. Krochmal, "Multicast DNS," RFC XXXX, Month Year.
+
+[RFC-jiang-a6-to-historic-00.txt]
+           S. Jiang, D. Conrad, B. Carpenter, "Moving A6 to Historic Status",
+           RFC XXXX, Month Year.
+           
 People
 --------
+[Barwood] George Barwood, <george.barwood&blueyonder.co.uk>, 06 June 2011.
+
 [Daniel] Ron Daniel, <rdaniel&lanl.gov>, June 1997.
 
 [Eastlake] Donald E. Eastlake, III <d3e3e3&gmail.com>, January 1995,
            November 1997.
+
+[Faltstrom] Patrik Faltstrom, <paf&cisco.com>, 22 February 2011.
+
+[Hallam-Baker] Phillip Hallam-Baker, <phill&hallambaker.com>, 07 April 2011.
 
 [IANA] Internet Assigned Numbers Authority, <iana&iana.org>, December 1994.
 
@@ -540,7 +559,7 @@ People
 
 [Otha] Masataka Ohta, <mohta&necom830.cc.titech.ac.jp>, March 1995.
 
-[Patton] Michael Patton, <map&bbn.com>, June 1995.
+[Patton] Michael Patton, <map&bbn.com>, June 1995. 
 
 [Reid] Jim Reid, <jim&telnic.org>, 21 January 2008.
 
@@ -549,7 +568,7 @@ People
 [Vixie] Paul Vixie, <paul&vix.com>, June 1997.
 
 [Weiler] Sam Weiler, <weiler+iana&tislabs.com>, December 2005.
-         Deploying DNSSEC Without a Signed Rott.  Technical Report 1999-19, 
+         Deploying DNSSEC Without a Signed Root.  Technical Report 1999-19, 
          Information Networking Institute, Carnegie Mellon University, April 2004.
          http://cameo.library.cmu.edu/
          http://www.watson.org/~weiler/INI1999-19.pdf
