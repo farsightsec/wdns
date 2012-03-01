@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
-w = open('rrtype_to_str.c', 'w')
+import sys
+
+header_fname = sys.argv[1]
+output_fname = sys.argv[2]
+
+w = open(output_fname, 'w')
 
 w.write('''#include "private.h"
 
@@ -10,7 +15,7 @@ wdns_rrtype_to_str(uint16_t rrtype)
     switch (rrtype) {
 ''')
 
-for line in open('../constants.h'):
+for line in open(header_fname):
     if 'WDNS_TYPE_' in line:
         wdns_type = line.split()[1]
         rrtype = wdns_type.rsplit('_', 1)[1]
@@ -26,7 +31,7 @@ w.write('''
 static const char *rrtypes[] = {
 ''')
 
-for line in open('../constants.h'):
+for line in open(header_fname):
     if 'WDNS_TYPE_' in line:
         wdns_type = line.split()[1]
         rrtype = wdns_type.rsplit('_', 1)[1]
