@@ -1,5 +1,5 @@
 void
-_wdns_rrset_to_ustr(Ustr **s, wdns_rrset_t *rrset, unsigned sec)
+_wdns_rrset_to_ubuf(ubuf *u, wdns_rrset_t *rrset, unsigned sec)
 {
 	unsigned n_rdatas;
 
@@ -16,6 +16,6 @@ _wdns_rrset_to_ustr(Ustr **s, wdns_rrset_t *rrset, unsigned sec)
 		rr.name.len = rrset->name.len;
 		rr.name.data = rrset->name.data;
 		rr.rdata = rrset->rdatas[i];
-		_wdns_rr_to_ustr(s, &rr, sec);
+		_wdns_rr_to_ubuf(u, &rr, sec);
 	}
 }

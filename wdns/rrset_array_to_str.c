@@ -2,15 +2,13 @@ char *
 wdns_rrset_array_to_str(wdns_rrset_array_t *a, unsigned sec)
 {
 	char *ret;
-	Ustr *s;
+	size_t retsz;
+	ubuf *u;
 
-	s = ustr_dup_empty();
-	_wdns_rrset_array_to_ustr(&s, a, sec);
-	if (ustr_enomem(s)) {
-		ustr_free(s);
-		return (NULL);
-	}
-	ret = strdup(ustr_cstr(s));
-	ustr_free(s);
+	u = ubuf_new();
+	_wdns_rrset_array_to_ubuf(u, a, sec);
+	ubuf_cterm(u);
+	ubuf_detach(u, (uint8_t **) &ret, &retsz);
+	ubuf_destroy(&u);
 	return (ret);
 }

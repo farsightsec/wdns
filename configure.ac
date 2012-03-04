@@ -10,7 +10,6 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_SILENT_RULES([yes])
 LT_INIT
 
-PKG_PROG_PKG_CONFIG
 AC_PROG_SED
 AC_PROG_MKDIR_P
 
@@ -26,8 +25,6 @@ AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_FILES([Makefile])
 
 AC_CHECK_HEADERS([alloca.h], [], [AC_MSG_ERROR([required header file not found])])
-
-PKG_CHECK_MODULES([ustr], [ustr])
 
 AC_CHECK_HEADER([pcap.h])
 AC_CHECK_LIB([pcap], [pcap_loop],

@@ -1,10 +1,10 @@
 static size_t
-rdata_to_str_string(const uint8_t *src, Ustr **s) {
+rdata_to_str_string(const uint8_t *src, ubuf *u) {
 	size_t len;
 	uint8_t oclen;
 
 	oclen = *src++;
-	ustr_add_cstr(s, "\"");
+	ubuf_add_cstr(u, "\"");
 
 	len = oclen;
 	while (len--) {
@@ -12,20 +12,20 @@ rdata_to_str_string(const uint8_t *src, Ustr **s) {
 
 		c = *src++;
 		if (c == '"') {
-			ustr_add_cstr(s, "\\\"");
+			ubuf_add_cstr(u, "\\\"");
 		} else if (c >= ' ' && c <= '~') {
-			ustr_add_buf(s, &c, 1);
+			ubuf_append(u, &c, 1);
 		} else {
-			ustr_add_fmt(s, "\\%.3d", c);
+			ubuf_add_fmt(u, "\\%.3d", c);
 		}
 	}
-	ustr_add_cstr(s, "\" ");
+	ubuf_add_cstr(u, "\" ");
 
 	return (oclen + 1); /* number of bytes consumed from src */
 }
 
 void
-_wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
+_wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		    uint16_t rrtype, uint16_t rrclass)
 {
 
@@ -53,11 +53,11 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 	if (rrtype >= record_descr_len || descr->types[0] == rdf_unknown) {
 		/* generic encoding */
 
-		ustr_add_cstr(s, "\\# ");
-		ustr_add_fmt(s, "%u ", rdlen);
+		ubuf_add_cstr(u, "\\# ");
+		ubuf_add_fmt(u, "%u ", rdlen);
 
 		for (unsigned i = 0; i < rdlen; i++)
-			ustr_add_fmt(s, "%02x ", rdata[i]);
+			ubuf_add_fmt(u, "%02x ", rdata[i]);
 
 		return;
 
@@ -83,15 +83,15 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 				goto err_res;
 			}
 			wdns_domain_to_str(src, len, domain_name);
-			ustr_add_cstr(s, domain_name);
-			ustr_add_cstr(s, " ");
+			ubuf_add_cstr(u, domain_name);
+			ubuf_add_cstr(u, " ");
 			bytes_consumed(len);
 			break;
 
 		case rdf_bytes:
 			len = src_bytes;
 			while (len > 0) {
-				ustr_add_fmt(s, "%02X", *src);
+				ubuf_add_fmt(u, "%02X", *src);
 				src++;
 				len--;
 			}
@@ -104,9 +104,9 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			base64_init_encodestate(&b64);
 			buf = alloca(2 * src_bytes + 1);
 			len = base64_encode_block((const char *) src, src_bytes, buf, &b64);
-			ustr_add_buf(s, buf, len);
+			ubuf_append(u, (uint8_t *) buf, len);
 			len = base64_encode_blockend(buf, &b64);
-			ustr_add_buf(s, buf, len);
+			ubuf_append(u, (uint8_t *) buf, len);
 			src_bytes = 0;
 			break;
 		}
@@ -116,11 +116,11 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			len = oclen = *src++;
 			bytes_required(1 + oclen);
 			while (len > 0) {
-				ustr_add_fmt(s, "%02x", *src);
+				ubuf_add_fmt(u, "%02x", *src);
 				src++;
 				len--;
 			}
-			ustr_add_cstr(s, " ");
+			ubuf_add_cstr(u, " ");
 			src_bytes -= oclen + 1;
 			break;
 
@@ -129,13 +129,13 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			len = oclen = *src++;
 			bytes_required(1 + oclen);
 			if (oclen == 0)
-				ustr_add_cstr(s, "-");
+				ubuf_add_cstr(u, "-");
 			while (len > 0) {
-				ustr_add_fmt(s, "%02x", *src);
+				ubuf_add_fmt(u, "%02x", *src);
 				src++;
 				len--;
 			}
-			ustr_add_cstr(s, " ");
+			ubuf_add_cstr(u, " ");
 			src_bytes -= oclen + 1;
 			break;
 
@@ -146,8 +146,8 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(1 + oclen);
 			buf = alloca(2 * oclen + 1);
 			len = base32_encode(buf, 2 * oclen + 1, src, oclen);
-			ustr_add_buf(s, buf, len);
-			ustr_add_cstr(s, " ");
+			ubuf_append(u, (uint8_t *) buf, len);
+			ubuf_add_cstr(u, " ");
 			src += oclen;
 			src_bytes -= oclen + 1;
 			break;
@@ -157,7 +157,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			uint8_t val;
 			bytes_required(1);
 			memcpy(&val, src, sizeof(val));
-			ustr_add_fmt(s, "%u ", val);
+			ubuf_add_fmt(u, "%u ", val);
 			bytes_consumed(1);
 			break;
 		}
@@ -167,7 +167,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(2);
 			memcpy(&val, src, sizeof(val));
 			val = ntohs(val);
-			ustr_add_fmt(s, "%hu ", val);
+			ubuf_add_fmt(u, "%hu ", val);
 			bytes_consumed(2);
 			break;
 		}
@@ -177,7 +177,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(4);
 			memcpy(&val, src, sizeof(val));
 			val = ntohl(val);
-			ustr_add_fmt(s, "%u ", val);
+			ubuf_add_fmt(u, "%u ", val);
 			bytes_consumed(4);
 			break;
 		}
@@ -186,8 +186,8 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			char pres[WDNS_PRESLEN_TYPE_A];
 			bytes_required(4);
 			inet_ntop(AF_INET, src, pres, sizeof(pres));
-			ustr_add_cstr(s, pres);
-			ustr_add_cstr(s, " ");
+			ubuf_add_cstr(u, pres);
+			ubuf_add_cstr(u, " ");
 			bytes_consumed(4);
 			break;
 		}
@@ -196,8 +196,8 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			char pres[WDNS_PRESLEN_TYPE_AAAA];
 			bytes_required(16);
 			inet_ntop(AF_INET6, src, pres, sizeof(pres));
-			ustr_add_cstr(s, pres);
-			ustr_add_cstr(s, " ");
+			ubuf_add_cstr(u, pres);
+			ubuf_add_cstr(u, " ");
 			bytes_consumed(16);
 			break;
 		}
@@ -206,7 +206,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(1);
 			oclen = *src;
 			bytes_required(1 + oclen);
-			len = rdata_to_str_string(src, s);
+			len = rdata_to_str_string(src, u);
 			bytes_consumed(len);
 			break;
 		}
@@ -216,7 +216,7 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 				bytes_required(1);
 				oclen = *src;
 				bytes_required(1 + oclen);
-				len = rdata_to_str_string(src, s);
+				len = rdata_to_str_string(src, u);
 				bytes_consumed(len);
 			}
 			break;
@@ -232,10 +232,10 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 
 			s_rrtype = wdns_rrtype_to_str(my_rrtype);
 			if (s_rrtype != NULL) {
-				ustr_add_cstr(s, s_rrtype);
-				ustr_add_cstr(s, " ");
+				ubuf_add_cstr(u, s_rrtype);
+				ubuf_add_cstr(u, " ");
 			} else {
-				ustr_add_fmt(s, "TYPE%hu ", my_rrtype);
+				ubuf_add_fmt(u, "TYPE%hu ", my_rrtype);
 			}
 
 			break;
@@ -261,10 +261,10 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 							my_rrtype = (window_block << 16) | lo;
 							s_rrtype = wdns_rrtype_to_str(my_rrtype);
 							if (s_rrtype != NULL) {
-								ustr_add_cstr(s, s_rrtype);
-								ustr_add_cstr(s, " ");
+								ubuf_add_cstr(u, s_rrtype);
+								ubuf_add_cstr(u, " ");
 							} else {
-								ustr_add_fmt(s, "TYPE%hu ", my_rrtype);
+								ubuf_add_fmt(u, "TYPE%hu ", my_rrtype);
 							}
 						}
 						lo += 1;
@@ -279,16 +279,16 @@ _wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
 	}
 
 	/* truncate trailing " " */
-	if (ustr_cstr(*s)[ustr_len(*s) - 1] == ' ')
-		ustr_del(s, 1);
+	if (ubuf_value(u, ubuf_size(u) - 1) == ' ')
+		ubuf_clip(u, ubuf_size(u) - 1);
 	
 	return;
 
 err:
-	ustr_add_fmt(s, " ### PARSE ERROR ###");
+	ubuf_add_fmt(u, " ### PARSE ERROR ###");
 	return;
 
 err_res:
-	ustr_add_fmt(s, " ### PARSE ERROR #%u ###", res);
+	ubuf_add_fmt(u, " ### PARSE ERROR #%u ###", res);
 	return;
 }

@@ -13,14 +13,13 @@
 #include <stdint.h>
 #include <string.h>
 
-#define USTR_CONF_COMPILE_USE_INLINE 0
-#include <ustr.h>
-
 #include "wdns.h"
 
 #include "record_descr.h"
 #include "b32_encode.h"
 #include "b64_encode.h"
+#include "librsf/vector.h"
+#include "librsf/ubuf.h"
 
 #define load_net16(buf, out) do { \
 	uint16_t _my_16; \
@@ -89,14 +88,14 @@ _wdns_parse_message_rr(unsigned sec, const uint8_t *p, const uint8_t *eop, const
 		       size_t *rrsz, wdns_rr_t *rr);
 
 void
-_wdns_rdata_to_ustr(Ustr **s, const uint8_t *rdata, uint16_t rdlen,
+_wdns_rdata_to_ubuf(ubuf *, const uint8_t *rdata, uint16_t rdlen,
 		    uint16_t rrtype, uint16_t rrclass);
 
 void
-_wdns_rr_to_ustr(Ustr **, wdns_rr_t *rr, unsigned sec);
+_wdns_rr_to_ubuf(ubuf *, wdns_rr_t *rr, unsigned sec);
 
 void
-_wdns_rrset_to_ustr(Ustr **, wdns_rrset_t *rrset, unsigned sec);
+_wdns_rrset_to_ubuf(ubuf *, wdns_rrset_t *rrset, unsigned sec);
 
 void
-_wdns_rrset_array_to_ustr(Ustr **, wdns_rrset_array_t *a, unsigned sec);
+_wdns_rrset_array_to_ubuf(ubuf *, wdns_rrset_array_t *a, unsigned sec);

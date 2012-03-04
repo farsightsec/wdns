@@ -43,14 +43,13 @@ wdns/rrtype_to_str.c: wdns/wdns.h wdns/gen_rrtype_to_str
 
 wdns_libwdns_la_CPPFLAGS = \
 	-include $(top_builddir)/wdns/wdns-private.h
-wdns_libwdns_la_CFLAGS = \
-	$(ustr_CFLAGS)
-wdns_libwdns_la_LIBADD = \
-	$(ustr_LIBS)
 wdns_libwdns_la_LDFLAGS = $(AM_LDFLAGS) \
 	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE) \
 	-export-symbols-regex "^(wdns_[a-z].*)"
 wdns_libwdns_la_SOURCES = \
+	librsf/my_alloc.h \
+	librsf/vector.h \
+	librsf/ubuf.h \
 	wdns/wdns-private.h \
 	wdns/wdns.h \
 	wdns/b32_encode.c \
@@ -84,18 +83,18 @@ wdns_libwdns_la_SOURCES = \
 	wdns/opcode_to_str.c \
 	wdns/rcode_to_str.c \
 	wdns/rdata_to_str.c \
-	wdns/rdata_to_ustr.c \
+	wdns/rdata_to_ubuf.c \
 	wdns/record_descr.c \
 	wdns/record_descr.h \
 	wdns/reverse_name.c \
 	wdns/rr_to_str.c \
-	wdns/rr_to_ustr.c \
+	wdns/rr_to_ubuf.c \
 	wdns/rrclass_to_str.c \
 	wdns/rrtype_to_str.c \
 	wdns/rrset_array_to_str.c \
-	wdns/rrset_array_to_ustr.c \
+	wdns/rrset_array_to_ubuf.c \
 	wdns/rrset_to_str.c \
-	wdns/rrset_to_ustr.c \
+	wdns/rrset_to_ubuf.c \
 	wdns/serialize_rrset.c \
 	wdns/sort_rrset.c \
 	wdns/skip_name.c \

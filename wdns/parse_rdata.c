@@ -23,12 +23,12 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 #define copy_bytes(x) do { \
 	if (src_bytes < (x)) \
 		return (wdns_res_parse_error); \
-	ustr_add_buf(&s, src, x); \
+	ubuf_append(u, src, x); \
 	src += (x); \
 	src_bytes -= (x); \
 } while (0)
 
-	Ustr *s;
+	ubuf *u;
 	const record_descr *descr;
 	const uint8_t *src;
 	const uint8_t *t;
@@ -38,7 +38,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 	uint8_t oclen;
 	wdns_res res;
 
-	s = ustr_dup_empty();
+	u = ubuf_new();
 	src = rdata;
 	src_bytes = (ssize_t) rdlen;
 
@@ -65,8 +65,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 					res = wdns_res_out_of_bounds;
 					goto parse_error;
 				}
-
-				ustr_add_buf(&s, domain_name, len);
+				ubuf_append(u, domain_name, len);
 				break;
 
 			case rdf_uname:
@@ -74,8 +73,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 				if (res != wdns_res_success)
 					goto parse_error;
 				advance_bytes(len);
-
-				ustr_add_buf(&s, domain_name, len);
+				ubuf_append(u, domain_name, len);
 				break;
 
 			case rdf_bytes:
@@ -161,20 +159,20 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 	}
 
 	/* load rr->rdata */
-	len = ustr_len(s);
+	len = ubuf_size(u);
 	rr->rdata = malloc(sizeof(wdns_rdata_t) + len);
 	if (rr->rdata == NULL) {
-		ustr_free(s);
+		ubuf_destroy(&u);
 		return (wdns_res_malloc);
 	}
 	rr->rdata->len = len;
-	memcpy(rr->rdata->data, ustr_cstr(s), len);
-	ustr_free(s);
+	memcpy(rr->rdata->data, ubuf_cstr(u), len);
+	ubuf_destroy(&u);
 
 	return (wdns_res_success);
 
 parse_error:
-	ustr_free(s);
+	ubuf_destroy(&u);
 	if (res == wdns_res_success)
 		res = wdns_res_failure;
 	return (res);
