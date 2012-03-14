@@ -24,7 +24,7 @@ AC_SUBST([my_CFLAGS])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_FILES([Makefile])
 
-AC_CHECK_HEADERS([alloca.h], [], [AC_MSG_ERROR([required header file not found])])
+AC_CHECK_HEADERS([alloca.h])
 
 AC_CHECK_HEADER([pcap.h])
 AC_CHECK_LIB([pcap], [pcap_loop],
