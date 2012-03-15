@@ -1,0 +1,39 @@
+Source: wdns
+Section: libs
+Priority: optional
+Maintainer: Robert S. Edmonds <edmonds@debian.org>
+Build-Depends:
+ dpkg-dev (>= 1.16.0~),
+ debhelper (>= 9~),
+ dh-autoreconf (>= 5~)
+Standards-Version: 3.9.3
+
+Package: libwdns0
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: low-level DNS library
+ wdns is a low-level DNS library. It contains a fast DNS message parser
+ and various utility functions for manipulating wire-format DNS data.
+ .
+ This package contains the shared library for libwdns.
+
+Package: libwdns0-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Depends: libwdns0 (= ${binary:Version}), ${misc:Depends}
+Description: low-level DNS library (debug symbols)
+ wdns is a low-level DNS library. It contains a fast DNS message parser
+ and various utility functions for manipulating wire-format DNS data.
+ .
+ This package contains detached debugging symbols for libwdns.
+
+Package: libwdns-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends}, libwdns0 (= ${binary:Version})
+Description: low-level DNS library (development files)
+ wdns is a low-level DNS library. It contains a fast DNS message parser
+ and various utility functions for manipulating wire-format DNS data.
+ .
+ This package contains the static library and header file for libwdns.
