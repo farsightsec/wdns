@@ -27,28 +27,40 @@ w.write('''    }
 ''')
 
 w.write('''
-static const char *rrtypes[] = {
+static struct u16str {
+    uint16_t u16;
+    const char *str;
+} rrtypes[] = {
 ''')
 
+rrtypes = []
 for line in open(header_fname):
     if 'WDNS_TYPE_' in line:
         wdns_type = line.split()[1]
         rrtype = wdns_type.rsplit('_', 1)[1]
-        w.write('\t[%s] = "%s",\n' % (wdns_type, rrtype))
+        rrtypes.append((wdns_type, rrtype))
+rrtypes.sort()
+for wdns_type, rrtype in rrtypes:
+    w.write('\t{ %s, "%s" },\n' % (wdns_type, rrtype))
 
 w.write('''};
 
+#define num_rrtypes (sizeof(rrtypes) / sizeof(struct u16str))
+
+static int
+cmp_u16str(const void *a, const void *b) {
+    struct u16str *u1 = (struct u16str *) a;
+    struct u16str *u2 = (struct u16str *) b;
+    return (strcasecmp(u1->str, u2->str));
+}
+
 uint16_t
 wdns_str_to_rrtype(const char *str) {
-    const char *rrtype;
-    unsigned i;
-
-    for (i = 0; i < sizeof(rrtypes) / sizeof(char *); i++) {
-        rrtype = rrtypes[i];
-        if (rrtype && strcasecmp(rrtype, str) == 0)
-            return ((uint16_t) i);
-    }
-
+    struct u16str key, *res;
+    key.str = str;
+    res = bsearch(&key, rrtypes, num_rrtypes, sizeof(struct u16str), cmp_u16str);
+    if (res != NULL)
+        return (res->u16);
     return (0);
 }
 ''')
