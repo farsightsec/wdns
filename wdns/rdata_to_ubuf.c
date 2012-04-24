@@ -279,7 +279,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 	}
 
 	/* truncate trailing " " */
-	if (ubuf_value(u, ubuf_size(u) - 1) == ' ')
+	if (ubuf_size(u) > 0 && ubuf_value(u, ubuf_size(u) - 1) == ' ')
 		ubuf_clip(u, ubuf_size(u) - 1);
 	
 	return;
