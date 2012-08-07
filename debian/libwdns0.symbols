@@ -34,5 +34,5 @@ libwdns.so.0 libwdns0 #MINVER#
  wdns_skip_name@Base 0.2
  wdns_sort_rrset@Base 0.2
  wdns_str_to_name@Base 0.2
- wdns_str_to_rrtype@Base 0.2
+ wdns_str_to_rrtype@Base 0.4
  wdns_unpack_name@Base 0.2
