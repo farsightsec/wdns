@@ -54,13 +54,38 @@ cmp_u16str(const void *a, const void *b) {
     return (strcasecmp(u1->str, u2->str));
 }
 
+static bool
+convert_generic_rrtype(const char *s, long int *val) {
+    char *endptr = NULL;
+
+    if (strlen(s) <= 4)
+        return (false);
+    if (strncasecmp(s, "TYPE", 4) != 0)
+        return (false);
+
+    s += 4; /* skip leading "TYPE" */
+
+    *val = strtol(s, &endptr, 10);
+    if (endptr != NULL && *endptr != '\\0')
+        return (false);
+    if (*val < 0 || *val > 65535)
+        return (false);
+
+    return (true);
+}
+
 uint16_t
 wdns_str_to_rrtype(const char *str) {
     struct u16str key, *res;
     key.str = str;
     res = bsearch(&key, rrtypes, num_rrtypes, sizeof(struct u16str), cmp_u16str);
-    if (res != NULL)
+    if (res != NULL) {
         return (res->u16);
+    } else {
+        long int val = 0;
+        if (convert_generic_rrtype(str, &val))
+            return (val);
+    }
     return (0);
 }
 ''')
