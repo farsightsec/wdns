@@ -28,7 +28,7 @@ wdns_domain_to_str(const uint8_t *src, size_t src_len, char *dst)
 			uint8_t c = *src++;
 			bytes_remaining--;
 
-			if (c == '.') {
+			if (c == '.' || c == '\\') {
 				*dst++ = '\\';
 				*dst++ = c;
 			} else if (c >= '!' && c <= '~') {
