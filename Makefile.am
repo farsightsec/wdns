@@ -7,23 +7,11 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
-	-I${top_srcdir}/wdns
-AM_CFLAGS = ${my_CFLAGS}
+	-I$(top_srcdir)/wdns
+AM_CFLAGS = $(my_CFLAGS)
 AM_LDFLAGS = -Wl,--as-needed
 
 EXTRA_DIST += COPYRIGHT
-
-SED_PROCESS = \
-	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(SED) \
-	-e 's,@VERSION\@,$(VERSION),g' \
-	-e 's,@prefix\@,$(prefix),g' \
-	-e 's,@exec_prefix\@,$(exec_prefix),g' \
-	-e 's,@libdir\@,$(libdir),g' \
-	-e 's,@includedir\@,$(includedir),g' \
-	< $< > $@ || rm $@
-
-%.pc: %.pc.in Makefile
-	$(SED_PROCESS)
 
 LIBWDNS_CURRENT=0
 LIBWDNS_REVISION=0
@@ -101,10 +89,6 @@ wdns_libwdns_la_SOURCES = \
 	wdns/str_to_name.c \
 	wdns/unpack_name.c
 
-install-exec-hook:
-	rm -f $(DESTDIR)$(libdir)/libwdns.la
-
-pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = wdns/libwdns.pc
 EXTRA_DIST += wdns/libwdns.pc.in
 CLEANFILES += wdns/libwdns.pc
