@@ -19,8 +19,7 @@
 #include "record_descr.h"
 #include "b32_encode.h"
 #include "b64_encode.h"
-#include "librsf/vector.h"
-#include "librsf/ubuf.h"
+#include "libmy/ubuf.h"
 
 #define load_net16(buf, out) do { \
 	uint16_t _my_16; \

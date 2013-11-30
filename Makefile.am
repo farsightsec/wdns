@@ -47,9 +47,9 @@ wdns_libwdns_la_LDFLAGS = $(AM_LDFLAGS) \
 	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE) \
 	-export-symbols-regex "^(wdns_[a-z].*)"
 wdns_libwdns_la_SOURCES = \
-	librsf/my_alloc.h \
-	librsf/vector.h \
-	librsf/ubuf.h \
+	libmy/my_alloc.h \
+	libmy/vector.h \
+	libmy/ubuf.h \
 	wdns/wdns-private.h \
 	wdns/wdns.h \
 	wdns/b32_encode.c \
