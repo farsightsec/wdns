@@ -1,0 +1,22 @@
+wdns (0.5)
+
+ * Update copyright and license statements as a result of the transition from
+   Internet Systems Consortium to Farsight Security.
+
+ * Escape literal backslashes when converting domain names or record data to
+   presentation format.
+
+ * Add a spec file for building on RPM systems, based on a spec file
+   contributed by John Heidemann.
+
+ * Replace the "librsf" submodule with the "libmy" subtree.
+
+ * Correct the "Name:" field in the libwdns.pc file.
+
+ * Make it possible to build with "make" rather than "gmake" on FreeBSD by
+   generating libwdns.pc from the configure script rather than the Makefile.
+
+ * Install the libwdns.pc file into the right directory on FreeBSD systems
+   where pkg-config has been modified to read from a "libdata" directory.
+
+ -- Robert Edmonds <edmonds@fsi.io>  Fri, 13 Dec 2013 16:06:06 -0500
