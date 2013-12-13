@@ -13,6 +13,8 @@ rdata_to_str_string(const uint8_t *src, ubuf *u) {
 		c = *src++;
 		if (c == '"') {
 			ubuf_add_cstr(u, "\\\"");
+		} else if (c == '\\') {
+			ubuf_add_cstr(u, "\\\\");
 		} else if (c >= ' ' && c <= '~') {
 			ubuf_append(u, &c, 1);
 		} else {
