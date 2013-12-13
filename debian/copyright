@@ -14,6 +14,9 @@ License: Apache-2.0
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
  implied. See the License for the specific language governing
  permissions and limitations under the License.
+ .
+ On Debian systems, the full text of the Apache Licens, Version 2.0 can be
+ found in the file `/usr/share/common-licenses/Apache-2.0'.
 
 Files: wdns/b32_encode.c wdns/b32_encode.h
 Copyright: 2006 Christian Biere <christianbiere@gmx.de>
