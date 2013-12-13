@@ -10,6 +10,7 @@ Standards-Version: 3.9.4
 
 Package: libwdns0
 Architecture: any
+Multi-Arch: same
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: low-level DNS library
  wdns is a low-level DNS library. It contains a fast DNS message parser
@@ -21,6 +22,7 @@ Package: libwdns0-dbg
 Section: debug
 Priority: extra
 Architecture: any
+Multi-Arch: same
 Depends: libwdns0 (= ${binary:Version}), ${misc:Depends}
 Description: low-level DNS library (debug symbols)
  wdns is a low-level DNS library. It contains a fast DNS message parser
@@ -31,6 +33,7 @@ Description: low-level DNS library (debug symbols)
 Package: libwdns-dev
 Section: libdevel
 Architecture: any
+Multi-Arch: same
 Depends: ${misc:Depends}, libwdns0 (= ${binary:Version})
 Description: low-level DNS library (development files)
  wdns is a low-level DNS library. It contains a fast DNS message parser
