@@ -75,6 +75,7 @@ wdns_libwdns_la_SOURCES = \
 	wdns/rdata_to_ubuf.c \
 	wdns/record_descr.c \
 	wdns/record_descr.h \
+	wdns/res_to_str.c \
 	wdns/reverse_name.c \
 	wdns/rr_to_str.c \
 	wdns/rr_to_ubuf.c \
