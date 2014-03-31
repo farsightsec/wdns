@@ -122,5 +122,6 @@ wdns_str_to_name(const char *str, wdns_name_t *name)
 
 out:
 	free(name->data);
+	name->data = NULL;
 	return (res);
 }
