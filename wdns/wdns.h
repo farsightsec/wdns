@@ -147,6 +147,12 @@ extern "C" {
 #define WDNS_FLAGS_CD(msg)		((((msg).flags) >> 4) & 0x01)
 #define WDNS_FLAGS_RCODE(msg)		((msg).rcode)
 
+#if defined(__GNUC__)
+# define WDNS_WARN_UNUSED_RESULT	__attribute__ ((warn_unused_result))
+#else
+# define WDNS_WARN_UNUSED_RESULT
+#endif
+
 /* Data structures and definitions. */
 
 typedef enum {
@@ -294,6 +300,7 @@ wdns_file_load_names(const char *fname, wdns_callback_name cb, void *user);
 wdns_res
 wdns_left_chop(wdns_name_t *name, wdns_name_t *chop);
 
+WDNS_WARN_UNUSED_RESULT
 wdns_res
 wdns_reverse_name(const uint8_t *name, size_t len_name, uint8_t *rev_name);
 
