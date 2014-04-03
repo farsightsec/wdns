@@ -1,5 +1,5 @@
 %define name            wdns
-%define version         0.5
+%define version         0.6
 
 BuildRoot:              %{_tmppath}/%{name}-%{version}-build
 Summary:                low-level DNS library
