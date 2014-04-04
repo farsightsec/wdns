@@ -246,6 +246,7 @@ char *		wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdlen,
 
 /* Functions for converting presentation format strings to objects. */
 
+WDNS_WARN_UNUSED_RESULT
 wdns_res
 wdns_str_to_name(const char *str, wdns_name_t *name);
 
