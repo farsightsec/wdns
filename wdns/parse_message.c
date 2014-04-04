@@ -22,8 +22,6 @@ wdns_parse_message(wdns_message_t *m, const uint8_t *pkt, size_t len)
 
 	m->rcode = m->flags & 0xf;
 
-	len -= WDNS_LEN_HEADER;
-
 	for (unsigned sec = 0; sec < WDNS_MSG_SEC_MAX; sec++) {
 		for (unsigned n = 0; n < sec_counts[sec]; n++) {
 			if (p == pkt_end)
