@@ -177,8 +177,6 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 parse_error:
 	ubuf_destroy(&u);
-	if (res == wdns_res_success)
-		res = wdns_res_failure;
 	return (res);
 
 #undef advance_bytes
