@@ -6,6 +6,7 @@
  * \param[out] sz length of name
  *
  * \return wdns_res_success
+ * \return wdns_res_name_len
  * \return wdns_res_overflow
  * \return wdns_res_invalid_length_octet
  */
@@ -32,5 +33,7 @@ wdns_len_uname(const uint8_t *p, const uint8_t *eop, size_t *sz)
 	}
 
 	*sz = olen - len;
+	if (*sz > WDNS_MAXLEN_NAME)
+		return (wdns_res_name_len);
 	return (wdns_res_success);
 }
