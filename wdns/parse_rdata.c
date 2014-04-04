@@ -14,15 +14,19 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 {
 
 #define advance_bytes(x) do { \
-	if (src_bytes < ((signed) (x))) \
+	if (src_bytes < ((signed) (x))) { \
+		ubuf_destroy(&u); \
 		return (wdns_res_parse_error); \
+	} \
 	src += (x); \
 	src_bytes -= (x); \
 } while (0)
 
 #define copy_bytes(x) do { \
-	if (src_bytes < (x)) \
+	if (src_bytes < (x)) {\
+		ubuf_destroy(&u); \
 		return (wdns_res_parse_error); \
+	} \
 	ubuf_append(u, src, x); \
 	src += (x); \
 	src_bytes -= (x); \
