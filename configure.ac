@@ -47,6 +47,8 @@ AC_CHECK_LIB([pcap], [pcap_loop],
 )
 AM_CONDITIONAL([LIBPCAP], [test "$have_libpcap" = "true"])
 
+gl_LD_VERSION_SCRIPT
+
 AC_OUTPUT
 AC_MSG_RESULT([
     $PACKAGE $VERSION

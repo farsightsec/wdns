@@ -33,8 +33,14 @@ wdns/rrtype_to_str.c: wdns/wdns.h wdns/gen_rrtype_to_str
 wdns_libwdns_la_CPPFLAGS = \
 	-include $(top_builddir)/wdns/wdns-private.h
 wdns_libwdns_la_LDFLAGS = $(AM_LDFLAGS) \
-	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE) \
+	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE)
+if HAVE_LD_VERSION_SCRIPT
+wdns_libwdns_la_LDFLAGS += \
+	-Wl,--version-script=$(top_srcdir)/wdns/libwdns.sym
+else
+wdns_libwdns_la_LDFLAGS += \
 	-export-symbols-regex "^(wdns_[a-z].*)"
+endif
 wdns_libwdns_la_SOURCES = \
 	libmy/my_alloc.h \
 	libmy/vector.h \
