@@ -22,9 +22,6 @@ wdns_skip_name(const uint8_t **data, const uint8_t *eod)
 			/* compression pointers occupy two octets */
 			src++;
 			break;
-		} else if (c == 0) {
-			/* end of uncompressed name */
-			break;
 		} else {
 			/* skip c octets to the end of the label, then one more to the next
 			 * length octet */
