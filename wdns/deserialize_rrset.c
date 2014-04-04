@@ -28,10 +28,7 @@ wdns_deserialize_rrset(wdns_rrset_t *rrset, const uint8_t *buf, size_t sz)
 	copy_bytes(&rrset->name.len, 1);
 
 	/* name */
-	rrset->name.data = malloc(rrset->name.len);
-	if (rrset->name.data == NULL)
-		return (wdns_res_malloc);
-
+	rrset->name.data = my_malloc(rrset->name.len);
 	copy_bytes(rrset->name.data, rrset->name.len);
 
 	/* type */
@@ -47,22 +44,12 @@ wdns_deserialize_rrset(wdns_rrset_t *rrset, const uint8_t *buf, size_t sz)
 	copy_bytes(&rrset->n_rdatas, 2);
 
 	/* rdatas */
-	rrset->rdatas = calloc(1, sizeof(void *) * rrset->n_rdatas);
-	if (rrset->rdatas == NULL) {
-		wdns_clear_rrset(rrset);
-		return (wdns_res_malloc);
-	}
+	rrset->rdatas = my_calloc(1, sizeof(void *) * rrset->n_rdatas);
 	for (size_t i = 0; i < rrset->n_rdatas; i++) {
 		uint16_t rdlen;
 
 		copy_bytes(&rdlen, 2);
-
-		rrset->rdatas[i] = malloc(sizeof(rrset->rdatas[i]) + rdlen);
-		if (rrset->rdatas[i] == NULL) {
-			wdns_clear_rrset(rrset);
-			return (wdns_res_malloc);
-		}
-		
+		rrset->rdatas[i] = my_malloc(sizeof(rrset->rdatas[i]) + rdlen);
 		rrset->rdatas[i]->len = rdlen;
 		copy_bytes(&rrset->rdatas[i]->data, rdlen);
 	}

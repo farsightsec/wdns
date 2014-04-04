@@ -164,11 +164,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 	/* load rr->rdata */
 	len = ubuf_size(u);
-	rr->rdata = malloc(sizeof(wdns_rdata_t) + len);
-	if (rr->rdata == NULL) {
-		ubuf_destroy(&u);
-		return (wdns_res_malloc);
-	}
+	rr->rdata = my_malloc(sizeof(wdns_rdata_t) + len);
 	rr->rdata->len = len;
 	memcpy(rr->rdata->data, ubuf_cstr(u), len);
 	ubuf_destroy(&u);

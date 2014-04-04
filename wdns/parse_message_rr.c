@@ -26,9 +26,7 @@ _wdns_parse_message_rr(unsigned sec, const uint8_t *p, const uint8_t *eop, const
 
 	/* copy name */
 	rr->name.len = len;
-	rr->name.data = malloc(len);
-	if (rr->name.data == NULL)
-		return (wdns_res_malloc);
+	rr->name.data = my_malloc(len);
 	memcpy(rr->name.data, domain_name, len);
 
 	/* skip name */
@@ -79,7 +77,6 @@ _wdns_parse_message_rr(unsigned sec, const uint8_t *p, const uint8_t *eop, const
 	return (wdns_res_success);
 
 err:
-	free(rr->name.data);
-	rr->name.data = NULL;
+	my_free(rr->name.data);
 	return (res);
 }
