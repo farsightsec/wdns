@@ -42,7 +42,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 } while(0)
 
 	char domain_name[WDNS_PRESLEN_NAME];
-	const record_descr *descr;
+	const record_descr *descr = NULL;
 	const uint8_t *src;
 	size_t len;
 	ssize_t src_bytes;
@@ -52,7 +52,9 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 	if (rrtype < record_descr_len)
 		descr = &record_descr_array[rrtype];
 
-	if (rrtype >= record_descr_len || descr->types[0] == rdf_unknown) {
+	if (rrtype >= record_descr_len ||
+	    (descr != NULL && descr->types[0] == rdf_unknown))
+	{
 		/* generic encoding */
 
 		ubuf_add_cstr(u, "\\# ");
@@ -63,8 +65,8 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 		return;
 
-	} else if (!(descr->record_class == class_un ||
-		     descr->record_class == rrclass))
+	} else if (descr != NULL && !(descr->record_class == class_un ||
+				      descr->record_class == rrclass))
 	{
 		return;
 	}
