@@ -80,10 +80,8 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_name:
 		case rdf_uname:
 			res = wdns_len_uname(src, src + src_bytes, &len);
-			if (res != wdns_res_success) {
-				src_bytes = 0;
+			if (res != wdns_res_success)
 				goto err_res;
-			}
 			wdns_domain_to_str(src, len, domain_name);
 			ubuf_add_cstr(u, domain_name);
 			ubuf_add_cstr(u, " ");
