@@ -41,6 +41,7 @@ else
 wdns_libwdns_la_LDFLAGS += \
 	-export-symbols-regex "^(wdns_[a-z].*)"
 endif
+EXTRA_DIST += wdns/libwdns.sym
 wdns_libwdns_la_SOURCES = \
 	libmy/my_alloc.h \
 	libmy/vector.h \
