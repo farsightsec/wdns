@@ -33,7 +33,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 } while (0)
 
 	ubuf *u;
-	const record_descr *descr;
+	const record_descr *descr = NULL;
 	const uint8_t *src;
 	const uint8_t *t;
 	ssize_t src_bytes;
@@ -49,11 +49,14 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 	if (rr->rrtype < record_descr_len)
 		descr = &record_descr_array[rr->rrtype];
 
-	if (rr->rrtype >= record_descr_len || descr->types[0] == rdf_unknown) {
+	if (rr->rrtype >= record_descr_len ||
+	    (descr != NULL && descr->types[0] == rdf_unknown))
+	{
 		/* unknown rrtype, treat generically */
 		copy_bytes(src_bytes);
-	} else if (descr->record_class == class_un ||
-		   descr->record_class == rr->rrclass)
+	} else if (descr != NULL &&
+		   (descr->record_class == class_un ||
+		    descr->record_class == rr->rrclass))
 	{
 		for (t = &descr->types[0]; *t != rdf_end; t++) {
 			if (src_bytes == 0)
