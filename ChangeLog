@@ -1,3 +1,33 @@
+wdns (0.6.0)
+
+  [ Henry Stern ]
+  * wdns_reverse_name(): fix buffer overflow on invalid input. This function
+    now returns a 'wdns_res' that callers must check. This changes the
+    API/ABI.
+
+  * wdns_res_to_str(): new function.
+
+  [ Robert Edmonds ]
+  * wdns_str_to_name(): prevent use-after-free in callers which don't check
+    the return value.
+
+  * wdns_len_uname(): enforce WDNS_MAXLEN_NAME limit on input data.
+
+  * wdns_parse_message(): fix a leak-on-error.
+
+  * Various fixes to several functions, detected by static analysis.
+
+  * Drop "-Wl,--as-needed" from LDFLAGS.
+
+  * Ship the LICENSE file in the distribution tarball.
+
+  * Bump the libwdns SONAME.
+
+  * Begin versioning the library's symbols. (Based on ld-version-script.m4
+    from gnulib.)
+
+ -- Robert Edmonds <edmonds@fsi.io>  Wed, 21 May 2014 12:06:48 -0400
+
 wdns (0.5)
 
   * Update copyright and license statements as a result of the transition from
