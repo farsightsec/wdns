@@ -5,15 +5,16 @@ EXTRA_DIST =
 CLEANFILES =
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
+EXTRA_DIST += COPYRIGHT
+EXTRA_DIST += LICENSE
+
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-I$(top_srcdir)/wdns
 AM_CFLAGS = $(my_CFLAGS)
-AM_LDFLAGS = -Wl,--as-needed
+AM_LDFLAGS =
 
-EXTRA_DIST += COPYRIGHT
-
-LIBWDNS_CURRENT=0
+LIBWDNS_CURRENT=1
 LIBWDNS_REVISION=0
 LIBWDNS_AGE=0
 
@@ -32,8 +33,15 @@ wdns/rrtype_to_str.c: wdns/wdns.h wdns/gen_rrtype_to_str
 wdns_libwdns_la_CPPFLAGS = \
 	-include $(top_builddir)/wdns/wdns-private.h
 wdns_libwdns_la_LDFLAGS = $(AM_LDFLAGS) \
-	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE) \
+	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE)
+if HAVE_LD_VERSION_SCRIPT
+wdns_libwdns_la_LDFLAGS += \
+	-Wl,--version-script=$(top_srcdir)/wdns/libwdns.sym
+else
+wdns_libwdns_la_LDFLAGS += \
 	-export-symbols-regex "^(wdns_[a-z].*)"
+endif
+EXTRA_DIST += wdns/libwdns.sym
 wdns_libwdns_la_SOURCES = \
 	libmy/my_alloc.h \
 	libmy/vector.h \
@@ -74,6 +82,7 @@ wdns_libwdns_la_SOURCES = \
 	wdns/rdata_to_ubuf.c \
 	wdns/record_descr.c \
 	wdns/record_descr.h \
+	wdns/res_to_str.c \
 	wdns/reverse_name.c \
 	wdns/rr_to_str.c \
 	wdns/rr_to_ubuf.c \

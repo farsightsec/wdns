@@ -147,6 +147,12 @@ extern "C" {
 #define WDNS_FLAGS_CD(msg)		((((msg).flags) >> 4) & 0x01)
 #define WDNS_FLAGS_RCODE(msg)		((msg).rcode)
 
+#if defined(__GNUC__)
+# define WDNS_WARN_UNUSED_RESULT	__attribute__ ((warn_unused_result))
+#else
+# define WDNS_WARN_UNUSED_RESULT
+#endif
+
 /* Data structures and definitions. */
 
 typedef enum {
@@ -224,6 +230,7 @@ typedef void (*wdns_callback_name)(wdns_name_t *name, void *user);
 
 /* Functions for converting objects to presentation format strings. */
 
+const char *	wdns_res_to_str(wdns_res res);
 const char *	wdns_opcode_to_str(uint16_t dns_opcode);
 const char *	wdns_rcode_to_str(uint16_t dns_rcode);
 const char *	wdns_rrclass_to_str(uint16_t dns_class);
@@ -239,6 +246,7 @@ char *		wdns_rdata_to_str(const uint8_t *rdata, uint16_t rdlen,
 
 /* Functions for converting presentation format strings to objects. */
 
+WDNS_WARN_UNUSED_RESULT
 wdns_res
 wdns_str_to_name(const char *str, wdns_name_t *name);
 
@@ -293,7 +301,8 @@ wdns_file_load_names(const char *fname, wdns_callback_name cb, void *user);
 wdns_res
 wdns_left_chop(wdns_name_t *name, wdns_name_t *chop);
 
-void
+WDNS_WARN_UNUSED_RESULT
+wdns_res
 wdns_reverse_name(const uint8_t *name, size_t len_name, uint8_t *rev_name);
 
 /* Parsing functions. */

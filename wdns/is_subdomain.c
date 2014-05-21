@@ -52,7 +52,6 @@ wdns_is_subdomain(wdns_name_t *n0, wdns_name_t *n1, bool *is_subdomain)
 	wdns_res res;
 	size_t n0_nlabels, n1_nlabels;
 	ssize_t n0_idx, n1_idx;
-	uint8_t *n0_offsets, *n1_offsets;
 
 	*is_subdomain = false;
 
@@ -81,8 +80,10 @@ wdns_is_subdomain(wdns_name_t *n0, wdns_name_t *n1, bool *is_subdomain)
 	}
 
 	/* for each name, create an array of label offsets */
-	n0_offsets = alloca(n0_nlabels);
-	n1_offsets = alloca(n1_nlabels);
+	uint8_t n0_offsets[n0_nlabels];
+	uint8_t n1_offsets[n1_nlabels];
+	memset(n0_offsets, 0, sizeof(n0_offsets));
+	memset(n1_offsets, 0, sizeof(n1_offsets));
 
 	res = gen_label_offsets(n0, n0_nlabels, n0_offsets);
 	if (res != wdns_res_success)

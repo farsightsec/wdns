@@ -19,6 +19,8 @@
 #include "record_descr.h"
 #include "b32_encode.h"
 #include "b64_encode.h"
+
+#include "libmy/my_alloc.h"
 #include "libmy/ubuf.h"
 
 #define load_net16(buf, out) do { \

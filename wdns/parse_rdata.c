@@ -14,22 +14,26 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 {
 
 #define advance_bytes(x) do { \
-	if (src_bytes < ((signed) (x))) \
-		return (wdns_res_parse_error); \
+	if (src_bytes < ((signed) (x))) { \
+		res = wdns_res_parse_error; \
+		goto parse_error; \
+	} \
 	src += (x); \
 	src_bytes -= (x); \
 } while (0)
 
 #define copy_bytes(x) do { \
-	if (src_bytes < (x)) \
-		return (wdns_res_parse_error); \
+	if (src_bytes < (x)) {\
+		res = wdns_res_parse_error; \
+		goto parse_error; \
+	} \
 	ubuf_append(u, src, x); \
 	src += (x); \
 	src_bytes -= (x); \
 } while (0)
 
 	ubuf *u;
-	const record_descr *descr;
+	const record_descr *descr = NULL;
 	const uint8_t *src;
 	const uint8_t *t;
 	ssize_t src_bytes;
@@ -45,11 +49,14 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 	if (rr->rrtype < record_descr_len)
 		descr = &record_descr_array[rr->rrtype];
 
-	if (rr->rrtype >= record_descr_len || descr->types[0] == rdf_unknown) {
+	if (rr->rrtype >= record_descr_len ||
+	    (descr != NULL && descr->types[0] == rdf_unknown))
+	{
 		/* unknown rrtype, treat generically */
 		copy_bytes(src_bytes);
-	} else if (descr->record_class == class_un ||
-		   descr->record_class == rr->rrclass)
+	} else if (descr != NULL &&
+		   (descr->record_class == class_un ||
+		    descr->record_class == rr->rrclass))
 	{
 		for (t = &descr->types[0]; *t != rdf_end; t++) {
 			if (src_bytes == 0)
@@ -160,11 +167,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 	/* load rr->rdata */
 	len = ubuf_size(u);
-	rr->rdata = malloc(sizeof(wdns_rdata_t) + len);
-	if (rr->rdata == NULL) {
-		ubuf_destroy(&u);
-		return (wdns_res_malloc);
-	}
+	rr->rdata = my_malloc(sizeof(wdns_rdata_t) + len);
 	rr->rdata->len = len;
 	memcpy(rr->rdata->data, ubuf_cstr(u), len);
 	ubuf_destroy(&u);
@@ -173,8 +176,6 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 parse_error:
 	ubuf_destroy(&u);
-	if (res == wdns_res_success)
-		res = wdns_res_failure;
 	return (res);
 
 #undef advance_bytes

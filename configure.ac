@@ -1,5 +1,5 @@
 AC_PREREQ(2.60)
-AC_INIT([wdns], [0.5])
+AC_INIT([wdns], [0.6.0])
 AC_CONFIG_SRCDIR([wdns/wdns.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign 1.11 -Wall -Wno-portability silent-rules subdir-objects])
@@ -46,6 +46,8 @@ AC_CHECK_LIB([pcap], [pcap_loop],
     ]
 )
 AM_CONDITIONAL([LIBPCAP], [test "$have_libpcap" = "true"])
+
+gl_LD_VERSION_SCRIPT
 
 AC_OUTPUT
 AC_MSG_RESULT([

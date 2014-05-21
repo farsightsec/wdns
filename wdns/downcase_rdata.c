@@ -15,11 +15,13 @@ wdns_downcase_rdata(wdns_rdata_t *rdata, uint16_t rrtype, uint16_t rrclass)
 	uint8_t oclen;
 	uint8_t *p = rdata->data;
 
-	if (rrtype < record_descr_len)
+	if (rrtype < record_descr_len) {
 		descr = &record_descr_array[rrtype];
-
-	if (rrtype >= record_descr_len || descr->types[0] == rdf_unknown)
+		if (descr->types[0] == rdf_unknown)
+			return (wdns_res_success);
+	} else {
 		return (wdns_res_success);
+	}
 
 	/* only downcase rrtypes specified by RFC 4034 section 6.2
 	 * and draft-ietf-dnsext-dnssec-bis-updates-11 section 5.1 */

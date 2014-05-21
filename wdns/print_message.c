@@ -7,5 +7,5 @@ wdns_print_message(FILE *fp, wdns_message_t *m)
 	if (s == NULL)
 		return;
 	fputs(s, fp);
-	free(s);
+	my_free(s);
 }

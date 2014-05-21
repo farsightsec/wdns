@@ -22,17 +22,13 @@ wdns_str_to_name(const char *str, wdns_name_t *name)
 
 	if (slen == 1 && *p == '.') {
 		name->len = 1;
-		name->data = malloc(1);
-		if (name->data == NULL)
-			return (wdns_res_malloc);
+		name->data = my_malloc(1);
 		name->data[0] = '\0';
 		return (wdns_res_success);
 	}
 
 	name->len = 0;
-	name->data = malloc(WDNS_MAXLEN_NAME);
-	if (name->data == NULL)
-		return (wdns_res_malloc);
+	name->data = my_malloc(WDNS_MAXLEN_NAME);
 
 	data = name->data;
 	label_len = 0;
@@ -121,6 +117,6 @@ wdns_str_to_name(const char *str, wdns_name_t *name)
 	return (wdns_res_success);
 
 out:
-	free(name->data);
+	my_free(name->data);
 	return (res);
 }
