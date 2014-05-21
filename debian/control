@@ -8,7 +8,7 @@ Build-Depends:
  dh-autoreconf (>= 5~),
  pkg-config,
  python
-Standards-Version: 3.9.4
+Standards-Version: 3.9.5
 
 Package: libwdns1
 Architecture: any
