@@ -10,7 +10,7 @@ Build-Depends:
  python
 Standards-Version: 3.9.4
 
-Package: libwdns0
+Package: libwdns1
 Architecture: any
 Multi-Arch: same
 Depends: ${misc:Depends}, ${shlibs:Depends}
@@ -20,12 +20,12 @@ Description: low-level DNS library
  .
  This package contains the shared library for libwdns.
 
-Package: libwdns0-dbg
+Package: libwdns1-dbg
 Section: debug
 Priority: extra
 Architecture: any
 Multi-Arch: same
-Depends: libwdns0 (= ${binary:Version}), ${misc:Depends}
+Depends: libwdns1 (= ${binary:Version}), ${misc:Depends}
 Description: low-level DNS library (debug symbols)
  wdns is a low-level DNS library. It contains a fast DNS message parser
  and various utility functions for manipulating wire-format DNS data.
@@ -36,7 +36,7 @@ Package: libwdns-dev
 Section: libdevel
 Architecture: any
 Multi-Arch: same
-Depends: ${misc:Depends}, libwdns0 (= ${binary:Version})
+Depends: ${misc:Depends}, libwdns1 (= ${binary:Version})
 Description: low-level DNS library (development files)
  wdns is a low-level DNS library. It contains a fast DNS message parser
  and various utility functions for manipulating wire-format DNS data.

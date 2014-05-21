@@ -4,5 +4,5 @@
 	dh $@ --with autoreconf
 
 override_dh_strip:
-	dh_strip -p libwdns0 --dbg-package=libwdns0-dbg
+	dh_strip -p libwdns1 --dbg-package=libwdns1-dbg
 	dh_strip -a --remaining-packages
