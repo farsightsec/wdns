@@ -102,6 +102,12 @@ pkgconfig_DATA = wdns/libwdns.pc
 EXTRA_DIST += wdns/libwdns.pc.in
 CLEANFILES += wdns/libwdns.pc
 
+bin_PROGRAMS += examples/wdns-dump-file
+examples_wdns_dump_file_LDADD = wdns/libwdns.la
+examples_wdns_dump_file_SOURCES = \
+	examples/private.h \
+	examples/wdns-dump-file.c
+
 if LIBPCAP
 bin_PROGRAMS += examples/wdns-dump-pcap
 examples_wdns_dump_pcap_LDADD = wdns/libwdns.la -lpcap
