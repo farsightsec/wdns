@@ -48,6 +48,8 @@ wdns_libwdns_la_SOURCES = \
 	libmy/ubuf.h \
 	wdns/wdns-private.h \
 	wdns/wdns.h \
+	wdns/b32_decode.c \
+	wdns/b32_decode.h \
 	wdns/b32_encode.c \
 	wdns/b32_encode.h \
 	wdns/b64_decode.c \
