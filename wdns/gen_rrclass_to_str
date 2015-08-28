@@ -40,12 +40,12 @@ static struct u16str {
 rrclasses = []
 for line in open(header_fname):
     if 'WDNS_CLASS_' in line:
-        wdns_type = line.split()[1]
-        rrclass = wdns_type.rsplit('_', 1)[1]
-        rrclasses.append((wdns_type, rrclass))
+        wdns_class = line.split()[1]
+        rrclass = wdns_class.rsplit('_', 1)[1]
+        rrclasses.append((wdns_class, rrclass))
 rrclasses.sort()
-for wdns_type, rrclass in rrclasses:
-    w.write('\t{ %s, "%s" },\n' % (wdns_type, rrclass))
+for wdns_class, rrclass in rrclasses:
+    w.write('\t{ %s, "%s" },\n' % (wdns_class, rrclass))
 
 w.write('''};
 
