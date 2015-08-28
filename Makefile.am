@@ -50,6 +50,8 @@ wdns_libwdns_la_SOURCES = \
 	wdns/wdns.h \
 	wdns/b32_encode.c \
 	wdns/b32_encode.h \
+	wdns/b64_decode.c \
+	wdns/b64_decode.h \
 	wdns/b64_encode.c \
 	wdns/b64_encode.h \
 	wdns/clear.c \
