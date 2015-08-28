@@ -26,6 +26,57 @@ rdata_to_str_string(const uint8_t *src, ubuf *u) {
 	return (oclen + 1); /* number of bytes consumed from src */
 }
 
+static size_t
+rdata_from_str_string(const uint8_t *src, ubuf *u) {
+	const uint8_t *ptr = src;
+	size_t u_orig_size = ubuf_size(u);
+
+	if (*ptr++ != '"') {
+		return 0;
+	}
+
+	while (*ptr) {
+		if (*ptr == '"') {
+			while (isspace(*++ptr));
+			return ptr-src;
+		} else if (*ptr == '\\') {
+			ptr++;
+			if (*ptr == 0) {
+				goto err;
+			} else if (*ptr == '"' || *ptr == '\\') {
+				ubuf_append(u, ptr++, 1);
+			} else if (isdigit(*ptr)) {
+				char dstr[4] = { 0, 0, 0, 0 };
+				uint8_t c;
+				uint16_t c_in;
+				strncpy(dstr, (const char *)ptr, sizeof(dstr)-1);
+				if (! (isdigit(dstr[1]) && isdigit(dstr[2]))) {
+					goto err;
+				}
+				if (sscanf(dstr, "%hu", &c_in) == 0) {
+					goto err;
+				}
+				c = (uint8_t) c_in;
+				if (c != c_in) {
+					goto err;
+				}
+				ubuf_append(u, &c, 1);
+				ptr += 4;
+			} else {
+				goto err;
+			}
+		} else if (*ptr >= ' ' && *ptr <= '~') {
+			ubuf_append(u, ptr++, 1);
+		} else {
+			goto err;
+		}
+	}
+
+err:
+	ubuf_clip(u, u_orig_size);
+	return 0;
+}
+
 void
 _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		    uint16_t rrtype, uint16_t rrclass)
