@@ -29,4 +29,69 @@ for line in open(header_fname):
         w.write('\tcase %s: return ("%s");\n' % (wdns_class, rrclass))
 
 w.write(footer)
+
+w.write('''
+static struct u16str {
+    uint16_t u16;
+    const char *str;
+} rrclasses[] = {
+''')
+
+rrclasses = []
+for line in open(header_fname):
+    if 'WDNS_CLASS_' in line:
+        wdns_class = line.split()[1]
+        rrclass = wdns_class.rsplit('_', 1)[1]
+        rrclasses.append((wdns_class, rrclass))
+rrclasses.sort()
+for wdns_class, rrclass in rrclasses:
+    w.write('\t{ %s, "%s" },\n' % (wdns_class, rrclass))
+
+w.write('''};
+
+#define num_rrclasses (sizeof(rrclasses) / sizeof(struct u16str))
+
+static int
+cmp_u16str(const void *a, const void *b) {
+    struct u16str *u1 = (struct u16str *) a;
+    struct u16str *u2 = (struct u16str *) b;
+    return (strcasecmp(u1->str, u2->str));
+}
+
+static bool
+convert_generic_rrclass(const char *s, long int *val) {
+    char *endptr = NULL;
+
+    if (strlen(s) <= 5)
+        return (false);
+    if (strncasecmp(s, "CLASS", 5) != 0)
+        return (false);
+
+    s += 5; /* skip leading "CLASS" */
+
+    *val = strtol(s, &endptr, 10);
+    if (endptr != NULL && *endptr != '\\0')
+        return (false);
+    if (*val < 0 || *val > 65535)
+        return (false);
+
+    return (true);
+}
+
+uint16_t
+wdns_str_to_rrclass(const char *str) {
+    struct u16str key, *res;
+    key.str = str;
+    res = bsearch(&key, rrclasses, num_rrclasses, sizeof(struct u16str), cmp_u16str);
+    if (res != NULL) {
+        return (res->u16);
+    } else {
+        long int val = 0;
+        if (convert_generic_rrclass(str, &val))
+            return (val);
+    }
+    return (0);
+}
+''')
+
 w.close()
