@@ -41,3 +41,8 @@ global:
 local:
         *;
 };
+
+LIBWDNS_0.7.0 {
+global:
+        wdns_str_to_rrclass;
+} LIBWDNS_0.6.0;
