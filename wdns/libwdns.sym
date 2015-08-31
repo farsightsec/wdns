@@ -36,6 +36,7 @@ global:
         wdns_skip_name;
         wdns_sort_rrset;
         wdns_str_to_name;
+        wdns_str_to_rdata;
         wdns_str_to_rrtype;
         wdns_unpack_name;
 local:
