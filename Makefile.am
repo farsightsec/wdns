@@ -141,3 +141,17 @@ examples_wdns_test_serialize_rrset_SOURCES = \
 	examples/private.h \
 	examples/wdns-hex-driver.c \
 	examples/wdns-test-serialize-rrset.c
+
+#
+##
+### tests
+##
+#
+
+AM_TESTS_ENVIRONMENT = top_builddir='$(top_builddir)'; top_srcdir='$(top_srcdir)'; export top_builddir top_srcdir;
+TESTS_ENVIRONMENT = $(AM_TESTS_ENVIRONMENT)
+
+TESTS += t/test-str_to_rdata
+check_PROGRAMS += t/test-str_to_rdata
+t_test_str_to_rdata_SOURCES = t/test-str_to_rdata.c
+t_test_str_to_rdata_LDADD = wdns/libwdns.la
