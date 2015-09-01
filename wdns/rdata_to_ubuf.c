@@ -183,18 +183,37 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			break;
 		}
 
-		case rdf_ipv6prefix:
+		case rdf_ipv6prefix: {
+			uint8_t prefix_len;
+			uint8_t addr[16];
+			char pres[WDNS_PRESLEN_TYPE_AAAA];
+
 			bytes_required(1);
-			len = oclen = *src++;
-			bytes_required(1 + oclen);
-			while (len > 0) {
-				ubuf_add_fmt(u, "%02x", *src);
-				src++;
-				len--;
+			prefix_len = *src++;
+
+			if (prefix_len > 128) {
+				goto err;
 			}
-			ubuf_add_cstr(u, " ");
+
+			oclen = (128-prefix_len) / 8;
+			if (prefix_len % 8 != 0) {
+				oclen++;
+			}
+			bytes_required(1 + oclen);
+
+			ubuf_add_fmt(u, "%d ", prefix_len);
+
+			if (oclen > 0) {
+				memset(addr, 0, sizeof(addr));
+				memcpy(addr, src, oclen);
+				inet_ntop(AF_INET6, addr, pres, sizeof(pres));
+				ubuf_add_cstr(u, pres);
+				ubuf_add_cstr(u, " ");
+			}
 			src_bytes -= oclen + 1;
+			src += oclen;
 			break;
+		}
 
 		case rdf_salt:
 			bytes_required(1);
