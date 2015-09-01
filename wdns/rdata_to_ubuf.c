@@ -508,28 +508,75 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 		}
 
 		case rdf_ipv6prefix: {
+			uint8_t prefix_len;
 			const char *end = strpbrk(str, " \t\r\n");
+			const char *ptr = str;
+
 			if (end == NULL) {
 				end = str + strlen(str);
 			}
 
-			if (end-str > (2*UINT8_MAX) || (end-str) % 2 == 1) {
-				res = wdns_res_failure;
-				goto err;
-			}
-			uint8_t oclen = (uint8_t)(end-str)/2;
-			ubuf_append(u, &oclen, 1);
-
-			while (oclen > 0) {
-				uint8_t c;
-				if (!sscanf(str, "%02hhx", &c)) {
+			while (ptr < end) {
+				if (!isdigit(*ptr++)) {
 					res = wdns_res_failure;
 					goto err;
 				}
-				ubuf_append(u, &c, 1);
-				str += 2;
-				oclen--;
 			}
+
+			if (sscanf(str, "%hhu", &prefix_len) == 0) {
+				res = wdns_res_failure;
+				goto err;
+			}
+
+			if (prefix_len > 128) {
+				res = wdns_res_failure;
+				goto err;
+			}
+
+			ubuf_append(u, &prefix_len, sizeof(prefix_len));
+
+			str = end;
+			if (str) {
+				while (isspace(*str)) {
+					str++;
+				}
+			}
+
+			if (prefix_len > 0) {
+				if (str == NULL || *str == 0) {
+					res = wdns_res_failure;
+					goto err;
+				}
+
+				end = strpbrk(str, " \t\r\n");
+
+				uint8_t oclen = prefix_len / 8;
+				if (prefix_len % 8 > 0) {
+					oclen++;
+				}
+
+				uint8_t addr[16];
+				char * pres;
+
+				if (end != NULL) {
+					pres = strndup(str, end-str);
+				} else {
+					pres = strdup(str);
+				}
+
+				int pton_res = inet_pton(AF_INET6, pres, addr);
+				free(pres);
+
+				if (pton_res == 1) {
+					ubuf_append(u, addr, oclen);
+				} else {
+					res = wdns_res_failure;
+					goto err;
+				}
+
+				str = end;
+			}
+
 			break;
 		}
 
