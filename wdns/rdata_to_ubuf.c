@@ -930,6 +930,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 				free(s_rrtype);
 
 				if (my_rrtype == 0 || (rrtype >= 128 && rrtype < 256) || rrtype == 65535) {
+					u16buf_destroy(&rrtypes);
 					res = wdns_res_parse_error;
 					goto err;
 				}
