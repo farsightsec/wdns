@@ -7,6 +7,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <assert.h>
+#include <ctype.h>
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,7 +19,9 @@
 #include "wdns.h"
 
 #include "record_descr.h"
+#include "b32_decode.h"
 #include "b32_encode.h"
+#include "b64_decode.h"
 #include "b64_encode.h"
 
 #include "libmy/my_alloc.h"
@@ -92,6 +96,10 @@ _wdns_parse_message_rr(unsigned sec, const uint8_t *p, const uint8_t *eop, const
 void
 _wdns_rdata_to_ubuf(ubuf *, const uint8_t *rdata, uint16_t rdlen,
 		    uint16_t rrtype, uint16_t rrclass);
+
+wdns_res
+_wdns_str_to_rdata_ubuf(ubuf *, const char * str,
+		uint16_t rrtype, uint16_t rrclass);
 
 void
 _wdns_rr_to_ubuf(ubuf *, wdns_rr_t *rr, unsigned sec);
