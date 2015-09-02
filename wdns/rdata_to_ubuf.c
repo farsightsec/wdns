@@ -400,12 +400,12 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 		/* generic encoding */
 
 		if (strncmp(str, "\\#", 2)) {
-			res = wdns_res_failure;
+			res = wdns_res_parse_error;
 			goto err;
 		}
 		str += 2;
 		if (!isspace(str)) {
-			res = wdns_res_failure;
+			res = wdns_res_parse_error;
 			goto err;
 		}
 		while (isspace(*++str));
@@ -413,11 +413,11 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 		while (*str) {
 			uint8_t c;
 			if (*(str+1) == 0) {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 			if (!sscanf(str, "%02hhx", &c)) {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 			ubuf_append(u, &c, 1);
@@ -481,11 +481,11 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			while (*str) {
 				uint8_t c;
 				if (*(str+1) == 0) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 				if (!sscanf(str, "%02hhx", &c)) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 				ubuf_append(u, &c, 1);
@@ -518,18 +518,18 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 
 			while (ptr < end) {
 				if (!isdigit(*ptr++)) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 			}
 
 			if (sscanf(str, "%hhu", &prefix_len) == 0) {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 
 			if (prefix_len > 128) {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 
@@ -544,7 +544,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 
 			if (prefix_len > 0) {
 				if (str == NULL || *str == 0) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 
@@ -570,7 +570,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 				if (pton_res == 1) {
 					ubuf_append(u, addr, oclen);
 				} else {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 
@@ -592,7 +592,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 				str++;
 			} else {
 				if (end-str > (2*UINT8_MAX) || (end-str) % 2 == 1) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 				uint8_t oclen = (uint8_t)(end-str)/2;
@@ -601,7 +601,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 				while (oclen > 0) {
 					uint8_t c;
 					if (!sscanf(str, "%02hhx", &c)) {
-						res = wdns_res_failure;
+						res = wdns_res_parse_error;
 						goto err;
 					}
 					ubuf_append(u, &c, 1);
@@ -622,7 +622,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			}
 
 			if (end-str > (2*UINT8_MAX) || (end-str) % 2 == 1) {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 			uint8_t oclen = (uint8_t)(end-str)/2;
@@ -631,7 +631,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			buf = alloca(oclen + 1);
 			buf_len = base32_decode(buf, oclen + 1, str, oclen*2);
 			if (buf_len != oclen) {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 
@@ -652,7 +652,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 
 			while (ptr < end) {
 				if (!isdigit(*ptr++)) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 			}
@@ -660,7 +660,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			if (sscanf(str, "%" PRIu64, &s_val)) {
 				val = (uint8_t)s_val;
 				if (val != s_val) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 				ubuf_append(u, &val, sizeof(val));
@@ -681,7 +681,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 
 			while (ptr < end) {
 				if (!isdigit(*ptr++)) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 			}
@@ -689,7 +689,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			if (sscanf(str, "%" PRIu64, &s_val)) {
 				val = (uint16_t)s_val;
 				if (val != s_val) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 				val = htons(val);
@@ -711,7 +711,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 
 			while (ptr < end) {
 				if (!isdigit(*ptr++)) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 			}
@@ -719,7 +719,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			if (sscanf(str, "%" PRIu64, &s_val)) {
 				val = (uint32_t)s_val;
 				if (val != s_val) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 				val = htonl(val);
@@ -747,7 +747,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			if (pton_res == 1) {
 				ubuf_append(u, addr, sizeof(addr));
 			} else {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 
@@ -772,7 +772,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			if (pton_res == 1) {
 				ubuf_append(u, addr, sizeof(addr));
 			} else {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 
@@ -791,14 +791,14 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 
 			end += rdata_from_str_string((const uint8_t*)str, u);
 			if (end == str) {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 			str_len = ubuf_size(u) - u_oclen_offset - 1;
 
 			oclen = (uint8_t)str_len;
 			if (oclen != str_len) {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 			ubuf_data(u)[u_oclen_offset] = oclen;
@@ -827,14 +827,14 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 
 				end += rdata_from_str_string((const uint8_t*)str, u);
 				if (end == str) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 				str_len = ubuf_size(u) - u_oclen_offset - 1;
 
 				oclen = (uint8_t)str_len;
 				if (oclen != str_len) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 				ubuf_data(u)[u_oclen_offset] = oclen;
@@ -861,7 +861,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			if (my_rrtype > 0) {
 				ubuf_append(u, (const uint8_t*)&my_rrtype, sizeof(my_rrtype));
 			} else {
-				res = wdns_res_failure;
+				res = wdns_res_parse_error;
 				goto err;
 			}
 
@@ -901,7 +901,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 				free(s_rrtype);
 
 				if (my_rrtype == 0 || (rrtype >= 128 && rrtype < 256) || rrtype == 65535) {
-					res = wdns_res_failure;
+					res = wdns_res_parse_error;
 					goto err;
 				}
 
