@@ -131,7 +131,6 @@ test_str_to_rdata(void) {
 	size_t failures = 0;
 
 	u = ubuf_init(256);
-	assert (u != NULL);
 
 	for(cur = tdata; cur->input != NULL; cur++) {
 		uint8_t * actual = NULL;
