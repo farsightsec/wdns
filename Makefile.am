@@ -160,3 +160,8 @@ TESTS += t/test-rdata_to_str
 check_PROGRAMS += t/test-rdata_to_str
 t_test_rdata_to_str_SOURCES = t/test-rdata_to_str.c
 t_test_rdata_to_str_LDADD = wdns/libwdns.la
+
+TESTS += t/test-str_to_rrtype
+check_PROGRAMS += t/test-str_to_rrtype
+t_test_str_to_rrtype_SOURCES = t/test-str_to_rrtype.c
+t_test_str_to_rrtype_LDADD = wdns/libwdns.la

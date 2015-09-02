@@ -17,7 +17,7 @@ wdns_rrtype_to_str(uint16_t rrtype)
 for line in open(header_fname):
     if 'WDNS_TYPE_' in line:
         wdns_type = line.split()[1]
-        rrtype = wdns_type.rsplit('_', 1)[1]
+        rrtype = wdns_type.replace('WDNS_TYPE_','',1)
         w.write('\tcase %s: return ("%s");\n' % (wdns_type, rrtype))
 
 w.write('''    }
@@ -37,7 +37,7 @@ rrtypes = []
 for line in open(header_fname):
     if 'WDNS_TYPE_' in line:
         wdns_type = line.split()[1]
-        rrtype = wdns_type.rsplit('_', 1)[1]
+        rrtype = wdns_type.replace('WDNS_TYPE_','',1)
         rrtypes.append((wdns_type, rrtype))
 rrtypes.sort()
 for wdns_type, rrtype in rrtypes:
