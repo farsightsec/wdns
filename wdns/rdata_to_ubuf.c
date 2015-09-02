@@ -500,9 +500,10 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			size_t buf_len;
 
 			base64_init_decodestate(&b64);
-			buf = alloca((str_len+1) / 2 + 1);
+			buf = malloc(str_len+1);
 			buf_len = base64_decode_block((const char *) str, str_len, buf, &b64);
 			ubuf_append(u, (uint8_t *) buf, buf_len);
+			free(buf);
 			str += str_len;
 			break;
 		}
