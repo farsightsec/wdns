@@ -404,14 +404,39 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			goto err;
 		}
 		str += 2;
-		if (!isspace(str)) {
+		if (!isspace(*str)) {
 			res = wdns_res_parse_error;
 			goto err;
 		}
-		while (isspace(*++str));
+		while (*str && isspace(*str)) {
+			str++;
+		}
 
+		const char * ptr = str;
+		while (*ptr && !isspace(*ptr)) {
+			if (!isdigit(*ptr)) {
+				res = wdns_res_parse_error;
+				goto err;
+			}
+			ptr++;
+		}
+
+		uint16_t rdlen;
+		if (sscanf(str, "%hu", &rdlen) == 0) {
+			res = wdns_res_parse_error;
+			goto err;
+		}
+		str = ptr;
+
+		size_t len = 0;
 		while (*str) {
 			uint8_t c;
+
+			if (isspace(*str)) {
+				str++;
+				continue;
+			}
+
 			if (*(str+1) == 0) {
 				res = wdns_res_parse_error;
 				goto err;
@@ -421,7 +446,12 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 				goto err;
 			}
 			ubuf_append(u, &c, 1);
+			len++;
 			str += 2;
+		}
+		if (len != rdlen) {
+			res = wdns_res_parse_error;
+			goto err;
 		}
 
 		return (wdns_res_success);
