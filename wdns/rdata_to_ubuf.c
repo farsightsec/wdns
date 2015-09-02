@@ -628,8 +628,8 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 			uint8_t oclen = (uint8_t)(end-str)/2;
 			ubuf_append(u, &oclen, 1);
 
-			buf = alloca(oclen + 1);
-			buf_len = base32_decode(buf, oclen + 1, str, oclen*2);
+			buf = alloca(oclen);
+			buf_len = base32_decode(buf, oclen, str, oclen*2);
 			if (buf_len != oclen) {
 				res = wdns_res_parse_error;
 				goto err;

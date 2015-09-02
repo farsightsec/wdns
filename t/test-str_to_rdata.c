@@ -89,6 +89,7 @@ struct test tdata[] = {
 	{ "1 2 3 gg", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "1 2 3 --", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "1 2 3", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, (const uint8_t*)"\x01\x02\x00\x03", 4, wdns_res_success },
+	{ "1 1 10 7225a239d4230bba7be2 O4K23SKVI7PTGVR5LRITC8IDIQ6KJVA0 NS DS RRSIG", WDNS_TYPE_NSEC3, WDNS_CLASS_IN, (const uint8_t*)"\x01\x01\x00\x0a\x0ar%\xa2""9\xd4#\x0b\xba{\xe2\x10\xc1(!\xf2\x9f\x91\xf3\xd8\x7f""e\xae\xe5\xd6\"M\x96\x00\x06 \x00\x00\x00\x00\x12", 40, wdns_res_success },
 	/* generic encodings */
 	{ 0 }
 };
