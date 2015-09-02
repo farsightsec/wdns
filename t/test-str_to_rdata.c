@@ -89,7 +89,7 @@ struct test tdata[] = {
 	{ "1 2 3 gg", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "1 2 3 --", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "1 2 3", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, (const uint8_t*)"\x01\x02\x00\x03", 4, wdns_res_success },
-	{ "1 1 10 7225a239d4230bba7be2 O4K23SKVI7PTGVR5LRITC8IDIQ6KJVA0 NS DS RRSIG", WDNS_TYPE_NSEC3, WDNS_CLASS_IN, (const uint8_t*)"\x01\x01\x00\x0a\x0ar%\xa2""9\xd4#\x0b\xba{\xe2\x10\xc1(!\xf2\x9f\x91\xf3\xd8\x7f""e\xae\xe5\xd6\"M\x96\x00\x06 \x00\x00\x00\x00\x12", 40, wdns_res_success },
+	{ "1 1 10 7225a239d4230bba7be2 O4K23SKVI7PTGVR5LRITC8IDIQ6KJVA0 NS DS RRSIG", WDNS_TYPE_NSEC3, WDNS_CLASS_IN, (const uint8_t*)"\x01\x01\x00\x0a\x0ar%\xa2""9\xd4#\x0b\xba{\xe2\x14\xc1(!\xf2\x9f\x91\xf3\xd8\x7f""e\xae\xe5\xd6\"M\x96\x8dI\xfd@\x00\x06 \x00\x00\x00\x00\x12", 44, wdns_res_success },
 	{ "NSEC 5 5 7200 1442949945 1440354345 34572 5.in-addr.arpa. aTPqHqvtDsdyY6acy5BzbmjzJcdNWeFW2laTYY/+NJsMAedSryvDJKkA evVh4Fv4G+o9Ts3XKhYUihW2qXp7bbhHmlIvSY3qX67/Ti9DzRPymirt m5ffESFO7+4H2QFd5xIpoJH/WQysNWzCyLt+JeguH4/7PU5C9K30cqqd vJk=", WDNS_TYPE_RRSIG, WDNS_CLASS_IN, (const uint8_t*)"\x00/\x05\x05\x00\x00\x1c V\x01\xab""9U\xda\x10)\x87\x0c\x01""5\x07in-addr\x04""arpa\x00i3\xea\x1e\xab\xed\x0e\xc7rc\xa6\x9c\xcb\x90snh\xf3%\xc7MY\xe1V\xdaV\x93""a\x8f\xfe""4\x9b\x0c\x01\xe7R\xaf+\xc3$\xa9\x00z\xf5""a\xe0[\xf8\x1b\xea=N\xcd\xd7*\x16\x14\x8a\x15\xb6\xa9z{m\xb8G\x9aR/I\x8d\xea_\xae\xffN/C\xcd\x13\xf2\x9a*\xed\x9b\x97\xdf\x11!N\xef\xee\x07\xd9\x01]\xe7\x12)\xa0\x91\xffY\x0c\xac""5l\xc2\xc8\xbb~%\xe8.\x1f\x8f\xfb=NB\xf4\xad\xf4r\xaa\x9d\xbc\x99", 162, wdns_res_success },
 	/* generic encodings */
 	{ 0 }

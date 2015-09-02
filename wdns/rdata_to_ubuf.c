@@ -621,22 +621,20 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char * str,
 				end = str + strlen(str);
 			}
 
-			if (end-str > (2*UINT8_MAX) || (end-str) % 2 == 1) {
+			size_t str_len = end-str;
+			buf = malloc(str_len);
+			buf_len = base32_decode(buf, str_len, str, str_len);
+
+			uint8_t oclen = (uint8_t)buf_len;
+			if (oclen != buf_len) {
+				free(buf);
 				res = wdns_res_parse_error;
 				goto err;
 			}
-			uint8_t oclen = (uint8_t)(end-str)/2;
 			ubuf_append(u, &oclen, 1);
-
-			buf = alloca(oclen);
-			buf_len = base32_decode(buf, oclen, str, oclen*2);
-			if (buf_len != oclen) {
-				res = wdns_res_parse_error;
-				goto err;
-			}
-
-			ubuf_append(u, (uint8_t *) buf, buf_len);
-			str += oclen*2;
+			ubuf_append(u, (uint8_t *) buf, oclen);
+			free(buf);
+			str = end;
 			break;
 		}
 
