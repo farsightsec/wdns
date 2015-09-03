@@ -13,9 +13,15 @@
 /configure
 /libtool
 /stamp-h1
+/test-suite.log
 Makefile
 Makefile.in
 TAGS
 wdns/libwdns.pc
 wdns/rrclass_to_str.c
 wdns/rrtype_to_str.c
+t/test-str_to_rdata
+t/test-str_to_rrtype
+t/test-rdata_to_str
+t/*.log
+t/*.trs
