@@ -1,3 +1,15 @@
+wdns (0.7.0-1) wheezy-farsightsec; urgency=medium
+
+  * New release.
+  * [561e8615] debian/gbp.conf: Add [dch], set debian-branch = upstream-branch = next
+  * [2f93e72f] debian/control: Update Maintainer
+  * [3980d135] debian/control: Update Standards-Version
+  * [44207e59] debian/control: wrap-and-sort
+  * [3a7e315b] debian/libwdns1.symbols: Update symbols for 0.7.0
+  * [d678bb25] debian/copyright: 2015
+
+ -- Robert Edmonds <edmonds@debian.org>  Thu, 10 Sep 2015 17:24:47 -0400
+
 wdns (0.6.0-1) unstable; urgency=medium
 
   * Current release.
