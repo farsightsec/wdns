@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
 Files: *
-Copyright: 2009-2013 by Farsight Security, Inc.
+Copyright: 2009-2015 by Farsight Security, Inc.
 License: Apache-2.0
  Licensed under the Apache License, Version 2.0 (the "License"); you
  may not use this file except in compliance with the License. You may
@@ -18,7 +18,7 @@ License: Apache-2.0
  On Debian systems, the full text of the Apache Licens, Version 2.0 can be
  found in the file `/usr/share/common-licenses/Apache-2.0'.
 
-Files: wdns/b32_encode.c wdns/b32_encode.h
+Files: wdns/b32_encode.c wdns/b32_encode.h wdns/b32_decode.c wdns/b32_decode.h
 Copyright: 2006 Christian Biere <christianbiere@gmx.de>
 License: BSD-3-Clause
  Redistribution and use in source and binary forms, with or without
