@@ -1,3 +1,15 @@
+wdns (0.7.0)
+
+  [ Henry Stern ]
+  * wdns_str_to_rdata(): New function.
+
+  * wdns_str_to_rrclass(): New function.
+
+  [ Robert Edmonds ]
+  * examples/wdns-dump-file: New utility.
+
+ -- Robert Edmonds <edmonds@fsi.io>  Thu, 10 Sep 2015 17:19:11 -0400
+
 wdns (0.6.0)
 
   [ Henry Stern ]
