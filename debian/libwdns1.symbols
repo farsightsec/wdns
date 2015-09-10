@@ -1,5 +1,6 @@
 libwdns.so.1 libwdns1 #MINVER#
  LIBWDNS_0.6.0@LIBWDNS_0.6.0 0.6.0
+ LIBWDNS_0.7.0@LIBWDNS_0.7.0 0.7.0
  wdns_clear_message@LIBWDNS_0.6.0 0.6.0
  wdns_clear_rr@LIBWDNS_0.6.0 0.6.0
  wdns_clear_rrset@LIBWDNS_0.6.0 0.6.0
@@ -36,5 +37,7 @@ libwdns.so.1 libwdns1 #MINVER#
  wdns_skip_name@LIBWDNS_0.6.0 0.6.0
  wdns_sort_rrset@LIBWDNS_0.6.0 0.6.0
  wdns_str_to_name@LIBWDNS_0.6.0 0.6.0
+ wdns_str_to_rdata@LIBWDNS_0.7.0 0.7.0
+ wdns_str_to_rrclass@LIBWDNS_0.7.0 0.7.0
  wdns_str_to_rrtype@LIBWDNS_0.6.0 0.6.0
  wdns_unpack_name@LIBWDNS_0.6.0 0.6.0
