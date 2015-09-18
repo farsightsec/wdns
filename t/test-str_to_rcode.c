@@ -36,8 +36,11 @@ test_str_to_rcode(void) {
 
 	for(n = 0; n < num_rcodes; n++) {
 		uint16_t rcode;
-		rcode = wdns_str_to_rcode(rcodes[n].str);
-		if (rcode != rcodes[n].u16) {
+		wdns_res res;
+		res = wdns_str_to_rcode(rcodes[n].str, &rcode);
+		if (res != wdns_res_success) {
+			fprintf (stderr, "FAIL: %s res=%s\n", rcodes[n].str, wdns_res_to_str(res));
+		} else if (rcode != rcodes[n].u16) {
 			fprintf (stderr, "FAIL: %s %d != %d\n", rcodes[n].str, rcode, rcodes[n].u16);
 			failures++;
 		} else {

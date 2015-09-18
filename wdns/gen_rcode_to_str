@@ -74,19 +74,22 @@ convert_generic_rcode(const char *s, long int *val) {
     return (true);
 }
 
-uint16_t
-wdns_str_to_rcode(const char *str) {
+wdns_res
+wdns_str_to_rcode(const char *str, uint16_t *out) {
     struct u16str key, *res;
     key.str = str;
     res = bsearch(&key, rcodes, num_rcodes, sizeof(struct u16str), cmp_u16str);
     if (res != NULL) {
-        return (res->u16);
+        *out = res->u16;
+        return (wdns_res_success);
     } else {
         long int val = 0;
-        if (convert_generic_rcode(str, &val))
-            return (val);
+        if (convert_generic_rcode(str, &val)) {
+            *out = val;
+            return (wdns_res_success);
+        }
     }
-    return (0);
+    return (wdns_res_parse_error);
 }
 ''')
 
