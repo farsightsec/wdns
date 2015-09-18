@@ -161,6 +161,11 @@ examples_wdns_test_serialize_rrset_SOURCES = \
 AM_TESTS_ENVIRONMENT = top_builddir='$(top_builddir)'; top_srcdir='$(top_srcdir)'; export top_builddir top_srcdir;
 TESTS_ENVIRONMENT = $(AM_TESTS_ENVIRONMENT)
 
+TESTS += t/test-str_to_name
+check_PROGRAMS += t/test-str_to_name
+t_test_str_to_name_SOURCES = t/test-str_to_name.c
+t_test_str_to_name_LDADD = wdns/libwdns.la
+
 TESTS += t/test-str_to_rcode
 check_PROGRAMS += t/test-str_to_rcode
 t_test_str_to_rcode_SOURCES = t/test-str_to_rcode.c

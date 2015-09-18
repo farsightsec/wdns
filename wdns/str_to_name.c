@@ -6,8 +6,8 @@ is_digit(char c)
 	return (false);
 }
 
-wdns_res
-wdns_str_to_name(const char *str, wdns_name_t *name)
+static inline wdns_res
+_wdns_str_to_name(const char *str, wdns_name_t *name, bool downcase)
 {
 	const char *p;
 	size_t label_len;
@@ -58,7 +58,8 @@ wdns_str_to_name(const char *str, wdns_name_t *name)
 
 		if (c >= 'A' && c <= 'Z') {
 			/* an upper case letter; downcase it */
-			c |= 0x20;
+			if (downcase)
+				c |= 0x20;
 			*data++ = c;
 			name->len++;
 		} else if (c == '\\' && !is_digit(*p)) {
@@ -119,4 +120,16 @@ wdns_str_to_name(const char *str, wdns_name_t *name)
 out:
 	my_free(name->data);
 	return (res);
+}
+
+wdns_res
+wdns_str_to_name(const char *str, wdns_name_t *name)
+{
+	return _wdns_str_to_name(str, name, true);
+}
+
+wdns_res
+wdns_str_to_name_case(const char *str, wdns_name_t *name)
+{
+	return _wdns_str_to_name(str, name, false);
 }

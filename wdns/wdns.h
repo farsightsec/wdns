@@ -250,6 +250,10 @@ WDNS_WARN_UNUSED_RESULT
 wdns_res
 wdns_str_to_name(const char *str, wdns_name_t *name);
 
+WDNS_WARN_UNUSED_RESULT
+wdns_res
+wdns_str_to_name_case(const char *str, wdns_name_t *name);
+
 wdns_res
 wdns_str_to_rcode(const char *str, uint16_t *out);
 
