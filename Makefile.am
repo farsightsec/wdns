@@ -21,8 +21,12 @@ LIBWDNS_AGE=0
 include_HEADERS = wdns/wdns.h
 lib_LTLIBRARIES = wdns/libwdns.la
 
+EXTRA_DIST += wdns/gen_rcode_to_str
 EXTRA_DIST += wdns/gen_rrclass_to_str
 EXTRA_DIST += wdns/gen_rrtype_to_str
+
+wdns/rcode_to_str.c: wdns/wdns.h wdns/gen_rcode_to_str
+	$(AM_V_GEN)wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
 
 wdns/rrclass_to_str.c: wdns/wdns.h wdns/gen_rrclass_to_str
 	$(AM_V_GEN)wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
@@ -156,6 +160,11 @@ examples_wdns_test_serialize_rrset_SOURCES = \
 
 AM_TESTS_ENVIRONMENT = top_builddir='$(top_builddir)'; top_srcdir='$(top_srcdir)'; export top_builddir top_srcdir;
 TESTS_ENVIRONMENT = $(AM_TESTS_ENVIRONMENT)
+
+TESTS += t/test-str_to_rcode
+check_PROGRAMS += t/test-str_to_rcode
+t_test_str_to_rcode_SOURCES = t/test-str_to_rcode.c
+t_test_str_to_rcode_LDADD = wdns/libwdns.la
 
 TESTS += t/test-str_to_rdata
 check_PROGRAMS += t/test-str_to_rdata

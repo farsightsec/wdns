@@ -1,6 +1,6 @@
 AC_PREREQ(2.64)
 AC_INIT([wdns],
-        [0.7.0],
+        [0.8.0],
         [https://github.com/farsightsec/wdns/issues],
         [wdns],
         [https://github.com/farsightsec/wdns])
