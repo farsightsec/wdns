@@ -54,26 +54,6 @@ cmp_u16str(const void *a, const void *b) {
     return (strcasecmp(u1->str, u2->str));
 }
 
-static bool
-convert_generic_rcode(const char *s, long int *val) {
-    char *endptr = NULL;
-
-    if (strlen(s) <= 1)
-        return (false);
-    if (strncasecmp(s, "R", 1) != 0)
-        return (false);
-
-    s += 1; /* skip leading "R" */
-
-    *val = strtol(s, &endptr, 10);
-    if (endptr != NULL && *endptr != '\\0')
-        return (false);
-    if (*val < 0 || *val > 65535)
-        return (false);
-
-    return (true);
-}
-
 wdns_res
 wdns_str_to_rcode(const char *str, uint16_t *out) {
     struct u16str key, *res;
@@ -82,14 +62,8 @@ wdns_str_to_rcode(const char *str, uint16_t *out) {
     if (res != NULL) {
         *out = res->u16;
         return (wdns_res_success);
-    } else {
-        long int val = 0;
-        if (convert_generic_rcode(str, &val)) {
-            *out = val;
-            return (wdns_res_success);
-        }
     }
-    return (wdns_res_parse_error);
+    return (wdns_res_failure);
 }
 ''')
 
