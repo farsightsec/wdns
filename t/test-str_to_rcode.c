@@ -10,8 +10,8 @@
 #define NAME "test-str_to_rcode"
 
 static struct u16str {
-    uint16_t u16;
-    const char *str;
+	uint16_t u16;
+	const char *str;
 } rcodes[] = {
 	{ WDNS_R_BADVERS, "BADVERS" },
 	{ WDNS_R_FORMERR, "FORMERR" },
@@ -34,7 +34,7 @@ test_str_to_rcode(void) {
 	size_t n;
 	size_t failures = 0;
 
-	for(n = 0; n < num_rcodes; n++) {
+	for (n = 0; n < num_rcodes; n++) {
 		uint16_t rcode;
 		wdns_res res;
 		res = wdns_str_to_rcode(rcodes[n].str, &rcode);
@@ -54,11 +54,11 @@ test_str_to_rcode(void) {
 static int
 check(size_t ret, const char *s)
 {
-        if (ret == 0)
-                fprintf(stderr, NAME ": PASS: %s\n", s);
-        else
-                fprintf(stderr, NAME ": FAIL: %s (%" PRIu64 " failures)\n", s, ret);
-        return (ret);
+	if (ret == 0)
+		fprintf(stderr, NAME ": PASS: %s\n", s);
+	else
+		fprintf(stderr, NAME ": FAIL: %s (%" PRIu64 " failures)\n", s, ret);
+	return (ret);
 }
 
 int main (int argc, char **argv) {
