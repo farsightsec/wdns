@@ -6,7 +6,7 @@ is_digit(char c)
 	return (false);
 }
 
-static inline wdns_res
+static wdns_res
 _wdns_str_to_name(const char *str, wdns_name_t *name, bool downcase)
 {
 	const char *p;
