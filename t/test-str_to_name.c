@@ -9,10 +9,10 @@
 
 #define NAME "test-str_to_name"
 
-typedef wdns_res (*fp)(char*, wdns_name_t*);
+typedef wdns_res (*fp)(char *, wdns_name_t *);
 
 struct test {
-	char * input;
+	char *input;
 	fp func;
 	const uint8_t *expected;
 	size_t expected_len;
@@ -26,7 +26,8 @@ struct test tdata[] = {
 };
 
 static void
-escape(ubuf *u, const uint8_t * a, size_t len) {
+escape(ubuf *u, const uint8_t *a, size_t len)
+{
 	size_t n;
 	bool last_hex = false;
 
@@ -53,7 +54,8 @@ escape(ubuf *u, const uint8_t * a, size_t len) {
 }
 
 static size_t
-test_str_to_name(void) {
+test_str_to_name(void)
+{
 	ubuf *u;
 	struct test *cur;
 	size_t failures = 0;
@@ -124,14 +126,15 @@ test_str_to_name(void) {
 static int
 check(size_t ret, const char *s)
 {
-        if (ret == 0)
-                fprintf(stderr, NAME ": PASS: %s\n", s);
-        else
-                fprintf(stderr, NAME ": FAIL: %s (%" PRIu64 " failures)\n", s, ret);
-        return (ret);
+	if (ret == 0)
+		fprintf(stderr, NAME ": PASS: %s\n", s);
+	else
+		fprintf(stderr, NAME ": FAIL: %s (%" PRIu64 " failures)\n", s, ret);
+	return (ret);
 }
 
-int main (int argc, char **argv) {
+int main (int argc, char **argv)
+{
 	int ret = 0;
 
 	ret |= check(test_str_to_name(), "test-str_to_name");
