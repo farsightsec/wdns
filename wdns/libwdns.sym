@@ -51,4 +51,5 @@ global:
 LIBWDNS_0.8.0 {
 global:
         wdns_str_to_rcode;
+        wdns_str_to_name_case;
 } LIBWDNS_0.7.0;
