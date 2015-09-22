@@ -46,5 +46,9 @@ LIBWDNS_0.7.0 {
 global:
         wdns_str_to_rrclass;
         wdns_str_to_rdata;
-        wdns_str_to_rrclass;
 } LIBWDNS_0.6.0;
+
+LIBWDNS_0.8.0 {
+global:
+        wdns_str_to_rcode;
+} LIBWDNS_0.7.0;

@@ -1,0 +1,70 @@
+#!/usr/bin/env python
+
+import sys
+
+header_fname = sys.argv[1]
+output_fname = sys.argv[2]
+
+w = open(output_fname, 'w')
+
+w.write('''
+const char *
+wdns_rcode_to_str(uint16_t rcode)
+{
+    switch (rcode) {
+''')
+
+for line in open(header_fname):
+    if 'WDNS_R_' in line:
+        wdns_type = line.split()[1]
+        rcode = wdns_type.replace('WDNS_R_','',1).replace('_', '-')
+        w.write('\tcase %s: return ("%s");\n' % (wdns_type, rcode))
+
+w.write('''    }
+
+    return (NULL);
+}
+''')
+
+w.write('''
+static struct u16str {
+    uint16_t u16;
+    const char *str;
+} rcodes[] = {
+''')
+
+rcodes = []
+for line in open(header_fname):
+    if 'WDNS_R_' in line:
+        wdns_type = line.split()[1]
+        rcode = wdns_type.replace('WDNS_R_','',1).replace('_', '-')
+        rcodes.append((wdns_type, rcode))
+rcodes.sort()
+for wdns_type, rcode in rcodes:
+    w.write('\t{ %s, "%s" },\n' % (wdns_type, rcode))
+
+w.write('''};
+
+#define num_rcodes (sizeof(rcodes) / sizeof(struct u16str))
+
+static int
+cmp_u16str(const void *a, const void *b) {
+    struct u16str *u1 = (struct u16str *) a;
+    struct u16str *u2 = (struct u16str *) b;
+    return (strcasecmp(u1->str, u2->str));
+}
+
+wdns_res
+wdns_str_to_rcode(const char *str, uint16_t *out) {
+    struct u16str key, *res;
+    key.str = str;
+    res = bsearch(&key, rcodes, num_rcodes, sizeof(struct u16str), cmp_u16str);
+    if (res != NULL) {
+        *out = res->u16;
+        return (wdns_res_success);
+    }
+    return (wdns_res_failure);
+}
+''')
+
+w.close()
