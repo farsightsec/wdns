@@ -1,3 +1,10 @@
+wdns (0.8.0-1) wheezy-farsightsec; urgency=medium
+
+  * New release.
+  * [66a5b1d9] debian/libwdns1.symbols: Update symbols for 0.8.0
+
+ -- Robert Edmonds <edmonds@debian.org>  Tue, 13 Oct 2015 17:22:11 -0400
+
 wdns (0.7.0-1) wheezy-farsightsec; urgency=medium
 
   * New release.
