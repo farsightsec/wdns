@@ -169,6 +169,18 @@ const record_descr record_descr_array[] = {
 			rdf_end,
 		}
 	},
+
+	/* RFC 7477 */
+
+	[WDNS_TYPE_CSYNC] = {
+		class_un,
+		{
+			rdf_int32,	/* SOA Serial */
+			rdf_int16,	/* Flags */
+			rdf_type_bitmap,/* Type Bit Map */
+			rdf_end,
+		}
+	},
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);

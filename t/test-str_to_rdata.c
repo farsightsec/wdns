@@ -119,6 +119,18 @@ static const struct test tdata[] = {
 		.expected_res = wdns_res_success,
 	},
 
+	{
+		.rrtype = WDNS_TYPE_CSYNC,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "66 3 A NS AAAA",
+		.expected =
+			"\x00\x00\x00\x42"
+			"\x00\x03"
+			"\x00\x04\x60\x00\x00\x08",
+		.expected_len = 4 + 2 + 6,
+		.expected_res = wdns_res_success,
+	},
+
 	{ "fsi.io.", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
 	{ "fsi.io", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
 	{ "fsi.io..", WDNS_TYPE_CNAME, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
