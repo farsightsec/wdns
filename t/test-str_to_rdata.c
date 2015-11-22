@@ -96,6 +96,7 @@ static const struct test tdata[] = {
 			"\xec\x45" "\x05" "\x01"
 			"\x2b\xb1\x83\xaf\x5f\x22\x58\x81\x79\xa5\x3b\x0a\x98\x63\x1f\xad\x1a\x29\x21\x18",
 		.expected_len = 2 + 1 + 1 + 20,
+		.expected_res = wdns_res_success,
 	},
 
 	{
@@ -106,6 +107,7 @@ static const struct test tdata[] = {
 			"\xec\x45" "\x05" "\x01"
 			"\x2b\xb1\x83\xaf\x5f\x22\x58\x81\x79\xa5\x3b\x0a\x98\x63\x1f\xad\x1a\x29\x21\x18",
 		.expected_len = 2 + 1 + 1 + 20,
+		.expected_res = wdns_res_success,
 	},
 
 	{
@@ -114,6 +116,7 @@ static const struct test tdata[] = {
 		.input = "AQIDBAUGBwg=",
 		.expected = "\x01\x02\x03\x04\x05\x06\x07\x08",
 		.expected_len = 8,
+		.expected_res = wdns_res_success,
 	},
 
 	{ "fsi.io.", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
