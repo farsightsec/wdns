@@ -151,6 +151,14 @@ const record_descr record_descr_array[] = {
 			rdf_end,
 		}
 	},
+
+	/* RFC 7344 */
+
+	[WDNS_TYPE_CDNSKEY] =	/* Same as DNSKEY */
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes_b64, rdf_end } },
+
+	[WDNS_TYPE_CDS] =	/* Same as DS */
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes, rdf_end } },
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);
