@@ -159,6 +159,16 @@ const record_descr record_descr_array[] = {
 
 	[WDNS_TYPE_CDS] =	/* Same as DS */
 		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes, rdf_end } },
+
+	/* draft-ietf-dane-openpgpkey-06 */
+
+	[WDNS_TYPE_OPENPGPKEY] = {
+		class_un,
+		{
+			rdf_bytes_b64,	/* OpenPGP Transferable Public Key */
+			rdf_end,
+		}
+	},
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);
