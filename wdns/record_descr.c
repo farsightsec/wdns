@@ -138,6 +138,19 @@ const record_descr record_descr_array[] = {
 
 	[WDNS_TYPE_SPF] =
 		{ class_un, { rdf_repstring, rdf_end } },
+
+	/* RFC 6698 */
+
+	[WDNS_TYPE_TLSA] = {
+		class_un,
+		{
+			rdf_int8,	/* Certificate Usage */
+			rdf_int8,	/* Selector */
+			rdf_int8,	/* Matching Type */
+			rdf_bytes,	/* Certificate Association Data */
+			rdf_end,
+		}
+	},
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);

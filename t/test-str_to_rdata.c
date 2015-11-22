@@ -19,6 +19,21 @@ struct test {
 };
 
 static const struct test tdata[] = {
+	{
+		.rrtype = WDNS_TYPE_TLSA,
+		.rrclass = WDNS_CLASS_IN,
+		.input =
+			"0 0 1 "
+			"d2abde240d7cd3ee6b4b28c54df034b9"
+			"7983a1d16e8a410e4561cb106618e971",
+		.expected =
+			"\x00" "\x00" "\x01"
+			"\xd2\xab\xde\x24\x0d\x7c\xd3\xee\x6b\x4b\x28\xc5\x4d\xf0\x34\xb9"
+			"\x79\x83\xa1\xd1\x6e\x8a\x41\x0e\x45\x61\xcb\x10\x66\x18\xe9\x71",
+		.expected_len = 1 + 1 + 1 + 32,
+		.expected_res = wdns_res_success,
+	},
+
 	{ "fsi.io.", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
 	{ "fsi.io", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
 	{ "fsi.io..", WDNS_TYPE_CNAME, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
