@@ -99,6 +99,14 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 				copy_bytes(16);
 				break;
 
+			case rdf_eui48:
+				copy_bytes(6);
+				break;
+
+			case rdf_eui64:
+				copy_bytes(8);
+				break;
+
 			case rdf_string:
 			case rdf_salt:
 			case rdf_hash:

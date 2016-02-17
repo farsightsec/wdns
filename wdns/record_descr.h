@@ -20,6 +20,8 @@ typedef enum {
 	rdf_ipv4,	/* IPv4 host address */
 	rdf_ipv6,	/* IPv6 host address */
 	rdf_ipv6prefix,	/* IPv6 prefix: length octet followed by 0-16 octets */
+	rdf_eui48,	/* EUI-48 address */
+	rdf_eui64,	/* EUI-64 address */
 	rdf_string,	/* length octet followed by that many octets */
 	rdf_repstring,	/* one or more strings (terminal) */
 	rdf_rrtype,	/* resource record type */

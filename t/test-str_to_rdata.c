@@ -131,6 +131,24 @@ static const struct test tdata[] = {
 		.expected_res = wdns_res_success,
 	},
 
+	{
+		.rrtype = WDNS_TYPE_EUI48,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "AB-CD-EF-01-02-03",
+		.expected = "\xAB\xCD\xEF\x01\x02\x03",
+		.expected_len = 6,
+		.expected_res = wdns_res_success,
+	},
+
+	{
+		.rrtype = WDNS_TYPE_EUI64,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "AB-CD-EF-01-02-03-04-05",
+		.expected = "\xAB\xCD\xEF\x01\x02\x03\x04\x05",
+		.expected_len = 8,
+		.expected_res = wdns_res_success,
+	},
+
 	{ "fsi.io.", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
 	{ "fsi.io", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
 	{ "fsi.io..", WDNS_TYPE_CNAME, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
@@ -326,7 +344,7 @@ check(size_t ret, const char *s)
 int main (int argc, char **argv) {
 	int ret = 0;
 
-	ret |= check(test_str_to_rdata(), "test_cname");
+	ret |= check(test_str_to_rdata(), "test_str_to_rdata");
 
 	if (ret)
 		return (EXIT_FAILURE);

@@ -223,6 +223,30 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			break;
 		}
 
+		case rdf_eui48: {
+			bytes_required(6);
+			for (size_t i = 0; i < 6; i++) {
+				if (i != 0) {
+					ubuf_add(u, '-');
+				}
+				ubuf_add_fmt(u, "%02x", src[i]);
+			}
+			bytes_consumed(6);
+			break;
+		}
+
+		case rdf_eui64: {
+			bytes_required(8);
+			for (size_t i = 0; i < 8; i++) {
+				if (i != 0) {
+					ubuf_add(u, '-');
+				}
+				ubuf_add_fmt(u, "%02x", src[i]);
+			}
+			bytes_consumed(8);
+			break;
+		}
+
 		case rdf_string: {
 			bytes_required(1);
 			oclen = *src;

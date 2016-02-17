@@ -181,6 +181,24 @@ const record_descr record_descr_array[] = {
 			rdf_end,
 		}
 	},
+
+	/* RFC 7043 */
+
+	[WDNS_TYPE_EUI48] = {
+		class_un,
+		{
+			rdf_eui48,	/* Address */
+			rdf_end,
+		}
+	},
+
+	[WDNS_TYPE_EUI64] = {
+		class_un,
+		{
+			rdf_eui64,	/* Address */
+			rdf_end,
+		}
+	},
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);

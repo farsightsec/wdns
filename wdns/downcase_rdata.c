@@ -98,6 +98,13 @@ wdns_downcase_rdata(wdns_rdata_t *rdata, uint16_t rrtype, uint16_t rrclass)
 				advance_bytes(16U);
 				break;
 
+			case rdf_eui48:
+				advance_bytes(6U);
+				break;
+
+			case rdf_eui64:
+				advance_bytes(8U);
+
 			case rdf_string:
 			case rdf_salt:
 			case rdf_hash:

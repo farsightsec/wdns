@@ -493,6 +493,62 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			break;
 		}
 
+		case rdf_eui48: {
+			uint8_t a[6] = {0};
+			int ret;
+
+			if (strlen(str) != strlen("01-02-03-04-05-06")) {
+				res = wdns_res_parse_error;
+				goto err;
+			}
+			for (int i = 0; i < 6; i++) {
+				if (!isxdigit(str[3*i]) ||
+				    !isxdigit(str[3*i + 1]) ||
+				    (i < 5 && str[3*i + 2] != '-'))
+				{
+					res = wdns_res_parse_error;
+					goto err;
+				}
+			}
+			ret = sscanf(str, "%02hhx-%02hhx-%02hhx-%02hhx-%02hhx-%02hhx",
+			             &a[0], &a[1], &a[2], &a[3], &a[4], &a[5]);
+			if (ret != 6) {
+				res = wdns_res_parse_error;
+				goto err;
+			}
+			ubuf_append(u, a, 6);
+			str += strlen(str);
+			break;
+		}
+
+		case rdf_eui64: {
+			uint8_t a[8] = {0};
+			int ret;
+
+			if (strlen(str) != strlen("01-02-03-04-05-06-07-08")) {
+				res = wdns_res_parse_error;
+				goto err;
+			}
+			for (int i = 0; i < 8; i++) {
+				if (!isxdigit(str[3*i]) ||
+				    !isxdigit(str[3*i + 1]) ||
+				    (i < 7 && str[3*i + 2] != '-'))
+					{
+						res = wdns_res_parse_error;
+						goto err;
+					}
+			}
+			ret = sscanf(str, "%02hhx-%02hhx-%02hhx-%02hhx-%02hhx-%02hhx-%02hhx-%02hhx",
+			             &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6], &a[7]);
+			if (ret != 8) {
+				res = wdns_res_parse_error;
+				goto err;
+			}
+			ubuf_append(u, a, 8);
+			str += strlen(str);
+			break;
+		}
+
 		case rdf_string: {
 			const char * end = str;
 			size_t u_oclen_offset;
