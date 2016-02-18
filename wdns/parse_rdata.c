@@ -64,6 +64,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 			switch (*t) {
 			case rdf_name:
+			case rdf_uname:
 				res = wdns_unpack_name(p, eop, src, domain_name, &len);
 				if (res != wdns_res_success)
 					goto parse_error;
@@ -72,14 +73,6 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 					res = wdns_res_out_of_bounds;
 					goto parse_error;
 				}
-				ubuf_append(u, domain_name, len);
-				break;
-
-			case rdf_uname:
-				res = wdns_copy_uname(p, eop, src, domain_name, &len);
-				if (res != wdns_res_success)
-					goto parse_error;
-				advance_bytes(len);
 				ubuf_append(u, domain_name, len);
 				break;
 
