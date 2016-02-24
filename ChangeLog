@@ -1,3 +1,10 @@
+wdns (0.8.1)
+
+  * Allow compressed <domain-name> record data fields in all supported record
+    types (#12).
+
+ -- Robert Edmonds <edmonds@fsi.io>  Wed, 24 Feb 2016 15:26:32 -0500
+
 wdns (0.8.0)
 
   [ Henry Stern ]
