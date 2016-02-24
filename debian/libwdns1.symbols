@@ -20,7 +20,7 @@ libwdns.so.1 libwdns1 #MINVER#
  wdns_len_uname@LIBWDNS_0.6.0 0.6.0
  wdns_message_to_str@LIBWDNS_0.6.0 0.6.0
  wdns_opcode_to_str@LIBWDNS_0.6.0 0.6.0
- wdns_parse_message@LIBWDNS_0.6.0 0.6.0
+ wdns_parse_message@LIBWDNS_0.6.0 0.8.1
  wdns_print_message@LIBWDNS_0.6.0 0.6.0
  wdns_print_rr@LIBWDNS_0.6.0 0.6.0
  wdns_print_rrset@LIBWDNS_0.6.0 0.6.0
