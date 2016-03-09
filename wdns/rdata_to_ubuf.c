@@ -48,7 +48,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 	ssize_t src_bytes;
 	uint8_t oclen;
 	wdns_res res;
-	
+
 	if (rrtype < record_descr_len)
 		descr = &record_descr_array[rrtype];
 
@@ -333,7 +333,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 	/* truncate trailing " " */
 	if (ubuf_size(u) > 0 && ubuf_value(u, ubuf_size(u) - 1) == ' ')
 		ubuf_clip(u, ubuf_size(u) - 1);
-	
+
 	return;
 
 err:
