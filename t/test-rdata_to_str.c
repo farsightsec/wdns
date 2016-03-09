@@ -22,6 +22,15 @@ struct test tdata[] = {
 	{ (const uint8_t*)"\x01\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef\x03""fsi\x02io\x00", 25, WDNS_TYPE_A6, WDNS_CLASS_IN, "1 2000::dead:beef fsi.io." },
 	{ (const uint8_t*)"\x80\x03""fsi\x02io\x00", 9, WDNS_TYPE_A6, WDNS_CLASS_IN, "128 fsi.io." },
 	{ (const uint8_t*)"\x80", 1, WDNS_TYPE_A6, WDNS_CLASS_IN, "128" },
+
+	{
+		.input = (const uint8_t *) "\x00\x0a" "\x00\x01" "ftp://ftp1.example.com/public",
+		.input_len = 2 + 2 + 29,
+		.rrtype = WDNS_TYPE_URI,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "10 1 \"ftp://ftp1.example.com/public\"",
+	},
+
 	{ 0 }
 };
 
@@ -116,7 +125,7 @@ check(size_t ret, const char *s)
 int main (int argc, char **argv) {
 	int ret = 0;
 
-	ret |= check(test_rdata_to_str(), "test_cname");
+	ret |= check(test_rdata_to_str(), "test_rdata_to_str");
 
 	if (ret)
 		return (EXIT_FAILURE);

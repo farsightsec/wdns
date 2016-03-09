@@ -199,6 +199,19 @@ const record_descr record_descr_array[] = {
 			rdf_end,
 		}
 	},
+
+	/* RFC 7553 */
+
+	[WDNS_TYPE_URI] = {
+		class_un,
+		{
+			rdf_int16,	/* Priority */
+			rdf_int16,	/* Weight */
+			rdf_bytes_str,	/* Target */
+			rdf_end,
+		}
+
+	},
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);

@@ -113,6 +113,13 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			break;
 		}
 
+		case rdf_bytes_str:
+			ubuf_add(u, '"');
+			ubuf_append(u, src, src_bytes);
+			src_bytes = 0;
+			ubuf_add(u, '"');
+			break;
+
 		case rdf_ipv6prefix: {
 			uint8_t prefix_len;
 			uint8_t addr[16];

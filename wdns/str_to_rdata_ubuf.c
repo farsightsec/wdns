@@ -222,6 +222,19 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			break;
 		}
 
+		case rdf_bytes_str: {
+			size_t str_len = strlen(str);
+
+			if (str_len >= 3 && str[0] == '"' && str[str_len - 1] == '"') {
+				ubuf_append(u, (const uint8_t *) str + 1, str_len - 2);
+				str += str_len;
+			} else {
+				res = wdns_res_parse_error;
+				goto err;
+			}
+			break;
+		}
+
 		case rdf_ipv6prefix: {
 			uint8_t prefix_len;
 			const char *end = strpbrk(str, " \t\r\n");
