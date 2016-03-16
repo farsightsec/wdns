@@ -1,12 +1,8 @@
 static size_t
-rdata_to_str_string(const uint8_t *src, ubuf *u) {
-	size_t len;
-	uint8_t oclen;
+rdata_to_str_string_unquoted(const uint8_t *src, size_t len, ubuf *u)
+{
+	size_t n_bytes = 0;
 
-	oclen = *src++;
-	ubuf_add_cstr(u, "\"");
-
-	len = oclen;
 	while (len--) {
 		uint8_t c;
 
@@ -20,10 +16,23 @@ rdata_to_str_string(const uint8_t *src, ubuf *u) {
 		} else {
 			ubuf_add_fmt(u, "\\%.3d", c);
 		}
+		n_bytes += 1;
 	}
-	ubuf_add_cstr(u, "\" ");
 
-	return (oclen + 1); /* number of bytes consumed from src */
+	return n_bytes; /* number of bytes consumed from src */
+}
+
+static size_t
+rdata_to_str_string(const uint8_t *src, size_t len, ubuf *u)
+{
+	ubuf_add(u, '"');
+	size_t n_bytes = rdata_to_str_string_unquoted(src, len, u);
+	ubuf_add(u, '"');
+
+	/* Will be truncated later, if unused. */
+	ubuf_add(u, ' ');
+
+	return n_bytes;
 }
 
 void
@@ -114,10 +123,8 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		}
 
 		case rdf_bytes_str:
-			ubuf_add(u, '"');
-			ubuf_append(u, src, src_bytes);
-			src_bytes = 0;
-			ubuf_add(u, '"');
+			len = rdata_to_str_string(src, src_bytes, u);
+			bytes_consumed(len);
 			break;
 
 		case rdf_ipv6prefix: {
@@ -257,20 +264,26 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_string: {
 			bytes_required(1);
 			oclen = *src;
-			bytes_required(1 + oclen);
-			len = rdata_to_str_string(src, u);
+			bytes_consumed(1);
+
+			bytes_required(oclen);
+			len = rdata_to_str_string(src, oclen, u);
 			bytes_consumed(len);
 			break;
 		}
 
 		case rdf_repstring:
+			ubuf_add_cstr(u, "\"");
 			while (src_bytes > 0) {
 				bytes_required(1);
 				oclen = *src;
-				bytes_required(1 + oclen);
-				len = rdata_to_str_string(src, u);
+				bytes_consumed(1);
+
+				bytes_required(oclen);
+				len = rdata_to_str_string_unquoted(src, oclen, u);
 				bytes_consumed(len);
 			}
+			ubuf_add_cstr(u, "\" ");
 			break;
 
 		case rdf_rrtype: {
