@@ -31,6 +31,34 @@ struct test tdata[] = {
 		.expected = "10 1 \"ftp://ftp1.example.com/public\"",
 	},
 
+	{
+		.input = (const uint8_t *) "\x00\x0a" "\x00\x01"
+			"https://www.isc.org/HolyCowThisSureIsAVeryLongURIRecordIDontEvenKnowWhatSomeoneWouldEverWantWithSuchAThingButTheSpecificationRequiresThatWesupportItSoHereWeGoTestingItLaLaLaLaLaLaLaSeriouslyThoughWhyWouldYouEvenConsiderUsingAURIThisLongItSeemsLikeASillyIdeaButEnhWhatAreYouGonnaDo/",
+		.input_len = 2 + 2 + 281,
+		.rrtype = WDNS_TYPE_URI,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "10 1 " "\"" "https://www.isc.org/HolyCowThisSureIsAVeryLongURIRecordIDontEvenKnowWhatSomeoneWouldEverWantWithSuchAThingButTheSpecificationRequiresThatWesupportItSoHereWeGoTestingItLaLaLaLaLaLaLaSeriouslyThoughWhyWouldYouEvenConsiderUsingAURIThisLongItSeemsLikeASillyIdeaButEnhWhatAreYouGonnaDo/" "\"",
+	},
+
+	{
+		.input = (const uint8_t *) "\x04" "some" "\x04" "text",
+		.input_len = 1 + 4 + 1 + 4,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"sometext\"",
+	},
+
+	{
+		.input = (const uint8_t *)
+			"\x1a" "Please stop asking for ANY"
+			"\x1f" "See draft-ietf-dnsop-refuse-any"
+			,
+		.input_len = 1 + 0x1a + 1 + 0x1f,
+		.rrtype = WDNS_TYPE_HINFO,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"Please stop asking for ANY\" \"See draft-ietf-dnsop-refuse-any\"",
+	},
+
 	{ 0 }
 };
 
