@@ -161,6 +161,18 @@ static const struct test tdata[] = {
 		.expected_res = wdns_res_success,
 	},
 
+	{
+		.rrtype = WDNS_TYPE_URI,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10 1 \"ftp://ftp1.ex\\097mple.com/public\"",
+		.expected =
+			"\x00\x0a"
+			"\x00\x01"
+			"ftp://ftp1.example.com/public",
+		.expected_len = 2 + 2 + 29,
+		.expected_res = wdns_res_success,
+	},
+
 	{ "fsi.io.", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
 	{ "fsi.io", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
 	{ "fsi.io..", WDNS_TYPE_CNAME, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},

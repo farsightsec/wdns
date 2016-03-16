@@ -226,7 +226,10 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			size_t str_len = strlen(str);
 
 			if (str_len >= 3 && str[0] == '"' && str[str_len - 1] == '"') {
-				ubuf_append(u, (const uint8_t *) str + 1, str_len - 2);
+				if (rdata_from_str_string((const uint8_t *)str, u) == 0) {
+					res = wdns_res_parse_error;
+					goto err;
+				}
 				str += str_len;
 			} else {
 				res = wdns_res_parse_error;
