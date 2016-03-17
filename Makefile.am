@@ -104,6 +104,7 @@ wdns_libwdns_la_SOURCES = \
 	wdns/sort_rrset.c \
 	wdns/skip_name.c \
 	wdns/str_to_name.c \
+	wdns/str_to_rdata_ubuf.c \
 	wdns/unpack_name.c
 
 pkgconfig_DATA = wdns/libwdns.pc

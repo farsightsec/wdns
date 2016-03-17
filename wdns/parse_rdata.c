@@ -78,6 +78,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 			case rdf_bytes:
 			case rdf_bytes_b64:
+			case rdf_bytes_str:
 				copy_bytes(src_bytes);
 				break;
 
@@ -97,6 +98,14 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 
 			case rdf_ipv6:
 				copy_bytes(16);
+				break;
+
+			case rdf_eui48:
+				copy_bytes(6);
+				break;
+
+			case rdf_eui64:
+				copy_bytes(8);
 				break;
 
 			case rdf_string:

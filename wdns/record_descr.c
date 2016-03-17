@@ -138,6 +138,80 @@ const record_descr record_descr_array[] = {
 
 	[WDNS_TYPE_SPF] =
 		{ class_un, { rdf_repstring, rdf_end } },
+
+	/* RFC 6698 */
+
+	[WDNS_TYPE_TLSA] = {
+		class_un,
+		{
+			rdf_int8,	/* Certificate Usage */
+			rdf_int8,	/* Selector */
+			rdf_int8,	/* Matching Type */
+			rdf_bytes,	/* Certificate Association Data */
+			rdf_end,
+		}
+	},
+
+	/* RFC 7344 */
+
+	[WDNS_TYPE_CDNSKEY] =	/* Same as DNSKEY */
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes_b64, rdf_end } },
+
+	[WDNS_TYPE_CDS] =	/* Same as DS */
+		{ class_un, { rdf_int16, rdf_int8, rdf_int8, rdf_bytes, rdf_end } },
+
+	/* draft-ietf-dane-openpgpkey-06 */
+
+	[WDNS_TYPE_OPENPGPKEY] = {
+		class_un,
+		{
+			rdf_bytes_b64,	/* OpenPGP Transferable Public Key */
+			rdf_end,
+		}
+	},
+
+	/* RFC 7477 */
+
+	[WDNS_TYPE_CSYNC] = {
+		class_un,
+		{
+			rdf_int32,	/* SOA Serial */
+			rdf_int16,	/* Flags */
+			rdf_type_bitmap,/* Type Bit Map */
+			rdf_end,
+		}
+	},
+
+	/* RFC 7043 */
+
+	[WDNS_TYPE_EUI48] = {
+		class_un,
+		{
+			rdf_eui48,	/* Address */
+			rdf_end,
+		}
+	},
+
+	[WDNS_TYPE_EUI64] = {
+		class_un,
+		{
+			rdf_eui64,	/* Address */
+			rdf_end,
+		}
+	},
+
+	/* RFC 7553 */
+
+	[WDNS_TYPE_URI] = {
+		class_un,
+		{
+			rdf_int16,	/* Priority */
+			rdf_int16,	/* Weight */
+			rdf_bytes_str,	/* Target */
+			rdf_end,
+		}
+
+	},
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);

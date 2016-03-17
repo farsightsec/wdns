@@ -77,6 +77,7 @@ wdns_downcase_rdata(wdns_rdata_t *rdata, uint16_t rrtype, uint16_t rrclass)
 			case rdf_repstring:
 			case rdf_bytes:
 			case rdf_bytes_b64:
+			case rdf_bytes_str:
 			case rdf_type_bitmap:
 				return (wdns_res_success);
 
@@ -97,6 +98,13 @@ wdns_downcase_rdata(wdns_rdata_t *rdata, uint16_t rrtype, uint16_t rrclass)
 			case rdf_ipv6:
 				advance_bytes(16U);
 				break;
+
+			case rdf_eui48:
+				advance_bytes(6U);
+				break;
+
+			case rdf_eui64:
+				advance_bytes(8U);
 
 			case rdf_string:
 			case rdf_salt:
