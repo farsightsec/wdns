@@ -79,6 +79,14 @@ struct test tdata[] = {
 		.expected = "ab-cd-ef-01-02-03",
 	},
 
+	{
+		.input = (const uint8_t *) "\xAB\xCD\xEF\x01\x02\x03\x04\x05",
+		.input_len = 8,
+		.rrtype = WDNS_TYPE_EUI64,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "ab-cd-ef-01-02-03-04-05",
+	},
+
 	{ 0 }
 };
 
