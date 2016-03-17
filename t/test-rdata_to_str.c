@@ -59,6 +59,18 @@ struct test tdata[] = {
 		.expected = "\"Please stop asking for ANY\" \"See draft-ietf-dnsop-refuse-any\"",
 	},
 
+	{
+		.input = (const uint8_t *)
+			"\x00\x00\x00\x42"
+			"\x00\x03"
+			"\x00\x04\x60\x00\x00\x08"
+			,
+		.input_len = 4 + 2 + 6,
+		.rrtype = WDNS_TYPE_CSYNC,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "66 3 A NS AAAA",
+	},
+
 	{ 0 }
 };
 
