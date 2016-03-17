@@ -87,6 +87,14 @@ struct test tdata[] = {
 		.expected = "ab-cd-ef-01-02-03-04-05",
 	},
 
+	{
+		.input = (const uint8_t *) "\x01\x02\x03\x04\x05\x06\x07\x08",
+		.input_len = 8,
+		.rrtype = WDNS_TYPE_OPENPGPKEY,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "AQIDBAUGBwg=",
+	},
+
 	{ 0 }
 };
 
