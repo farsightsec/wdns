@@ -161,6 +161,20 @@ struct test tdata[] = {
 		.expected = "60485 5 1 2BB183AF5F22588179A53B0A98631FAD1A292118",
 	},
 
+	{
+		.input =
+			"\x00" "\x00" "\x01"
+			"\xd2\xab\xde\x24\x0d\x7c\xd3\xee\x6b\x4b\x28\xc5\x4d\xf0\x34\xb9"
+			"\x79\x83\xa1\xd1\x6e\x8a\x41\x0e\x45\x61\xcb\x10\x66\x18\xe9\x71",
+		.input_len = 1 + 1 + 1 + 32,
+		.rrtype = WDNS_TYPE_TLSA,
+		.rrclass = WDNS_CLASS_IN,
+		.expected =
+			"0 0 1 "
+			"D2ABDE240D7CD3EE6B4B28C54DF034B9"
+			"7983A1D16E8A410E4561CB106618E971",
+	},
+
 	{ 0 }
 };
 
