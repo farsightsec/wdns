@@ -141,6 +141,26 @@ struct test tdata[] = {
 			"aNvv4w==",
 	},
 
+	{
+		.input =
+			"\xec\x45" "\x05" "\x01"
+			"\x2b\xb1\x83\xaf\x5f\x22\x58\x81\x79\xa5\x3b\x0a\x98\x63\x1f\xad\x1a\x29\x21\x18",
+		.input_len = 2 + 1 + 1 + 20,
+		.rrtype = WDNS_TYPE_DS,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "60485 5 1 2BB183AF5F22588179A53B0A98631FAD1A292118",
+	},
+
+	{
+		.input =
+			"\xec\x45" "\x05" "\x01"
+			"\x2b\xb1\x83\xaf\x5f\x22\x58\x81\x79\xa5\x3b\x0a\x98\x63\x1f\xad\x1a\x29\x21\x18",
+		.input_len = 2 + 1 + 1 + 20,
+		.rrtype = WDNS_TYPE_CDS,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "60485 5 1 2BB183AF5F22588179A53B0A98631FAD1A292118",
+	},
+
 	{ 0 }
 };
 
