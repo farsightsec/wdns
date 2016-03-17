@@ -10,7 +10,7 @@
 #define NAME "test-rdata_to_str"
 
 struct test {
-	const uint8_t * input;
+	const void *input;
 	size_t input_len;
 	uint16_t rrtype;
 	uint16_t rrclass;
@@ -18,13 +18,13 @@ struct test {
 };
 
 struct test tdata[] = {
-	{ (const uint8_t*)"\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef", 17, WDNS_TYPE_A6, WDNS_CLASS_IN, "0 2000::dead:beef" },
-	{ (const uint8_t*)"\x01\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef\x03""fsi\x02io\x00", 25, WDNS_TYPE_A6, WDNS_CLASS_IN, "1 2000::dead:beef fsi.io." },
-	{ (const uint8_t*)"\x80\x03""fsi\x02io\x00", 9, WDNS_TYPE_A6, WDNS_CLASS_IN, "128 fsi.io." },
-	{ (const uint8_t*)"\x80", 1, WDNS_TYPE_A6, WDNS_CLASS_IN, "128" },
+	{ "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef", 17, WDNS_TYPE_A6, WDNS_CLASS_IN, "0 2000::dead:beef" },
+	{ "\x01\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef\x03""fsi\x02io\x00", 25, WDNS_TYPE_A6, WDNS_CLASS_IN, "1 2000::dead:beef fsi.io." },
+	{ "\x80\x03""fsi\x02io\x00", 9, WDNS_TYPE_A6, WDNS_CLASS_IN, "128 fsi.io." },
+	{ "\x80", 1, WDNS_TYPE_A6, WDNS_CLASS_IN, "128" },
 
 	{
-		.input = (const uint8_t *) "\x00\x0a" "\x00\x01" "ftp://ftp1.example.com/public",
+		.input = "\x00\x0a" "\x00\x01" "ftp://ftp1.example.com/public",
 		.input_len = 2 + 2 + 29,
 		.rrtype = WDNS_TYPE_URI,
 		.rrclass = WDNS_CLASS_IN,
@@ -32,7 +32,7 @@ struct test tdata[] = {
 	},
 
 	{
-		.input = (const uint8_t *) "\x00\x0a" "\x00\x01"
+		.input = "\x00\x0a" "\x00\x01"
 			"https://www.isc.org/HolyCowThisSureIsAVeryLongURIRecordIDontEvenKnowWhatSomeoneWouldEverWantWithSuchAThingButTheSpecificationRequiresThatWesupportItSoHereWeGoTestingItLaLaLaLaLaLaLaSeriouslyThoughWhyWouldYouEvenConsiderUsingAURIThisLongItSeemsLikeASillyIdeaButEnhWhatAreYouGonnaDo/",
 		.input_len = 2 + 2 + 281,
 		.rrtype = WDNS_TYPE_URI,
@@ -41,7 +41,7 @@ struct test tdata[] = {
 	},
 
 	{
-		.input = (const uint8_t *) "\x04" "some" "\x04" "text",
+		.input = "\x04" "some" "\x04" "text",
 		.input_len = 1 + 4 + 1 + 4,
 		.rrtype = WDNS_TYPE_TXT,
 		.rrclass = WDNS_CLASS_IN,
@@ -49,7 +49,7 @@ struct test tdata[] = {
 	},
 
 	{
-		.input = (const uint8_t *)
+		.input =
 			"\x1a" "Please stop asking for ANY"
 			"\x1f" "See draft-ietf-dnsop-refuse-any"
 			,
@@ -60,7 +60,7 @@ struct test tdata[] = {
 	},
 
 	{
-		.input = (const uint8_t *)
+		.input =
 			"\x00\x00\x00\x42"
 			"\x00\x03"
 			"\x00\x04\x60\x00\x00\x08"
@@ -72,7 +72,7 @@ struct test tdata[] = {
 	},
 
 	{
-		.input = (const uint8_t *) "\xAB\xCD\xEF\x01\x02\x03",
+		.input = "\xAB\xCD\xEF\x01\x02\x03",
 		.input_len = 6,
 		.rrtype = WDNS_TYPE_EUI48,
 		.rrclass = WDNS_CLASS_IN,
@@ -80,7 +80,7 @@ struct test tdata[] = {
 	},
 
 	{
-		.input = (const uint8_t *) "\xAB\xCD\xEF\x01\x02\x03\x04\x05",
+		.input = "\xAB\xCD\xEF\x01\x02\x03\x04\x05",
 		.input_len = 8,
 		.rrtype = WDNS_TYPE_EUI64,
 		.rrclass = WDNS_CLASS_IN,
@@ -88,7 +88,7 @@ struct test tdata[] = {
 	},
 
 	{
-		.input = (const uint8_t *) "\x01\x02\x03\x04\x05\x06\x07\x08",
+		.input = "\x01\x02\x03\x04\x05\x06\x07\x08",
 		.input_len = 8,
 		.rrtype = WDNS_TYPE_OPENPGPKEY,
 		.rrclass = WDNS_CLASS_IN,
@@ -96,7 +96,7 @@ struct test tdata[] = {
 	},
 
 	{
-		.input = (const uint8_t *)
+		.input =
 			"\x01\x00" "\x03" "\x05"
 			"\x01\x03\xd2\x2a\x6c\xa7\x7f\x35\xb8\x93\x20\x6f\xd3\x5e\x4c\x50"
 			"\x6d\x83\x78\x84\x37\x09\xb9\x7e\x04\x16\x47\xe1\xbf\xf4\x3d\x8d"
@@ -119,7 +119,7 @@ struct test tdata[] = {
 	},
 
 	{
-		.input = (const uint8_t *)
+		.input =
 			"\x01\x00" "\x03" "\x05"
 			"\x01\x03\xd2\x2a\x6c\xa7\x7f\x35\xb8\x93\x20\x6f\xd3\x5e\x4c\x50"
 			"\x6d\x83\x78\x84\x37\x09\xb9\x7e\x04\x16\x47\xe1\xbf\xf4\x3d\x8d"
