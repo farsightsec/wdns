@@ -1,3 +1,18 @@
+wdns (0.9.0)
+
+  * Support for new rrtypes:
+    - CDNSKEY and CDS (RFC 7344)
+    - CSYNC (RFC 7477)
+    - EUI48 and EUI64 (RFC 7043)
+    - OPENPGPKEY (draft-ietf-dane-openpgpkey)
+    - TLSA (RFC 6698)
+    - URI (RFC 7553)
+
+  * Added new rrtype mnemonics: CDNSKEY, CSYNC, EUI48, EUI64, GID, L32, L64,
+    LP, NID, OPENPGPKEY, TLSA, UID, UINFO, UNSPEC.
+
+ -- Robert Edmonds <edmonds@fsi.io>  Mon, 18 Apr 2016 19:07:56 -0400
+
 wdns (0.8.1)
 
   * Allow compressed <domain-name> record data fields in all supported record
