@@ -1,7 +1,7 @@
 Source: wdns
 Section: libs
 Priority: optional
-Maintainer: Robert Edmonds <edmonds@debian.org>
+Maintainer: Farsight Security, Inc. <software@farsightsecurity.com>
 Build-Depends:
  debhelper (>= 9~),
  dh-autoreconf (>= 5~),
