@@ -4,14 +4,14 @@ wdns (0.8.1-1) wheezy-farsightsec; urgency=medium
   * debian/libwdns1.symbols: Update symbols for 0.8.1
   * debian/gbp.conf: Remove [dch] id-length
 
- -- Robert Edmonds <edmonds@debian.org>  Wed, 24 Feb 2016 15:41:35 -0500
+ -- Robert Edmonds <edmonds@fsi.io>  Wed, 24 Feb 2016 15:41:35 -0500
 
 wdns (0.8.0-1) wheezy-farsightsec; urgency=medium
 
   * New release.
   * debian/libwdns1.symbols: Update symbols for 0.8.0
 
- -- Robert Edmonds <edmonds@debian.org>  Tue, 13 Oct 2015 17:22:11 -0400
+ -- Robert Edmonds <edmonds@fsi.io>  Tue, 13 Oct 2015 17:22:11 -0400
 
 wdns (0.7.0-1) wheezy-farsightsec; urgency=medium
 
@@ -23,10 +23,10 @@ wdns (0.7.0-1) wheezy-farsightsec; urgency=medium
   * debian/libwdns1.symbols: Update symbols for 0.7.0
   * debian/copyright: 2015
 
- -- Robert Edmonds <edmonds@debian.org>  Thu, 10 Sep 2015 17:24:47 -0400
+ -- Robert Edmonds <edmonds@fsi.io>  Thu, 10 Sep 2015 17:24:47 -0400
 
 wdns (0.6.0-1) unstable; urgency=medium
 
   * Current release.
 
- -- Robert S. Edmonds <edmonds@debian.org>  Wed, 21 May 2014 12:28:00 -0400
+ -- Robert Edmonds <edmonds@fsi.io>  Wed, 21 May 2014 12:28:00 -0400
