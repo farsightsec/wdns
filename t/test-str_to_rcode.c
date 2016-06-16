@@ -58,7 +58,7 @@ check(size_t ret, const char *s)
 	if (ret == 0)
 		fprintf(stderr, NAME ": PASS: %s\n", s);
 	else
-		fprintf(stderr, NAME ": FAIL: %s (%" PRIu64 " failures)\n", s, ret);
+		fprintf(stderr, NAME ": FAIL: %s (%zd failures)\n", s, ret);
 	return (ret);
 }
 
