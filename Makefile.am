@@ -1,5 +1,6 @@
 bin_PROGRAMS =
 check_PROGRAMS =
+noinst_PROGRAMS =
 TESTS =
 EXTRA_DIST =
 CLEANFILES =
@@ -111,42 +112,42 @@ pkgconfig_DATA = wdns/libwdns.pc
 EXTRA_DIST += wdns/libwdns.pc.in
 CLEANFILES += wdns/libwdns.pc
 
-bin_PROGRAMS += examples/wdns-dump-file
+noinst_PROGRAMS += examples/wdns-dump-file
 examples_wdns_dump_file_LDADD = wdns/libwdns.la
 examples_wdns_dump_file_SOURCES = \
 	examples/private.h \
 	examples/wdns-dump-file.c
 
 if LIBPCAP
-bin_PROGRAMS += examples/wdns-dump-pcap
+noinst_PROGRAMS += examples/wdns-dump-pcap
 examples_wdns_dump_pcap_LDADD = wdns/libwdns.la -lpcap
 examples_wdns_dump_pcap_SOURCES = \
 	examples/private.h \
 	examples/wdns-dump-pcap.c
 endif
 
-bin_PROGRAMS += examples/wdns-test-deserialize-rrset
+noinst_PROGRAMS += examples/wdns-test-deserialize-rrset
 examples_wdns_test_deserialize_rrset_LDADD = wdns/libwdns.la
 examples_wdns_test_deserialize_rrset_SOURCES = \
 	examples/private.h \
 	examples/wdns-hex-driver.c \
 	examples/wdns-test-deserialize-rrset.c
 
-bin_PROGRAMS += examples/wdns-test-downcase-rrset
+noinst_PROGRAMS += examples/wdns-test-downcase-rrset
 examples_wdns_test_downcase_rrset_LDADD = wdns/libwdns.la
 examples_wdns_test_downcase_rrset_SOURCES = \
 	examples/private.h \
 	examples/wdns-hex-driver.c \
 	examples/wdns-test-downcase-rrset.c
 
-bin_PROGRAMS += examples/wdns-test-print-message
+noinst_PROGRAMS += examples/wdns-test-print-message
 examples_wdns_test_print_message_LDADD = wdns/libwdns.la
 examples_wdns_test_print_message_SOURCES = \
 	examples/private.h \
 	examples/wdns-hex-driver.c \
 	examples/wdns-test-print-message.c
 
-bin_PROGRAMS += examples/wdns-test-serialize-rrset
+noinst_PROGRAMS += examples/wdns-test-serialize-rrset
 examples_wdns_test_serialize_rrset_LDADD = wdns/libwdns.la
 examples_wdns_test_serialize_rrset_SOURCES = \
 	examples/private.h \
