@@ -35,7 +35,7 @@ On FreeBSD systems, the following ports should be installed, if available:
     devel/pkgconf
 
 After satisfying the prerequisites, `./configure && make && make install` should
-compile and install `libwdns` `/usr/local`. If building from a git checkout,
+compile and install `libwdns` in `/usr/local`. If building from a git checkout,
 run the `./autogen.sh` command first to generate the `configure` script.
 
 Examples
