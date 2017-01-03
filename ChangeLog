@@ -4,6 +4,8 @@ wdns (0.9.1)
 
 * Add README.md.
 
+* Don't install the compiled example programs.
+
  -- Farsight Security <software@fsi.io>  Tue, 3 Jan 2017 17:56:25 +0000
 
 wdns (0.9.0)
