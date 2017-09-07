@@ -273,17 +273,15 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		}
 
 		case rdf_repstring:
-			ubuf_add_cstr(u, "\"");
 			while (src_bytes > 0) {
 				bytes_required(1);
 				oclen = *src;
 				bytes_consumed(1);
 
 				bytes_required(oclen);
-				len = rdata_to_str_string_unquoted(src, oclen, u);
+				len = rdata_to_str_string(src, oclen, u);
 				bytes_consumed(len);
 			}
-			ubuf_add_cstr(u, "\" ");
 			break;
 
 		case rdf_rrtype: {

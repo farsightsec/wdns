@@ -45,7 +45,7 @@ struct test tdata[] = {
 		.input_len = 1 + 4 + 1 + 4,
 		.rrtype = WDNS_TYPE_TXT,
 		.rrclass = WDNS_CLASS_IN,
-		.expected = "\"sometext\"",
+		.expected = "\"some\" \"text\"",
 	},
 
 	{
