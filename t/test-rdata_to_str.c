@@ -48,6 +48,83 @@ struct test tdata[] = {
 		.expected = "\"some\" \"text\"",
 	},
 
+	/* TXT test for: a string beginning with a " and ending with a " */
+	{
+		.input = "\x08" "\x22" "quoted" "\x22",
+		.input_len = 1 + 1 + 6 + 1,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"\\\"quoted\\\"\"",
+	},
+
+	/* TXT test for: one quote sent over the wire */
+	{
+		.input = "\x03" "one" "\x05" "quote" "\x01" "\"" "\x04" "sent" "\x04" "over" "\x03" "the" "\x04" "wire",
+		.input_len = 1 + 3 + 1 + 5 + 1 + 1 + 1 + 4 + 1 + 4 + 1 + 3 + 1 + 4, 
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"one\" \"quote\" \"\\\"\" \"sent\" \"over\" \"the\" \"wire\"",
+	},
+
+	/* TXT test for: 256 characters in length (including the length 
+	   octet) */
+	{
+		.input = "\xff" "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		.input_len = 1 + 255,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+	},
+
+	/* TXT test for: single character string with multiple spaces */
+	{
+		.input = "\x19" "one string multiple words",
+		.input_len = 1 + 25,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"one string multiple words\"",
+	},
+
+	/* TXT test for: multiple character strings with spaces */
+	{
+		.input = "\x10" "multiple strings" "\x02" "of" "\x0e" "multiple words",
+		.input_len = 1 + 16 + 1 + 2 + 1+ 14,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"multiple strings\" \"of\" \"multiple words\"",
+	},
+
+	/* TXT test for: multiple long character strings */
+	{
+		.input = "\xff" "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" "\xff" "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" "\xff" "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+		.input_len = 1 + 255 + 1 + 255 + 1 + 255,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\" \"ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\" \"ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"",
+	},
+
+	/* TXT test for: real world example of DKIM use.
+	   The total length was 411 charcters broke up into
+	   multiple character-strings. */
+	{
+		.input = "\xfe" "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2UMfREvlgajdSp3jv1tJ9nLpi/mRYnGyKC3inEQ9a7zqUjLq/yXukgpXs9AEHlvBvioxlgAVCPQQsuc1xp9+KXQGgJ8jTsn5OtKm8u+YBCt6OfvpeCpvt0l9JXMMHBNYV4c0XiPE5RHX2ltI0Av20CfEy+vMecpFtVDg4rMngjLws/ro6qT63S20A4zyVs/V" "\x9c" "19WW5F2Lulgv+l+EJzz9XummIJHOlU5n5ChcWU3Rw5RVGTtNjTZnFUaNXly3fW0ahKcG5Qc3e0Rhztp57JJQTl3OmHiMR5cHsCnrl1VnBi3kaOoQBYsSuBm+KRhMIw/X9wkLY67VLdkrwlX3xxsp6wIDAQAB",
+		.input_len = 1 + 254 +1 + 156,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+/* NOTE: the semicolons are not escaped as they would be with dig output */
+		.expected = "\"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2UMfREvlgajdSp3jv1tJ9nLpi/mRYnGyKC3inEQ9a7zqUjLq/yXukgpXs9AEHlvBvioxlgAVCPQQsuc1xp9+KXQGgJ8jTsn5OtKm8u+YBCt6OfvpeCpvt0l9JXMMHBNYV4c0XiPE5RHX2ltI0Av20CfEy+vMecpFtVDg4rMngjLws/ro6qT63S20A4zyVs/V\" \"19WW5F2Lulgv+l+EJzz9XummIJHOlU5n5ChcWU3Rw5RVGTtNjTZnFUaNXly3fW0ahKcG5Qc3e0Rhztp57JJQTl3OmHiMR5cHsCnrl1VnBi3kaOoQBYsSuBm+KRhMIw/X9wkLY67VLdkrwlX3xxsp6wIDAQAB\"",
+	},
+
+	/* TXT test from RFC 7208 section 3.3:
+	   concatenated together without adding spaces. */
+	{
+		.input = "\x11" "v=spf1 .... first" "\x10" "second string...",
+		.input_len = 1 + 17 +1 + 16,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"v=spf1 .... first\" \"second string...\"",
+	},
+
 	{
 		.input =
 			"\x1a" "Please stop asking for ANY"
