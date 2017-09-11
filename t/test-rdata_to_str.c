@@ -108,7 +108,7 @@ struct test tdata[] = {
 	   multiple character-strings. */
 	{
 		.input = "\xfe" "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2UMfREvlgajdSp3jv1tJ9nLpi/mRYnGyKC3inEQ9a7zqUjLq/yXukgpXs9AEHlvBvioxlgAVCPQQsuc1xp9+KXQGgJ8jTsn5OtKm8u+YBCt6OfvpeCpvt0l9JXMMHBNYV4c0XiPE5RHX2ltI0Av20CfEy+vMecpFtVDg4rMngjLws/ro6qT63S20A4zyVs/V" "\x9c" "19WW5F2Lulgv+l+EJzz9XummIJHOlU5n5ChcWU3Rw5RVGTtNjTZnFUaNXly3fW0ahKcG5Qc3e0Rhztp57JJQTl3OmHiMR5cHsCnrl1VnBi3kaOoQBYsSuBm+KRhMIw/X9wkLY67VLdkrwlX3xxsp6wIDAQAB",
-		.input_len = 1 + 254 +1 + 156,
+		.input_len = 1 + 254 + 1 + 156,
 		.rrtype = WDNS_TYPE_TXT,
 		.rrclass = WDNS_CLASS_IN,
 /* NOTE: the semicolons are not escaped as they would be with dig output */
@@ -119,10 +119,19 @@ struct test tdata[] = {
 	   concatenated together without adding spaces. */
 	{
 		.input = "\x11" "v=spf1 .... first" "\x10" "second string...",
-		.input_len = 1 + 17 +1 + 16,
+		.input_len = 1 + 17 + 1 + 16,
 		.rrtype = WDNS_TYPE_TXT,
 		.rrclass = WDNS_CLASS_IN,
 		.expected = "\"v=spf1 .... first\" \"second string...\"",
+	},
+
+	/* SPF test using real world example, all as one string */
+	{
+		.input = "\x63" "v=spf1 a mx ip4:204.152.184.0/21 ip4:149.20.0.0/16 ip6:2001:04F8::0/32 ip6:2001:500:60::65/128 ~all",
+		.input_len = 1 + 99,
+		.rrtype = WDNS_TYPE_SPF,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"v=spf1 a mx ip4:204.152.184.0/21 ip4:149.20.0.0/16 ip6:2001:04F8::0/32 ip6:2001:500:60::65/128 ~all\"",
 	},
 
 	{
