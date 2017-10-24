@@ -235,6 +235,8 @@ static const struct test tdata[] = {
 	{ "65535 64 01 ZGVhZGJlZWZz", WDNS_TYPE_DNSKEY, WDNS_CLASS_IN, "\xff\xff@\x01""deadbeefs", 13, wdns_res_success},
 	{ "fsi.io A NS MX", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x02\x60\x01", 12, wdns_res_success},
 	{ "fsi.io", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success},
+	{ "fsi.io A NS MD MF CNAME SOA MB MG MR WKS PTR HINFO MINFO MX TXT RP AFSDB URI CAA", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x03\x7f\xdf\xe0\x01\x01\xc0", 16, wdns_res_success},
+	{ "fsi.io A AFSDB CAA CNAME HINFO MB MD MF MG MINFO MR MX NS PTR RP SOA TXT URI WKS", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x03\x7f\xdf\xe0\x01\x01\xc0", 16, wdns_res_success},
 	{ "fsi.io A NS MX FAKE", WDNS_TYPE_NSEC, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "1 2 3 -", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, "\x01\x02\x00\x03\x00", 5, wdns_res_success},
 	{ "1 2 3 deadbeef", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, "\x01\x02\x00\x03\x04\xde\xad\xbe\xef", 9, wdns_res_success},
