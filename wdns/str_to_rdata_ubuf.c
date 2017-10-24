@@ -63,8 +63,8 @@ err:
 
 static int
 cmp_u16(const void *a, const void *b) {
-	uint16_t *u1 = (uint16_t *)a;
-	uint16_t *u2 = (uint16_t *)b;
+	uint16_t u1 = *(uint16_t *)a;
+	uint16_t u2 = *(uint16_t *)b;
 	return u1 == u2 ? 0 : u1 > u2 ? 1 : -1;
 }
 
