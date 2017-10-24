@@ -694,7 +694,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				u16buf_add(rrtypes, my_rrtype);
 				str = end;
 			}
-			qsort(u16buf_ptr(rrtypes), u16buf_size(rrtypes), sizeof(uint16_t), cmp_u16);
+			qsort(u16buf_data(rrtypes), u16buf_size(rrtypes), sizeof(uint16_t), cmp_u16);
 
 			memset(bitmap, 0, sizeof(bitmap));
 			window_block = 0;
