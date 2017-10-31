@@ -353,6 +353,19 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			}
 
 			size_t str_len = end-str;
+
+			/*
+			 * The hashed owner name is presented as one base32 digit.
+			 * A single byte would be two base32 digits, therefore we
+			 * we can conclude the original data was zero bytes long.
+			 */
+			if (str_len == 1) {
+				uint8_t c = 0;
+				ubuf_append(u, &c, 1);
+				str++;
+				break;
+			}
+
 			buf = malloc(str_len);
 			buf_len = base32_decode(buf, str_len, str, str_len);
 
