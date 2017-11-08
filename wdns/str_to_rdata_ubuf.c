@@ -172,7 +172,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			}
 			name = calloc(1, sizeof(*name));
 
-			res = wdns_str_to_name(s, name);
+			res = wdns_str_to_name_case(s, name);
 			if (res != wdns_res_success) {
 				free(s);
 				free(name);
