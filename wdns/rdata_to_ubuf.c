@@ -321,7 +321,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 					for (int j = 1; j <= 8; j++) {
 						b = a & (1 << (8 - j));
 						if (b != 0) {
-							my_rrtype = (window_block << 16) | lo;
+							my_rrtype = (window_block << 8) | lo;
 							s_rrtype = wdns_rrtype_to_str(my_rrtype);
 							if (s_rrtype != NULL) {
 								ubuf_add_cstr(u, s_rrtype);

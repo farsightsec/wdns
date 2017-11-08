@@ -63,8 +63,8 @@ err:
 
 static int
 cmp_u16(const void *a, const void *b) {
-	uint16_t *u1 = (uint16_t *)a;
-	uint16_t *u2 = (uint16_t *)b;
+	uint16_t u1 = *(uint16_t *)a;
+	uint16_t u2 = *(uint16_t *)b;
 	return u1 == u2 ? 0 : u1 > u2 ? 1 : -1;
 }
 
@@ -694,7 +694,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				u16buf_add(rrtypes, my_rrtype);
 				str = end;
 			}
-			qsort(u16buf_ptr(rrtypes), u16buf_size(rrtypes), sizeof(uint16_t), cmp_u16);
+			qsort(u16buf_data(rrtypes), u16buf_size(rrtypes), sizeof(uint16_t), cmp_u16);
 
 			memset(bitmap, 0, sizeof(bitmap));
 			window_block = 0;

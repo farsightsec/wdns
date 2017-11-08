@@ -261,6 +261,19 @@ struct test tdata[] = {
 			"7983A1D16E8A410E4561CB106618E971",
 	},
 
+	/* rrtype bitmap test for rrtypes > 255 */
+	{
+		.input =
+			"\x03""fsi\x02io\x00"
+			"\x00\x01" "\x40"
+			"\x01\x01" "\x40"
+			"\x80\x01" "\x40",
+		.input_len = 8 + 3 + 3 + 3,
+		.rrtype = WDNS_TYPE_NSEC,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "fsi.io. A CAA DLV",
+	},
+
 	{ 0 }
 };
 
