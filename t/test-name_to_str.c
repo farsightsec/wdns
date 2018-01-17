@@ -151,7 +151,6 @@ test_str_to_name(void)
 					err = 1;
 				}
 
-				
 			}
 
 		}
