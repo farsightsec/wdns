@@ -50,6 +50,9 @@ struct test tdata[] = {
 		.ilen = 1 + 7 + 1 + 8 + 1 + 4 + 1 + 3 + 1 + 2 + 1     + 1 + 4 + 1,
 		.expected = "testing.trailing.data.fsi.io.",
 		.expected_lcase = "testing.trailing.data.fsi.io.",
+		// It's really unclear how this function should behave when presented
+		// with trailing data. This topic demands further discussion.
+		// Ref: https://github.com/farsightsec/wdns/issues/25
 //		.expected_rev = "io.fsi.data.trailing.testing.",
 		.expected_rev = ".",
 		.skip_len = 1 + 7 + 1 + 8 + 1 + 4 + 1 + 3 + 1 + 2 + 1,
@@ -79,6 +82,8 @@ test_name_to_str(void)
 		memset(&name, 0, sizeof(name));
 		memset(dstr, 0, sizeof(dstr));
 
+		// Don't check result of wdns_domain_to_str() here or elsewhere,
+		// because if it's wrong, subsequent string comparisons necessarily fail.
 		wdns_domain_to_str(cur->input, cur->ilen, dstr);
 
 		if (strcmp(dstr, cur->expected)) {
