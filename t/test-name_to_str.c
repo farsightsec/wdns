@@ -4,10 +4,12 @@
 #include <inttypes.h>
 #include <ctype.h>
 
+#include "test-common.h"
+
 #include <libmy/ubuf.h>
 #include <wdns.h>
 
-#define NAME "test-str_to_name"
+#define NAME "test-name_to_str"
 
 struct test {
 	const void *input;
@@ -58,36 +60,8 @@ struct test tdata[] = {
 };
 
 
-static void
-escape(ubuf *u, const uint8_t *a, size_t len)
-{
-	size_t n;
-	bool last_hex = false;
-
-	ubuf_add_cstr(u, "\"");
-	for (n = 0; n < len; n++) {
-		if (a[n] == '"') {
-			ubuf_add_cstr(u, "\\\"");
-			last_hex = false;
-		} else if (a[n] == '\\') {
-			ubuf_add_cstr(u, "\\\\");
-			last_hex = false;
-		} else if (a[n] >= ' ' && a[n] <= '~') {
-			if (last_hex && isxdigit(a[n])) {
-				ubuf_add_cstr(u, "\"\"");
-			}
-			ubuf_append(u, a+n, 1);
-			last_hex = false;
-		} else {
-			ubuf_add_fmt(u, "\\x%02x", a[n]);
-			last_hex = true;
-		}
-	}
-	ubuf_add_cstr(u, "\"");
-}
-
 static size_t
-test_str_to_name(void)
+test_name_to_str(void)
 {
 	char dstr[1024];
 	ubuf *u;
@@ -156,7 +130,9 @@ test_str_to_name(void)
 		}
 
 		if (!err) {
-			res = wdns_skip_name((const uint8_t **)&(cur->input), (((const uint8_t *)cur->input) + cur->ilen));
+			const u_int8_t *sptr = cur->input;
+
+			res = wdns_skip_name(&sptr, (((const uint8_t *)cur->input) + cur->ilen));
 
 			if (res != cur->skip_len) {
 				ubuf_add_fmt(u, "FAIL %" PRIu64 ": input=", cur-tdata);
@@ -169,7 +145,7 @@ test_str_to_name(void)
 
 		if (!err) {
 			ubuf_add_fmt(u, "PASS %" PRIu64 ": input=", cur-tdata);
-			escape(u, (uint8_t*)cur->input, strlen(cur->input));
+			escape(u, (uint8_t*)cur->input, cur->ilen);
 		} else {
 			failures++;
 		}
@@ -199,7 +175,7 @@ int main (int argc, char **argv)
 {
 	int ret = 0;
 
-	ret |= check(test_str_to_name(), "test-str_to_name");
+	ret |= check(test_name_to_str(), "test-name_to_str");
 
 	if (ret)
 		return (EXIT_FAILURE);

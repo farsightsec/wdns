@@ -166,12 +166,12 @@ TESTS_ENVIRONMENT = $(AM_TESTS_ENVIRONMENT)
 
 TESTS += t/test-name_to_str
 check_PROGRAMS += t/test-name_to_str
-t_test_name_to_str_SOURCES = t/test-name_to_str.c
+t_test_name_to_str_SOURCES = t/test-name_to_str.c t/test-common.c
 t_test_name_to_str_LDADD = wdns/libwdns.la
 
 TESTS += t/test-str_to_name
 check_PROGRAMS += t/test-str_to_name
-t_test_str_to_name_SOURCES = t/test-str_to_name.c
+t_test_str_to_name_SOURCES = t/test-str_to_name.c t/test-common.c
 t_test_str_to_name_LDADD = wdns/libwdns.la
 
 TESTS += t/test-str_to_rcode
@@ -181,12 +181,12 @@ t_test_str_to_rcode_LDADD = wdns/libwdns.la
 
 TESTS += t/test-str_to_rdata
 check_PROGRAMS += t/test-str_to_rdata
-t_test_str_to_rdata_SOURCES = t/test-str_to_rdata.c
+t_test_str_to_rdata_SOURCES = t/test-str_to_rdata.c t/test-common.c
 t_test_str_to_rdata_LDADD = wdns/libwdns.la
 
 TESTS += t/test-rdata_to_str
 check_PROGRAMS += t/test-rdata_to_str
-t_test_rdata_to_str_SOURCES = t/test-rdata_to_str.c
+t_test_rdata_to_str_SOURCES = t/test-rdata_to_str.c t/test-common.c
 t_test_rdata_to_str_LDADD = wdns/libwdns.la
 
 TESTS += t/test-str_to_rrtype
