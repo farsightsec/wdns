@@ -335,20 +335,10 @@ test_str_to_rdata(void) {
 	return failures;
 }
 
-static int
-check(size_t ret, const char *s)
-{
-        if (ret == 0)
-                fprintf(stderr, NAME ": PASS: %s\n", s);
-        else
-                fprintf(stderr, NAME ": FAIL: %s (%zd failures)\n", s, ret);
-        return (ret);
-}
-
 int main (int argc, char **argv) {
 	int ret = 0;
 
-	ret |= check(test_str_to_rdata(), "test_str_to_rdata");
+	ret |= check(test_str_to_rdata(), "test_str_to_rdata", NAME);
 
 	if (ret)
 		return (EXIT_FAILURE);

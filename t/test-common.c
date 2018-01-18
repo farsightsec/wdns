@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <ctype.h>
+
+#include "test-common.h"
 
 #include <libmy/ubuf.h>
 
@@ -31,4 +34,14 @@ escape(ubuf *u, const uint8_t *a, size_t len)
 		}
 	}
 	ubuf_add_cstr(u, "\"");
+}
+
+int
+check(size_t ret, const char *s, const char *cname)
+{
+	if (ret == 0)
+		fprintf(stderr, "%s : PASS: %s\n", cname, s);
+	else
+		fprintf(stderr, "%s : FAIL: %s (%zd failures)\n", cname, s, ret);
+	return (ret);
 }
