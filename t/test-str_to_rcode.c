@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <ctype.h>
 
+#include "test-common.h"
+
 #include <libmy/ubuf.h>
 #include <wdns.h>
 
@@ -52,21 +54,11 @@ test_str_to_rcode(void)
 	return failures;
 }
 
-static int
-check(size_t ret, const char *s)
-{
-	if (ret == 0)
-		fprintf(stderr, NAME ": PASS: %s\n", s);
-	else
-		fprintf(stderr, NAME ": FAIL: %s (%zd failures)\n", s, ret);
-	return (ret);
-}
-
 int main (int argc, char **argv)
 {
 	int ret = 0;
 
-	ret |= check(test_str_to_rcode(), "test_rcode");
+	ret |= check(test_str_to_rcode(), "test_rcode", NAME);
 
 	if (ret)
 		return (EXIT_FAILURE);
