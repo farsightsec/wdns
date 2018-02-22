@@ -128,6 +128,12 @@ examples_wdns_dump_pcap_SOURCES = \
 	examples/wdns-dump-pcap.c
 endif
 
+noinst_PROGRAMS += examples/wdns-print-version
+examples_wdns_print_version_LDADD = wdns/libwdns.la
+examples_wdns_print_version_SOURCES = \
+	examples/private.h \
+	examples/wdns-print-version.c
+
 noinst_PROGRAMS += examples/wdns-test-deserialize-rrset
 examples_wdns_test_deserialize_rrset_LDADD = wdns/libwdns.la
 examples_wdns_test_deserialize_rrset_SOURCES = \
