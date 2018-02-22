@@ -1,10 +1,17 @@
 AC_PREREQ(2.64)
+
+m4_define(wdns_major_version, 0)
+m4_define(wdns_minor_version, 9)
+m4_define(wdns_patchlevel_version, 1)
+m4_define(wdns_version,
+          wdns_major_version.wdns_minor_version.wdns_patchlevel_version)
+
 AC_INIT([wdns],
-        [0.9.1],
+        [wdns_version()],
         [https://github.com/farsightsec/wdns/issues],
         [wdns],
         [https://github.com/farsightsec/wdns])
-AC_CONFIG_SRCDIR([wdns/wdns.h])
+AC_CONFIG_SRCDIR([wdns/wdns.h.in])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign 1.11 -Wall -Wno-portability silent-rules subdir-objects])
 AC_PROG_CC_STDC
@@ -14,8 +21,18 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_SILENT_RULES([yes])
 LT_INIT
 
+WDNS_MAJOR_VERSION=wdns_major_version()
+WDNS_MINOR_VERSION=wdns_minor_version()
+WDNS_PATCHLEVEL_VERSION=wdns_patchlevel_version()
+WDNS_VERSION=wdns_version()
+
+AC_SUBST(WDNS_MAJOR_VERSION)
+AC_SUBST(WDNS_MINOR_VERSION)
+AC_SUBST(WDNS_PATCHLEVEL_VERSION)
+AC_SUBST(WDNS_VERSION)
+
 AC_CONFIG_HEADERS(config.h)
-AC_CONFIG_FILES([Makefile wdns/libwdns.pc])
+AC_CONFIG_FILES([Makefile wdns/libwdns.pc wdns/wdns.h])
 
 PKG_PROG_PKG_CONFIG
 if test -n "$PKG_CONFIG"; then
