@@ -107,7 +107,8 @@ wdns_libwdns_la_SOURCES = \
 	wdns/skip_name.c \
 	wdns/str_to_name.c \
 	wdns/str_to_rdata_ubuf.c \
-	wdns/unpack_name.c
+	wdns/unpack_name.c \
+	wdns/version.c
 
 pkgconfig_DATA = wdns/libwdns.pc
 EXTRA_DIST += wdns/libwdns.pc.in
