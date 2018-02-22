@@ -4,6 +4,7 @@ noinst_PROGRAMS =
 TESTS =
 EXTRA_DIST =
 CLEANFILES =
+DISTCLEANFILES =
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 EXTRA_DIST += COPYRIGHT
@@ -13,7 +14,8 @@ EXTRA_DIST += README.md
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-I$(top_srcdir)/wdns
-AM_CFLAGS = $(my_CFLAGS)
+AM_CFLAGS = $(my_CFLAGS) \
+	-I$(top_builddir)/wdns
 AM_LDFLAGS =
 
 LIBWDNS_CURRENT=1
@@ -26,15 +28,18 @@ lib_LTLIBRARIES = wdns/libwdns.la
 EXTRA_DIST += wdns/gen_rcode_to_str
 EXTRA_DIST += wdns/gen_rrclass_to_str
 EXTRA_DIST += wdns/gen_rrtype_to_str
+DISTCLEANFILES += wdns/rrtype_to_str.c \
+	wdns/rcode_to_str.c \
+	wdns/rrclass_to_str.c
 
 wdns/rcode_to_str.c: wdns/wdns.h wdns/gen_rcode_to_str
-	$(AM_V_GEN)wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
+	$(AM_V_GEN)$(top_srcdir)/wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
 
 wdns/rrclass_to_str.c: wdns/wdns.h wdns/gen_rrclass_to_str
-	$(AM_V_GEN)wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
+	$(AM_V_GEN)$(top_srcdir)/wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
 
 wdns/rrtype_to_str.c: wdns/wdns.h wdns/gen_rrtype_to_str
-	$(AM_V_GEN)wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
+	$(AM_V_GEN)$(top_srcdir)/wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
 
 wdns_libwdns_la_CPPFLAGS = \
 	-include $(top_builddir)/wdns/wdns-private.h
