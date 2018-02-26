@@ -18,9 +18,9 @@ AM_CFLAGS = $(my_CFLAGS) \
 	-I$(top_builddir)/wdns
 AM_LDFLAGS =
 
-LIBWDNS_CURRENT=1
+LIBWDNS_CURRENT=2
 LIBWDNS_REVISION=0
-LIBWDNS_AGE=0
+LIBWDNS_AGE=1
 
 include_HEADERS = wdns/wdns.h
 lib_LTLIBRARIES = wdns/libwdns.la
