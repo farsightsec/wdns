@@ -13,17 +13,15 @@ main(int argc, char **argv) {
 	printf("your install of libwdns supports compile-time versioning ");
 	printf("(WDNS_LIBRARY_VERSION_NUMBER == %lu)\n",
 			WDNS_LIBRARY_VERSION_NUMBER);
-#else
-	printf("your install of libwdns predates versioning, consider an upgrade\n");
-	return (EXIT_SUCCESS);
-#endif
-
 	/* to do run-time checking, do something like the following: */
 	printf("libwdns run-time version is %d\n", wdns_get_version_number());
 
 	/* and to emit a stringified version number, do this: */
 	printf("this program was linked against libwdns version %s\n",
 			wdns_get_version());
-
 	return (EXIT_SUCCESS);
+#else
+	printf("your install of libwdns predates versioning, consider an upgrade\n");
+	return (EXIT_SUCCESS);
+#endif
 }
