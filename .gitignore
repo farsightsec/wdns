@@ -2,6 +2,7 @@
 *.la
 *.lo
 *.o
+*.gcno
 *.tar.gz
 .deps/
 .dirstamp
@@ -28,3 +29,6 @@ t/test-str_to_rrtype
 t/test-rdata_to_str
 t/*.log
 t/*.trs
+t/*.gcda
+coveragereport/
+coverage.info

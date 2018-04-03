@@ -188,3 +188,7 @@ TESTS += t/test-str_to_rrtype
 check_PROGRAMS += t/test-str_to_rrtype
 t_test_str_to_rrtype_SOURCES = t/test-str_to_rrtype.c
 t_test_str_to_rrtype_LDADD = wdns/libwdns.la
+
+
+# coverage
+include $(top_srcdir)/Makefile.am.coverage

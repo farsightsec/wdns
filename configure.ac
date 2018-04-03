@@ -29,13 +29,23 @@ else
     AC_MSG_ERROR([pkg-config is required!])
 fi
 
-my_CFLAGS="-Wall \
+m4_include([m4/gcov.m4])
+AC_TDD_GCOV
+AC_SUBST(COVERAGE_CFLAGS)
+AC_SUBST(COVERAGE_LDFLAGS)
+
+CFLAGS="-Wall \
 -Wmissing-declarations -Wmissing-prototypes \
 -Wnested-externs -Wpointer-arith \
 -Wpointer-arith -Wsign-compare -Wchar-subscripts \
 -Wstrict-prototypes -Wshadow \
--Wformat-security"
-AC_SUBST([my_CFLAGS])
+-Wformat-security \
+$COVERAGE_CFLAGS \
+"
+AC_SUBST([CFLAGS])
+
+LDFLAGS="$COVERAGE_LDFLAGS"
+AC_SUBST([LDFLAGS])
 
 AC_CHECK_HEADERS([alloca.h])
 

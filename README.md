@@ -42,3 +42,19 @@ Examples
 --------
 
 C language examples are in the `examples/` directory.
+
+Coverage
+--------
+
+To generate a test coverage report:
+
+* install gcov
+* compile and install as above, adding a flag:
+
+```
+    $ ./autogen.sh  
+    $ ./configure --enable-gcov  
+    $ make  
+    $ make coverage-html
+```
+* inspect the report in `./coveragereport/index.html`
