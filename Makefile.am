@@ -173,6 +173,8 @@ examples_wdns_test_serialize_rrset_SOURCES = \
 ##
 #
 
+EXTRA_DIST += t/test-common.h
+
 AM_TESTS_ENVIRONMENT = top_builddir='$(top_builddir)'; top_srcdir='$(top_srcdir)'; export top_builddir top_srcdir;
 TESTS_ENVIRONMENT = $(AM_TESTS_ENVIRONMENT)
 
