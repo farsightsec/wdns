@@ -53,3 +53,9 @@ global:
         wdns_str_to_rcode;
         wdns_str_to_name_case;
 } LIBWDNS_0.7.0;
+
+LIBWDNS_0.10.0 {
+global:
+       wdns_get_version;
+       wdns_get_version_number;
+} LIBWDNS_0.8.0;

@@ -4,6 +4,7 @@ noinst_PROGRAMS =
 TESTS =
 EXTRA_DIST =
 CLEANFILES =
+DISTCLEANFILES =
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 EXTRA_DIST += COPYRIGHT
@@ -13,12 +14,13 @@ EXTRA_DIST += README.md
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-I$(top_srcdir)/wdns
-AM_CFLAGS = $(my_CFLAGS)
+AM_CFLAGS = $(my_CFLAGS) \
+	-I$(top_builddir)/wdns
 AM_LDFLAGS =
 
-LIBWDNS_CURRENT=1
+LIBWDNS_CURRENT=2
 LIBWDNS_REVISION=0
-LIBWDNS_AGE=0
+LIBWDNS_AGE=1
 
 include_HEADERS = wdns/wdns.h
 lib_LTLIBRARIES = wdns/libwdns.la
@@ -26,15 +28,18 @@ lib_LTLIBRARIES = wdns/libwdns.la
 EXTRA_DIST += wdns/gen_rcode_to_str
 EXTRA_DIST += wdns/gen_rrclass_to_str
 EXTRA_DIST += wdns/gen_rrtype_to_str
+DISTCLEANFILES += wdns/rrtype_to_str.c \
+	wdns/rcode_to_str.c \
+	wdns/rrclass_to_str.c
 
 wdns/rcode_to_str.c: wdns/wdns.h wdns/gen_rcode_to_str
-	$(AM_V_GEN)wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
+	$(AM_V_GEN)$(top_srcdir)/wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
 
 wdns/rrclass_to_str.c: wdns/wdns.h wdns/gen_rrclass_to_str
-	$(AM_V_GEN)wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
+	$(AM_V_GEN)$(top_srcdir)/wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
 
 wdns/rrtype_to_str.c: wdns/wdns.h wdns/gen_rrtype_to_str
-	$(AM_V_GEN)wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
+	$(AM_V_GEN)$(top_srcdir)/wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
 
 wdns_libwdns_la_CPPFLAGS = \
 	-include $(top_builddir)/wdns/wdns-private.h
@@ -107,7 +112,8 @@ wdns_libwdns_la_SOURCES = \
 	wdns/skip_name.c \
 	wdns/str_to_name.c \
 	wdns/str_to_rdata_ubuf.c \
-	wdns/unpack_name.c
+	wdns/unpack_name.c \
+	wdns/version.c
 
 pkgconfig_DATA = wdns/libwdns.pc
 EXTRA_DIST += wdns/libwdns.pc.in
@@ -126,6 +132,12 @@ examples_wdns_dump_pcap_SOURCES = \
 	examples/private.h \
 	examples/wdns-dump-pcap.c
 endif
+
+noinst_PROGRAMS += examples/wdns-print-version
+examples_wdns_print_version_LDADD = wdns/libwdns.la
+examples_wdns_print_version_SOURCES = \
+	examples/private.h \
+	examples/wdns-print-version.c
 
 noinst_PROGRAMS += examples/wdns-test-deserialize-rrset
 examples_wdns_test_deserialize_rrset_LDADD = wdns/libwdns.la

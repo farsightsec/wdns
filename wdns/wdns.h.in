@@ -155,6 +155,9 @@ extern "C" {
 /* Private use: 65280 - 65534 */
 /* Reserved: 65535 */
 
+#define WDNS_LIBRARY_VERSION "@WDNS_VERSION@"
+#define WDNS_LIBRARY_VERSION_NUMBER @WDNS_MAJOR_VERSION@ * 1000000L + @WDNS_MINOR_VERSION@ * 1000L + @WDNS_PATCHLEVEL_VERSION@
+
 /* Macros. */
 
 #define WDNS_FLAGS_QR(msg)		((((msg).flags) >> 15) & 0x01)
@@ -339,6 +342,20 @@ wdns_left_chop(wdns_name_t *name, wdns_name_t *chop);
 WDNS_WARN_UNUSED_RESULT
 wdns_res
 wdns_reverse_name(const uint8_t *name, size_t len_name, uint8_t *rev_name);
+
+/**
+ * Retrieve the semantic library version as a string. This function was
+ * Introduced in version 0.10.0.
+ */
+const char *wdns_get_version(void);
+
+/**
+ * Retrieve the semantic library version as a packed integer. The number is a
+ * combination of the major, minor, and patchelevel numbers as per:
+ * MAJOR * 1000000 + MINOR * 1000 + PATCHLEVEL. This function was introduced
+ * in version 0.10.0.
+ */
+uint32_t wdns_get_version_number(void);
 
 /* Parsing functions. */
 
