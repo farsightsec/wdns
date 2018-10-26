@@ -335,7 +335,7 @@ test_str_to_rdata(void) {
 	return failures;
 }
 
-int main (int argc, char **argv) {
+int main (void) {
 	int ret = 0;
 
 	ret |= check(test_str_to_rdata(), "test_str_to_rdata", NAME);

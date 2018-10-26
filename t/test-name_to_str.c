@@ -166,7 +166,7 @@ test_name_to_str(void)
 	return failures;
 }
 
-int main (int argc, char **argv)
+int main (void)
 {
 	int ret = 0;
 

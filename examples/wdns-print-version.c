@@ -6,7 +6,7 @@
 #include <wdns.h>
 
 int
-main(int argc, char **argv) {
+main(void) {
 
 /* to do compile-time checking, do something like the following: */
 #if WDNS_LIBRARY_VERSION_NUMBER > 9001

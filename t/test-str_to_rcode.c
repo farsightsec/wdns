@@ -54,7 +54,7 @@ test_str_to_rcode(void)
 	return failures;
 }
 
-int main (int argc, char **argv)
+int main (void)
 {
 	int ret = 0;
 
