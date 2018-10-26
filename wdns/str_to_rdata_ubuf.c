@@ -1,4 +1,4 @@
-VECTOR_GENERATE(u16buf, uint16_t);
+VECTOR_GENERATE(u16buf, uint16_t)
 
 static size_t
 rdata_from_str_string(const uint8_t *src, ubuf *u) {
