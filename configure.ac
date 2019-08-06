@@ -70,6 +70,9 @@ AM_CONDITIONAL([LIBPCAP], [test "$have_libpcap" = "true"])
 
 gl_LD_VERSION_SCRIPT
 
+m4_include([libmy/m4/my_code_coverage.m4])
+MY_CODE_COVERAGE
+
 AC_OUTPUT
 AC_MSG_RESULT([
     $PACKAGE $VERSION
@@ -84,4 +87,6 @@ AC_MSG_RESULT([
         libdir:                 ${libdir}
         includedir:             ${includedir}
         pkgconfigdir:           ${pkgconfigdir}
+
+        code coverage enabled:  ${CODE_COVERAGE_ENABLED}
 ])
