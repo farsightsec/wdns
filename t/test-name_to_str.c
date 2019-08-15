@@ -135,7 +135,7 @@ test_name_to_str(void)
 		}
 
 		if (!err) {
-			const u_int8_t *sptr = cur->input;
+			const uint8_t *sptr = cur->input;
 
 			res = wdns_skip_name(&sptr, (((const uint8_t *)cur->input) + cur->ilen));
 
