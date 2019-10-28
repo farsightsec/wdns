@@ -51,13 +51,13 @@ DISTCLEANFILES += wdns/rrtype_to_str.c \
 	wdns/rrclass_to_str.c
 
 wdns/rcode_to_str.c: wdns/wdns.h wdns/gen_rcode_to_str
-	$(AM_V_GEN)$(top_srcdir)/wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
+	$(PYTHON) $(top_srcdir)/wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
 
 wdns/rrclass_to_str.c: wdns/wdns.h wdns/gen_rrclass_to_str
-	$(AM_V_GEN)$(top_srcdir)/wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
+	$(PYTHON) $(top_srcdir)/wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
 
 wdns/rrtype_to_str.c: wdns/wdns.h wdns/gen_rrtype_to_str
-	$(AM_V_GEN)$(top_srcdir)/wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
+	$(PYTHON) $(top_srcdir)/wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
 
 wdns_libwdns_la_CPPFLAGS = \
 	-include $(top_builddir)/wdns/wdns-private.h
