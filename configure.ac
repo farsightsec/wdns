@@ -70,6 +70,9 @@ AM_CONDITIONAL([LIBPCAP], [test "$have_libpcap" = "true"])
 
 gl_LD_VERSION_SCRIPT
 
+AM_PATH_PYTHON(,, [:])
+AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
+
 m4_include([libmy/m4/my_code_coverage.m4])
 MY_CODE_COVERAGE
 
