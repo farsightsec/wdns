@@ -4,7 +4,7 @@
  * \param[in] src domain name in wire format
  * \param[in] src_len length of domain name in bytes
  * \param[out] dst caller-allocated string buffer of size WDNS_PRESLEN_NAME
- * 
+ *
  * \return Number of bytes read from src.
  */
 
