@@ -1,4 +1,5 @@
 libwdns.so.1 libwdns1 #MINVER#
+ LIBWDNS_0.10.0@LIBWDNS_0.10.0 0.10.0
  LIBWDNS_0.6.0@LIBWDNS_0.6.0 0.6.0
  LIBWDNS_0.7.0@LIBWDNS_0.7.0 0.7.0
  LIBWDNS_0.8.0@LIBWDNS_0.8.0 0.8.0
@@ -15,6 +16,8 @@ libwdns.so.1 libwdns1 #MINVER#
  wdns_downcase_rdata@LIBWDNS_0.6.0 0.6.0
  wdns_downcase_rrset@LIBWDNS_0.6.0 0.6.0
  wdns_file_load_names@LIBWDNS_0.6.0 0.6.0
+ wdns_get_version@LIBWDNS_0.10.0 0.10.0
+ wdns_get_version_number@LIBWDNS_0.10.0 0.10.0
  wdns_is_subdomain@LIBWDNS_0.6.0 0.6.0
  wdns_left_chop@LIBWDNS_0.6.0 0.6.0
  wdns_len_uname@LIBWDNS_0.6.0 0.6.0
