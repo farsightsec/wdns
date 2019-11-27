@@ -88,7 +88,7 @@ _wdns_str_to_name(const char *str, wdns_name_t *name, bool downcase)
 			    && val >= 0 && val <= 255)
 			{
 				uint8_t uval;
-				
+
 				uval = (uint8_t) val;
 				*data++ = uval;
 				name->len++;

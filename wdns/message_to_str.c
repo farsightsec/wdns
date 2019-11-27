@@ -8,7 +8,7 @@ wdns_message_to_str(wdns_message_t *m)
 	ubuf *u;
 
 	u = ubuf_new();
-	
+
 	ubuf_add_cstr(u, ";; ->>HEADER<<- ");
 
 	opcode = wdns_opcode_to_str(WDNS_FLAGS_OPCODE(*m));

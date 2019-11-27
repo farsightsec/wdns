@@ -10,7 +10,7 @@ _wdns_rr_to_ubuf(ubuf *u, wdns_rr_t *rr, unsigned sec)
 
 	if (sec == WDNS_MSG_SEC_QUESTION)
 		ubuf_add_cstr(u, ";");
-	
+
 	ubuf_add_cstr(u, name);
 
 	if (sec != WDNS_MSG_SEC_QUESTION)
