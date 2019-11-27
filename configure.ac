@@ -94,7 +94,7 @@ if test "$lcov" != "no"; then
 	if test ! -x $GENHTML; then
 		AC_MSG_ERROR([genhtml not found, needed for lcov])
 	fi
-	CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
+	CFLAGS="$CFLAGS --coverage"
 	LIBS=" $LIBS -lgcov"
 	AC_SUBST(CPPFLAGS)
 	AC_SUBST(LIBS)
