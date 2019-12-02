@@ -9,7 +9,7 @@ Build-Depends:
  lcov,
  pkg-config,
  python,
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 
 Package: libwdns-dev
 Section: libdevel
