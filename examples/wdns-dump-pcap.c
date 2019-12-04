@@ -96,7 +96,7 @@ packet_handler(u_char *dumper,
 		packet_dump(dumper, hdr, pkt);
 	}
 
-	VERBOSE("\n");
+	VERBOSE("%s", "\n");
 	return;
 }
 

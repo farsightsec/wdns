@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <ctype.h>
 
+#include "test-common.h"
+
 #include <libmy/ubuf.h>
 #include <wdns.h>
 
@@ -235,6 +237,10 @@ static const struct test tdata[] = {
 	{ "65535 64 01 ZGVhZGJlZWZz", WDNS_TYPE_DNSKEY, WDNS_CLASS_IN, "\xff\xff@\x01""deadbeefs", 13, wdns_res_success},
 	{ "fsi.io A NS MX", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x02\x60\x01", 12, wdns_res_success},
 	{ "fsi.io", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success},
+	{ "fsi.io A NS MD MF CNAME SOA MB MG MR WKS PTR HINFO MINFO MX TXT RP AFSDB URI CAA", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x03\x7f\xdf\xe0\x01\x01\xc0", 16, wdns_res_success},
+	/* The next test case uses the same rrtypes as the previous, but
+	 * sorted by name in order to shuffle them by value.  */
+	{ "fsi.io A AFSDB CAA CNAME HINFO MB MD MF MG MINFO MR MX NS PTR RP SOA TXT URI WKS", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x03\x7f\xdf\xe0\x01\x01\xc0", 16, wdns_res_success},
 	{ "fsi.io A NS MX FAKE", WDNS_TYPE_NSEC, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "1 2 3 -", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, "\x01\x02\x00\x03\x00", 5, wdns_res_success},
 	{ "1 2 3 deadbeef", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, "\x01\x02\x00\x03\x04\xde\xad\xbe\xef", 9, wdns_res_success},
@@ -251,32 +257,6 @@ static const struct test tdata[] = {
 	{ 0 }
 };
 
-static void
-escape(ubuf *u, const uint8_t * a, size_t len) {
-	size_t n;
-	bool last_hex = false;
-
-	ubuf_add_cstr(u, "\"");
-	for (n = 0; n < len; n++) {
-		if (a[n] == '"') {
-			ubuf_add_cstr(u, "\\\"");
-			last_hex = false;
-		} else if (a[n] == '\\') {
-			ubuf_add_cstr(u, "\\\\");
-			last_hex = false;
-		} else if (a[n] >= ' ' && a[n] <= '~') {
-			if (last_hex && isxdigit(a[n])) {
-				ubuf_add_cstr(u, "\"\"");
-			}
-			ubuf_append(u, a+n, 1);
-			last_hex = false;
-		} else {
-			ubuf_add_fmt(u, "\\x%02x", a[n]);
-			last_hex = true;
-		}
-	}
-	ubuf_add_cstr(u, "\"");
-}
 
 static size_t
 test_str_to_rdata(void) {
@@ -355,20 +335,10 @@ test_str_to_rdata(void) {
 	return failures;
 }
 
-static int
-check(size_t ret, const char *s)
-{
-        if (ret == 0)
-                fprintf(stderr, NAME ": PASS: %s\n", s);
-        else
-                fprintf(stderr, NAME ": FAIL: %s (%zd failures)\n", s, ret);
-        return (ret);
-}
-
-int main (int argc, char **argv) {
+int main (void) {
 	int ret = 0;
 
-	ret |= check(test_str_to_rdata(), "test_str_to_rdata");
+	ret |= check(test_str_to_rdata(), "test_str_to_rdata", NAME);
 
 	if (ret)
 		return (EXIT_FAILURE);

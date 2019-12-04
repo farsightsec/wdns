@@ -4,6 +4,7 @@ noinst_PROGRAMS =
 TESTS =
 EXTRA_DIST =
 CLEANFILES =
+DISTCLEANFILES =
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 EXTRA_DIST += COPYRIGHT
@@ -13,12 +14,48 @@ EXTRA_DIST += README.md
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-I$(top_srcdir)/wdns
-AM_CFLAGS = $(my_CFLAGS)
+AM_CFLAGS = $(my_CFLAGS) \
+	-I$(top_builddir)/wdns
 AM_LDFLAGS =
 
-LIBWDNS_CURRENT=1
+USE_LCOV=@USE_LCOV@
+LCOV=@LCOV@
+GENHTML=@GENHTML@
+
+clean-coverage:
+	@if [ $(USE_LCOV) = yes ] ; then \
+		$(LCOV) --directory . --zerocounters ; \
+		echo "Removing coverage info files and generated $(abs_top_builddir)/coverage-html/ directory" ; \
+		rm -rf all.coverage report.coverage ; \
+		rm -rf $(abs_top_builddir)/coverage-html/ ; \
+	else \
+		echo "Code coverage not enabled at configuration time." ; \
+		echo "Use: ./configure --with-coverage" ; \
+fi
+
+report-coverage:
+	@if [ $(USE_LCOV) = yes ] ; then \
+		$(LCOV) --capture --directory . --output-file all.coverage ; \
+		$(LCOV) --remove all.coverage \
+			$(abs_top_srcdir)/t/\* \
+			/usr/include/\* \
+			--output report.coverage ; \
+		$(GENHTML) --legend -o $(abs_top_builddir)/coverage-html report.coverage ; \
+		echo "Generated Code Coverage report in HTML at $(abs_top_builddir)/coverage-html" ; \
+	else \
+		echo "Code coverage not enabled at configuration time." ; \
+		echo "Use: ./configure --with-coverage" ; \
+fi
+
+#
+##
+### library
+##
+#
+
+LIBWDNS_CURRENT=3
 LIBWDNS_REVISION=0
-LIBWDNS_AGE=0
+LIBWDNS_AGE=2
 
 include_HEADERS = wdns/wdns.h
 lib_LTLIBRARIES = wdns/libwdns.la
@@ -26,15 +63,18 @@ lib_LTLIBRARIES = wdns/libwdns.la
 EXTRA_DIST += wdns/gen_rcode_to_str
 EXTRA_DIST += wdns/gen_rrclass_to_str
 EXTRA_DIST += wdns/gen_rrtype_to_str
+DISTCLEANFILES += wdns/rrtype_to_str.c \
+	wdns/rcode_to_str.c \
+	wdns/rrclass_to_str.c
 
 wdns/rcode_to_str.c: wdns/wdns.h wdns/gen_rcode_to_str
-	$(AM_V_GEN)wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
+	$(PYTHON) $(top_srcdir)/wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
 
 wdns/rrclass_to_str.c: wdns/wdns.h wdns/gen_rrclass_to_str
-	$(AM_V_GEN)wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
+	$(PYTHON) $(top_srcdir)/wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
 
 wdns/rrtype_to_str.c: wdns/wdns.h wdns/gen_rrtype_to_str
-	$(AM_V_GEN)wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
+	$(PYTHON) $(top_srcdir)/wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
 
 wdns_libwdns_la_CPPFLAGS = \
 	-include $(top_builddir)/wdns/wdns-private.h
@@ -107,7 +147,8 @@ wdns_libwdns_la_SOURCES = \
 	wdns/skip_name.c \
 	wdns/str_to_name.c \
 	wdns/str_to_rdata_ubuf.c \
-	wdns/unpack_name.c
+	wdns/unpack_name.c \
+	wdns/version.c
 
 pkgconfig_DATA = wdns/libwdns.pc
 EXTRA_DIST += wdns/libwdns.pc.in
@@ -126,6 +167,12 @@ examples_wdns_dump_pcap_SOURCES = \
 	examples/private.h \
 	examples/wdns-dump-pcap.c
 endif
+
+noinst_PROGRAMS += examples/wdns-print-version
+examples_wdns_print_version_LDADD = wdns/libwdns.la
+examples_wdns_print_version_SOURCES = \
+	examples/private.h \
+	examples/wdns-print-version.c
 
 noinst_PROGRAMS += examples/wdns-test-deserialize-rrset
 examples_wdns_test_deserialize_rrset_LDADD = wdns/libwdns.la
@@ -161,30 +208,37 @@ examples_wdns_test_serialize_rrset_SOURCES = \
 ##
 #
 
+EXTRA_DIST += t/test-common.h
+
 AM_TESTS_ENVIRONMENT = top_builddir='$(top_builddir)'; top_srcdir='$(top_srcdir)'; export top_builddir top_srcdir;
 TESTS_ENVIRONMENT = $(AM_TESTS_ENVIRONMENT)
 
+TESTS += t/test-name_to_str
+check_PROGRAMS += t/test-name_to_str
+t_test_name_to_str_SOURCES = t/test-name_to_str.c t/test-common.c
+t_test_name_to_str_LDADD = wdns/libwdns.la
+
 TESTS += t/test-str_to_name
 check_PROGRAMS += t/test-str_to_name
-t_test_str_to_name_SOURCES = t/test-str_to_name.c
+t_test_str_to_name_SOURCES = t/test-str_to_name.c t/test-common.c
 t_test_str_to_name_LDADD = wdns/libwdns.la
 
 TESTS += t/test-str_to_rcode
 check_PROGRAMS += t/test-str_to_rcode
-t_test_str_to_rcode_SOURCES = t/test-str_to_rcode.c
+t_test_str_to_rcode_SOURCES = t/test-str_to_rcode.c t/test-common.c
 t_test_str_to_rcode_LDADD = wdns/libwdns.la
 
 TESTS += t/test-str_to_rdata
 check_PROGRAMS += t/test-str_to_rdata
-t_test_str_to_rdata_SOURCES = t/test-str_to_rdata.c
+t_test_str_to_rdata_SOURCES = t/test-str_to_rdata.c t/test-common.c
 t_test_str_to_rdata_LDADD = wdns/libwdns.la
 
 TESTS += t/test-rdata_to_str
 check_PROGRAMS += t/test-rdata_to_str
-t_test_rdata_to_str_SOURCES = t/test-rdata_to_str.c
+t_test_rdata_to_str_SOURCES = t/test-rdata_to_str.c t/test-common.c
 t_test_rdata_to_str_LDADD = wdns/libwdns.la
 
 TESTS += t/test-str_to_rrtype
 check_PROGRAMS += t/test-str_to_rrtype
-t_test_str_to_rrtype_SOURCES = t/test-str_to_rrtype.c
+t_test_str_to_rrtype_SOURCES = t/test-str_to_rrtype.c t/test-common.c
 t_test_str_to_rrtype_LDADD = wdns/libwdns.la

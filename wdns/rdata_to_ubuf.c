@@ -179,6 +179,20 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(1);
 			oclen = *src++;
 			bytes_required(1 + oclen);
+			/*
+			 * RFC 5155 provides a "-" notation for salt with length zero,
+			 * but no similar notation for hash with length zero. We use a
+			 * single "0" character in this case to preserve the presentation
+			 * syntax requirement of a sequence of base32 digits, while not
+			 * conflicting with the base32 encoding of any one (or more) byte
+			 * sequences.
+			 */
+			if (oclen == 0) {
+				ubuf_add_cstr(u, "0 ");
+				src_bytes --;
+				break;
+			}
+
 			buf = alloca(2 * oclen + 1);
 			len = base32_encode(buf, 2 * oclen + 1, src, oclen);
 			ubuf_append(u, (uint8_t *) buf, len);
@@ -273,17 +287,15 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		}
 
 		case rdf_repstring:
-			ubuf_add_cstr(u, "\"");
 			while (src_bytes > 0) {
 				bytes_required(1);
 				oclen = *src;
 				bytes_consumed(1);
 
 				bytes_required(oclen);
-				len = rdata_to_str_string_unquoted(src, oclen, u);
+				len = rdata_to_str_string(src, oclen, u);
 				bytes_consumed(len);
 			}
-			ubuf_add_cstr(u, "\" ");
 			break;
 
 		case rdf_rrtype: {
@@ -323,7 +335,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 					for (int j = 1; j <= 8; j++) {
 						b = a & (1 << (8 - j));
 						if (b != 0) {
-							my_rrtype = (window_block << 16) | lo;
+							my_rrtype = (window_block << 8) | lo;
 							s_rrtype = wdns_rrtype_to_str(my_rrtype);
 							if (s_rrtype != NULL) {
 								ubuf_add_cstr(u, s_rrtype);

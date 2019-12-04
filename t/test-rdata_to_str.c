@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <ctype.h>
 
+#include "test-common.h"
+
 #include <libmy/ubuf.h>
 #include <wdns.h>
 
@@ -45,7 +47,93 @@ struct test tdata[] = {
 		.input_len = 1 + 4 + 1 + 4,
 		.rrtype = WDNS_TYPE_TXT,
 		.rrclass = WDNS_CLASS_IN,
-		.expected = "\"sometext\"",
+		.expected = "\"some\" \"text\"",
+	},
+
+	/* TXT test for: a string beginning with a " and ending with a " */
+	{
+		.input = "\x08" "\x22" "quoted" "\x22",
+		.input_len = 1 + 1 + 6 + 1,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"\\\"quoted\\\"\"",
+	},
+
+	/* TXT test for: one quote sent over the wire */
+	{
+		.input = "\x03" "one" "\x05" "quote" "\x01" "\"" "\x04" "sent" "\x04" "over" "\x03" "the" "\x04" "wire",
+		.input_len = 1 + 3 + 1 + 5 + 1 + 1 + 1 + 4 + 1 + 4 + 1 + 3 + 1 + 4, 
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"one\" \"quote\" \"\\\"\" \"sent\" \"over\" \"the\" \"wire\"",
+	},
+
+	/* TXT test for: 256 characters in length (including the length 
+	   octet) */
+	{
+		.input = "\xff" "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		.input_len = 1 + 255,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+	},
+
+	/* TXT test for: single character string with multiple spaces */
+	{
+		.input = "\x19" "one string multiple words",
+		.input_len = 1 + 25,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"one string multiple words\"",
+	},
+
+	/* TXT test for: multiple character strings with spaces */
+	{
+		.input = "\x10" "multiple strings" "\x02" "of" "\x0e" "multiple words",
+		.input_len = 1 + 16 + 1 + 2 + 1+ 14,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"multiple strings\" \"of\" \"multiple words\"",
+	},
+
+	/* TXT test for: multiple long character strings */
+	{
+		.input = "\xff" "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" "\xff" "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" "\xff" "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+		.input_len = 1 + 255 + 1 + 255 + 1 + 255,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\" \"ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\" \"ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"",
+	},
+
+	/* TXT test for: real world example of DKIM use.
+	   The total length was 411 charcters broke up into
+	   multiple character-strings. */
+	{
+		.input = "\xfe" "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2UMfREvlgajdSp3jv1tJ9nLpi/mRYnGyKC3inEQ9a7zqUjLq/yXukgpXs9AEHlvBvioxlgAVCPQQsuc1xp9+KXQGgJ8jTsn5OtKm8u+YBCt6OfvpeCpvt0l9JXMMHBNYV4c0XiPE5RHX2ltI0Av20CfEy+vMecpFtVDg4rMngjLws/ro6qT63S20A4zyVs/V" "\x9c" "19WW5F2Lulgv+l+EJzz9XummIJHOlU5n5ChcWU3Rw5RVGTtNjTZnFUaNXly3fW0ahKcG5Qc3e0Rhztp57JJQTl3OmHiMR5cHsCnrl1VnBi3kaOoQBYsSuBm+KRhMIw/X9wkLY67VLdkrwlX3xxsp6wIDAQAB",
+		.input_len = 1 + 254 + 1 + 156,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+/* NOTE: the semicolons are not escaped as they would be with dig output */
+		.expected = "\"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2UMfREvlgajdSp3jv1tJ9nLpi/mRYnGyKC3inEQ9a7zqUjLq/yXukgpXs9AEHlvBvioxlgAVCPQQsuc1xp9+KXQGgJ8jTsn5OtKm8u+YBCt6OfvpeCpvt0l9JXMMHBNYV4c0XiPE5RHX2ltI0Av20CfEy+vMecpFtVDg4rMngjLws/ro6qT63S20A4zyVs/V\" \"19WW5F2Lulgv+l+EJzz9XummIJHOlU5n5ChcWU3Rw5RVGTtNjTZnFUaNXly3fW0ahKcG5Qc3e0Rhztp57JJQTl3OmHiMR5cHsCnrl1VnBi3kaOoQBYsSuBm+KRhMIw/X9wkLY67VLdkrwlX3xxsp6wIDAQAB\"",
+	},
+
+	/* TXT test from RFC 7208 section 3.3:
+	   concatenated together without adding spaces. */
+	{
+		.input = "\x11" "v=spf1 .... first" "\x10" "second string...",
+		.input_len = 1 + 17 + 1 + 16,
+		.rrtype = WDNS_TYPE_TXT,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"v=spf1 .... first\" \"second string...\"",
+	},
+
+	/* SPF test using real world example, all as one string */
+	{
+		.input = "\x63" "v=spf1 a mx ip4:204.152.184.0/21 ip4:149.20.0.0/16 ip6:2001:04F8::0/32 ip6:2001:500:60::65/128 ~all",
+		.input_len = 1 + 99,
+		.rrtype = WDNS_TYPE_SPF,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "\"v=spf1 a mx ip4:204.152.184.0/21 ip4:149.20.0.0/16 ip6:2001:04F8::0/32 ip6:2001:500:60::65/128 ~all\"",
 	},
 
 	{
@@ -175,35 +263,22 @@ struct test tdata[] = {
 			"7983A1D16E8A410E4561CB106618E971",
 	},
 
+	/* rrtype bitmap test for rrtypes > 255 */
+	{
+		.input =
+			"\x03""fsi\x02io\x00"
+			"\x00\x01" "\x40"
+			"\x01\x01" "\x40"
+			"\x80\x01" "\x40",
+		.input_len = 8 + 3 + 3 + 3,
+		.rrtype = WDNS_TYPE_NSEC,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "fsi.io. A CAA DLV",
+	},
+
 	{ 0 }
 };
 
-static void
-escape(ubuf *u, const uint8_t * a, size_t len) {
-	size_t n;
-	bool last_hex = false;
-
-	ubuf_add_cstr(u, "\"");
-	for (n = 0; n < len; n++) {
-		if (a[n] == '"') {
-			ubuf_add_cstr(u, "\\\"");
-			last_hex = false;
-		} else if (a[n] == '\\') {
-			ubuf_add_cstr(u, "\\\\");
-			last_hex = false;
-		} else if (a[n] >= ' ' && a[n] <= '~') {
-			if (last_hex && isxdigit(a[n])) {
-				ubuf_add_cstr(u, "\"\"");
-			}
-			ubuf_append(u, a+n, 1);
-			last_hex = false;
-		} else {
-			ubuf_add_fmt(u, "\\x%02x", a[n]);
-			last_hex = true;
-		}
-	}
-	ubuf_add_cstr(u, "\"");
-}
 
 static size_t
 test_rdata_to_str(void) {
@@ -256,20 +331,10 @@ test_rdata_to_str(void) {
 	return failures;
 }
 
-static int
-check(size_t ret, const char *s)
-{
-        if (ret == 0)
-                fprintf(stderr, NAME ": PASS: %s\n", s);
-        else
-                fprintf(stderr, NAME ": FAIL: %s (%zd failures)\n", s, ret);
-        return (ret);
-}
-
-int main (int argc, char **argv) {
+int main (void) {
 	int ret = 0;
 
-	ret |= check(test_rdata_to_str(), "test_rdata_to_str");
+	ret |= check(test_rdata_to_str(), "test_rdata_to_str", NAME);
 
 	if (ret)
 		return (EXIT_FAILURE);

@@ -1,4 +1,4 @@
-VECTOR_GENERATE(u16buf, uint16_t);
+VECTOR_GENERATE(u16buf, uint16_t)
 
 static size_t
 rdata_from_str_string(const uint8_t *src, ubuf *u) {
@@ -63,8 +63,8 @@ err:
 
 static int
 cmp_u16(const void *a, const void *b) {
-	uint16_t *u1 = (uint16_t *)a;
-	uint16_t *u2 = (uint16_t *)b;
+	uint16_t u1 = *(uint16_t *)a;
+	uint16_t u2 = *(uint16_t *)b;
 	return u1 == u2 ? 0 : u1 > u2 ? 1 : -1;
 }
 
@@ -172,7 +172,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			}
 			name = calloc(1, sizeof(*name));
 
-			res = wdns_str_to_name(s, name);
+			res = wdns_str_to_name_case(s, name);
 			if (res != wdns_res_success) {
 				free(s);
 				free(name);
@@ -353,6 +353,19 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			}
 
 			size_t str_len = end-str;
+
+			/*
+			 * The hashed owner name is presented as one base32 digit.
+			 * A single byte would be two base32 digits, therefore we
+			 * we can conclude the original data was zero bytes long.
+			 */
+			if (str_len == 1) {
+				uint8_t c = 0;
+				ubuf_append(u, &c, 1);
+				str++;
+				break;
+			}
+
 			buf = malloc(str_len);
 			buf_len = base32_decode(buf, str_len, str, str_len);
 
@@ -694,7 +707,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				u16buf_add(rrtypes, my_rrtype);
 				str = end;
 			}
-			qsort(u16buf_ptr(rrtypes), u16buf_size(rrtypes), sizeof(uint16_t), cmp_u16);
+			qsort(u16buf_data(rrtypes), u16buf_size(rrtypes), sizeof(uint16_t), cmp_u16);
 
 			memset(bitmap, 0, sizeof(bitmap));
 			window_block = 0;

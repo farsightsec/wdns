@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <ctype.h>
 
+#include "test-common.h"
+
 #include <libmy/ubuf.h>
 #include <wdns.h>
 
@@ -25,33 +27,6 @@ struct test tdata[] = {
 	{ 0 }
 };
 
-static void
-escape(ubuf *u, const uint8_t *a, size_t len)
-{
-	size_t n;
-	bool last_hex = false;
-
-	ubuf_add_cstr(u, "\"");
-	for (n = 0; n < len; n++) {
-		if (a[n] == '"') {
-			ubuf_add_cstr(u, "\\\"");
-			last_hex = false;
-		} else if (a[n] == '\\') {
-			ubuf_add_cstr(u, "\\\\");
-			last_hex = false;
-		} else if (a[n] >= ' ' && a[n] <= '~') {
-			if (last_hex && isxdigit(a[n])) {
-				ubuf_add_cstr(u, "\"\"");
-			}
-			ubuf_append(u, a+n, 1);
-			last_hex = false;
-		} else {
-			ubuf_add_fmt(u, "\\x%02x", a[n]);
-			last_hex = true;
-		}
-	}
-	ubuf_add_cstr(u, "\"");
-}
 
 static size_t
 test_str_to_name(void)
@@ -123,21 +98,11 @@ test_str_to_name(void)
 	return failures;
 }
 
-static int
-check(size_t ret, const char *s)
-{
-	if (ret == 0)
-		fprintf(stderr, NAME ": PASS: %s\n", s);
-	else
-		fprintf(stderr, NAME ": FAIL: %s (%zd failures)\n", s, ret);
-	return (ret);
-}
-
-int main (int argc, char **argv)
+int main (void)
 {
 	int ret = 0;
 
-	ret |= check(test_str_to_name(), "test-str_to_name");
+	ret |= check(test_str_to_name(), "test-str_to_name", NAME);
 
 	if (ret)
 		return (EXIT_FAILURE);

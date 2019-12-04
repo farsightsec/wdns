@@ -55,7 +55,7 @@ wdns_is_subdomain(wdns_name_t *n0, wdns_name_t *n1, bool *is_subdomain)
 
 	*is_subdomain = false;
 
-	/* count the number of labels in each name */	
+	/* count the number of labels in each name */
 	res = wdns_count_labels(n0, &n0_nlabels);
 	if (res != wdns_res_success)
 		return (wdns_res_parse_error);

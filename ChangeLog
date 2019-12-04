@@ -1,10 +1,38 @@
+wdns (0.10.0)
+
+  * Handle corner case of NSEC3 hash field with length zero.
+
+  * Preserve name case when parsing rdata strings.
+
+  * Fix printing of bitmap entries for rrtypes larger than 255.
+    Improve rrtype sorting.
+
+  * Preserve character-string boundaries when formatting TXT rdata.
+
+  * Add ./configure --with-coverage option to build with code coverage
+    and make targets: clean-coverage to remove the coverage data and results
+    and report-coverage to generate report (after running the code such as
+    with "make check").
+
+  * Configure check for python which is used to generate some of the C code.
+
+  * Lots of compiler warning cleanups.
+
+  * Unit testing improvements and additional tests added.
+
+  * Added library versioning API:  wdns_get_version() and
+    wdns_get_version_number() available at run-time and WDNS_LIBRARY_VERSION
+    and WDNS_LIBRARY_VERSION_NUMBER for compile-time.
+
+ -- Farsight Security, Inc. <software@farsightsecurity.com>  Wed, 27 Nov 2019 13:03:14 -0500
+
 wdns (0.9.1)
 
-* t/: Fix format specifiers for size_t in some tests.
+  * t/: Fix format specifiers for size_t in some tests.
 
-* Add README.md.
+  * Add README.md.
 
-* Don't install the compiled example programs.
+  * Don't install the compiled example programs.
 
  -- Farsight Security <software@fsi.io>  Tue, 3 Jan 2017 17:56:25 +0000
 
