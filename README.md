@@ -5,13 +5,6 @@ Farsight wdns
 
 `wdns` is a low-level C library for dealing with wire-format dns packets.
 
-Contact information
--------------------
-
-Questions about `wdns`, should be directed to the `wdns-dev` mailing list:
-
-https://lists.farsightsecurity.com/mailman/listinfo/wdns-dev
-
 Building and installing wdns
 ----------------------------
 
