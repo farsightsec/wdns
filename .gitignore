@@ -22,6 +22,8 @@
 Makefile
 Makefile.in
 TAGS
+tags
+cscope.out
 wdns/libwdns.pc
 wdns/rcode_to_str.c
 wdns/rrclass_to_str.c
@@ -31,5 +33,8 @@ t/test-str_to_rcode
 t/test-str_to_rdata
 t/test-str_to_rrtype
 t/test-rdata_to_str
+t/test-name_to_str
 t/*.log
 t/*.trs
+examples/wdns-print-version
+wdns/wdns.h

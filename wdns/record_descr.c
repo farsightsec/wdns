@@ -210,7 +210,38 @@ const record_descr record_descr_array[] = {
 			rdf_bytes_str,	/* Target */
 			rdf_end,
 		}
+	},
 
+	/* draft-ietf-dnsop-svcb-https */
+	[WDNS_TYPE_SVCB] = {	/* used to locate alt endpoints for a service */
+		class_in,
+		{
+			rdf_int16,	/* SvcPriority: The priority of this
+					   record (relative to others, with
+					   lower values preferred). A value of
+					   0 indicates AliasMode */
+			rdf_name,	/* TargetName: The domain name of either
+					   the alias target (for AliasMode) or
+					   the alternative endpoint (for
+					   ServiceMode) */
+			rdf_svcparams,	/* SvcParams (optional): A list of
+					   key=value pairs describing the
+					   alternative endpoint at TargetName
+					   (only used in ServiceMode and
+					   otherwise ignored). */
+			rdf_end,
+		}
+	},
+
+	/* draft-ietf-dnsop-svcb-https */
+	[WDNS_TYPE_HTTPS] = {	/* a SVCB-compatible RR type for HTTPS */
+		class_in,
+		{
+			rdf_int16,	/* SvcFieldPriority*/
+			rdf_name,	/* SvcDomainName*/
+			rdf_svcparams,	/* SvcFieldValue */
+			rdf_end,
+		}
 	},
 };
 

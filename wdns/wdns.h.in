@@ -126,7 +126,10 @@ extern "C" {
 #define WDNS_TYPE_CDNSKEY	60
 #define WDNS_TYPE_OPENPGPKEY	61
 #define WDNS_TYPE_CSYNC		62
-/* Unassigned: 63 - 98 */
+/* Unassigned: 63 */
+#define	WDNS_TYPE_SVCB		64
+#define	WDNS_TYPE_HTTPS		65
+/* Unassigned: 66 - 98 */
 #define WDNS_TYPE_SPF		99
 #define WDNS_TYPE_UINFO		100
 #define WDNS_TYPE_UID		101

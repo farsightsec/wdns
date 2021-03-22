@@ -1,3 +1,5 @@
+#include <arpa/inet.h>
+
 static size_t
 rdata_to_str_string_unquoted(const uint8_t *src, size_t len, ubuf *u)
 {
@@ -33,6 +35,189 @@ rdata_to_str_string(const uint8_t *src, size_t len, ubuf *u)
 	ubuf_add(u, ' ');
 
 	return n_bytes;
+}
+
+/*
+ * bytes_to_ubuf_base64() encodes a base64 string and appends it to the
+ * given ubuf.
+ */
+static void
+bytes_to_ubuf_base64(uint8_t *src, uint16_t src_len, ubuf *u)
+{
+	char *buf;
+	size_t len;
+	base64_encodestate b64;
+
+	base64_init_encodestate(&b64);
+	buf = malloc(2 * src_len + 1);
+
+	len = base64_encode_block((const char *)src, src_len, buf, &b64);
+	ubuf_append(u, (uint8_t *)buf, len);
+
+	len = base64_encode_blockend(buf, &b64);
+	ubuf_append(u, (uint8_t *)buf, len);
+
+	free(buf);
+}
+
+/*
+ * svcparam_to_str() converts a wire format SvcParamVal to a string.
+ *
+ * See str_to_svcparam() for the opposite functionality.
+ */
+static wdns_res
+svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
+{
+	uint8_t *ptr = (uint8_t *)src;
+	uint16_t val;
+	uint8_t oclen;
+
+	switch (key) {
+	case spr_mandatory:
+		while ((ptr - src) < len) {
+			char key_str[16] = { 0 };
+
+			if ((ptr + sizeof(val) - src) > len) {
+				return (wdns_res_parse_error);
+			}
+
+			(void) memcpy(&val, ptr, sizeof(val));
+			ptr += sizeof(val);
+
+			val = ntohs(val);
+
+			if (_wdns_svcparamkey_to_str(val, key_str,
+			    sizeof(key_str)) != NULL) {
+				ubuf_add_fmt(u, "%s", key_str);
+			}
+
+			if ((ptr - src) < len) {
+				ubuf_add(u, ',');
+			} else {
+				ubuf_add(u, ' ');
+			}
+		}
+		break;
+
+	case spr_alpn:
+		/*
+		 * The wire format value for "alpn" consists of at least one
+		 * "alpn-id" prefixed by its length as a single octet, and
+		 * these length-value pairs are concatenated to form the
+		 * SvcParamValue. These pairs MUST exactly fill the
+		 * SvcParamValue; otherwise, the SvcParamValue is malformed.
+		 */
+		while ((ptr - src) < len) {
+			oclen = *ptr;
+			ptr += 1;	/* skip the length */
+
+			if ((ptr + oclen - src) > len) {
+				return (wdns_res_parse_error);
+			}
+
+			(void) rdata_to_str_string_unquoted(ptr, oclen, u);
+			ptr += oclen;
+
+			if ((ptr - src) < len) {
+				ubuf_add(u, ',');
+			} else {
+				ubuf_add(u, ' ');
+			}
+		}
+		break;
+
+	case spr_nd_alpn:
+		/*
+		 * For "no-default-alpn", the presentation and wire format
+		 * values MUST be empty. When "no-default-alpn" is specified in
+		 * an RR, "alpn" must also be specified in order for the RR to
+		 * be "self-consistent".
+		 */
+		ubuf_add(u, ' ');
+		break;
+
+	case spr_port:
+		/*
+		 * The wire format of the SvcParamValue is the corresponding 2
+		 * octet numeric value in network byte order.
+		 */
+		if (len != 2) {
+			return (wdns_res_parse_error);
+		}
+		(void) memcpy(&val, ptr, sizeof(val));
+		val = ntohs(val);
+		ubuf_add_fmt(u, "%hu ", val);
+		break;
+
+	case spr_echconfig:
+		/*
+		 * In wire format, the value of the parameter is an
+		 * ECHConfigList [ECH], including the redundant length prefix.
+		 */
+		bytes_to_ubuf_base64(ptr, len, u);
+		break;
+
+	/*
+	 * The wire format for IP hints is a sequence of IP addresses in
+	 * network byte order. An empty list of addresses is invalid.
+	 */
+	case spr_ipv4hint:
+		while ((ptr - src) < len) {
+			char pres[INET_ADDRSTRLEN] = { 0 };
+
+			if (ptr + 4 > src + len) {
+				return (wdns_res_parse_error);
+			}
+
+			if (inet_ntop(AF_INET, ptr, pres,
+			    sizeof(pres)) == NULL) {
+				return (wdns_res_parse_error);
+			}
+
+			ubuf_add_cstr(u, pres);
+			ptr += 4;
+
+			if ((ptr - src) < len) {
+				ubuf_add(u, ',');
+			} else {
+				ubuf_add(u, ' ');
+			}
+		}
+		break;
+
+	case spr_ipv6hint:
+		while ((ptr - src) < len) {
+			char pres[INET6_ADDRSTRLEN] = { 0 };
+
+			if (ptr + 16 > src + len) {
+				return (wdns_res_parse_error);
+			}
+
+			if (inet_ntop(AF_INET6, ptr, pres,
+			    sizeof(pres)) == NULL) {
+				return (wdns_res_parse_error);
+			}
+
+			ubuf_add_cstr(u, pres);
+			ptr += 16;
+
+			if ((ptr - src) < len) {
+				ubuf_add(u, ',');
+			} else {
+				ubuf_add(u, ' ');
+			}
+		}
+		break;
+
+	case spr_invalid:
+		break;
+
+	default:
+		(void) rdata_to_str_string(ptr, len, u);
+		break;
+	}
+
+	return (wdns_res_success);
 }
 
 void
@@ -109,18 +294,10 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			src_bytes = 0;
 			break;
 
-		case rdf_bytes_b64: {
-			base64_encodestate b64;
-			char *buf;
-			base64_init_encodestate(&b64);
-			buf = alloca(2 * src_bytes + 1);
-			len = base64_encode_block((const char *) src, src_bytes, buf, &b64);
-			ubuf_append(u, (uint8_t *) buf, len);
-			len = base64_encode_blockend(buf, &b64);
-			ubuf_append(u, (uint8_t *) buf, len);
+		case rdf_bytes_b64:
+			bytes_to_ubuf_base64((uint8_t *)src, src_bytes, u);
 			src_bytes = 0;
 			break;
-		}
 
 		case rdf_bytes_str:
 			len = rdata_to_str_string(src, src_bytes, u);
@@ -283,6 +460,60 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(oclen);
 			len = rdata_to_str_string(src, oclen, u);
 			bytes_consumed(len);
+			break;
+		}
+
+		case rdf_svcparams: {
+			/*
+			 * Wire format for the SvcParams portion of a
+			 * SVCB or HTTPS message, parsed per section
+			 * 2.2 of draft-ietf-dnsop-svcb-https.
+			 */
+			uint16_t key, val_len;
+
+			while (src_bytes > 0) {
+				char key_str[16] = { 0 };
+
+				/*
+				 * A 2 octet field containing the SvcParamKey
+				 * in network byte order.
+				 */
+				bytes_required(2);
+				(void) memcpy(&key, src, sizeof(key));
+				key = ntohs(key);
+
+				if (_wdns_svcparamkey_to_str(key, key_str,
+				    sizeof(key_str)) == NULL) {
+					goto err;
+				}
+
+				/* no-default-alpn has no value */
+				if (key != spr_nd_alpn) {
+					ubuf_add_fmt(u, "%s=", key_str);
+				} else {
+					ubuf_add_fmt(u, "%s", key_str);
+				}
+
+				bytes_consumed(2);
+
+				/*
+				 * A 2 octet field containing the length of
+				 * the SvcParamValue also in network byte order.
+				 */
+				bytes_required(2);
+				(void) memcpy(&val_len, src, sizeof(val_len));
+				val_len = ntohs(val_len);
+				bytes_consumed(2);
+
+				/*
+				 * An octet string of 'val_len' length whose
+				 * contents are in a format determined by the
+				 * key specified in 'key'.
+				 */
+				bytes_required(val_len);
+				svcparam_to_str(key, src, val_len, u);
+				bytes_consumed(val_len);
+			}
 			break;
 		}
 

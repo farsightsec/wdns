@@ -147,6 +147,7 @@ wdns_libwdns_la_SOURCES = \
 	wdns/skip_name.c \
 	wdns/str_to_name.c \
 	wdns/str_to_rdata_ubuf.c \
+	wdns/svcparamkeys_to_str.c \
 	wdns/unpack_name.c \
 	wdns/version.c
 
