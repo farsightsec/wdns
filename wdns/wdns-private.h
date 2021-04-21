@@ -109,3 +109,9 @@ _wdns_rrset_to_ubuf(ubuf *, wdns_rrset_t *rrset, unsigned sec);
 
 void
 _wdns_rrset_array_to_ubuf(ubuf *, wdns_rrset_array_t *a, unsigned sec);
+
+uint16_t
+_wdns_str_to_svcparamkey(char *str);
+
+char *
+_wdns_svcparamkey_to_str(uint16_t key, char *buf, size_t len);

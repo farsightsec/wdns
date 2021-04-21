@@ -62,13 +62,13 @@ struct test tdata[] = {
 	/* TXT test for: one quote sent over the wire */
 	{
 		.input = "\x03" "one" "\x05" "quote" "\x01" "\"" "\x04" "sent" "\x04" "over" "\x03" "the" "\x04" "wire",
-		.input_len = 1 + 3 + 1 + 5 + 1 + 1 + 1 + 4 + 1 + 4 + 1 + 3 + 1 + 4, 
+		.input_len = 1 + 3 + 1 + 5 + 1 + 1 + 1 + 4 + 1 + 4 + 1 + 3 + 1 + 4,
 		.rrtype = WDNS_TYPE_TXT,
 		.rrclass = WDNS_CLASS_IN,
 		.expected = "\"one\" \"quote\" \"\\\"\" \"sent\" \"over\" \"the\" \"wire\"",
 	},
 
-	/* TXT test for: 256 characters in length (including the length 
+	/* TXT test for: 256 characters in length (including the length
 	   octet) */
 	{
 		.input = "\xff" "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -274,6 +274,38 @@ struct test tdata[] = {
 		.rrtype = WDNS_TYPE_NSEC,
 		.rrclass = WDNS_CLASS_IN,
 		.expected = "fsi.io. A CAA DLV",
+	},
+
+	/* HTTPS test */
+	{
+		.input = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x01"		/* alpn in network order */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02\x68\x32"	/* length-value */
+		    "\x00\x04"		/* ipv4hint in network order */
+		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\xc0\xa8\x00\x01",	/* ipv4hint */
+		.input_len = 18,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_HTTPS,
+		.expected = "1 . alpn=h2 ipv4hint=192.168.0.1",
+	},
+
+	/* HTTPS test for an arbitrary key type 9 */
+	{
+		.input = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x01"		/* alpn in network order */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02\x68\x32"	/* length-value */
+		    "\x00\x09"		/* key9 in network order */
+		    "\x00\x03"		/* length of key9 in net order */
+		    "\x61\x6e\x79",	/* length-value */
+		.input_len = 17,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_HTTPS,
+		.expected = "1 . alpn=h2 key9=\"any\"",
 	},
 
 	{ 0 }

@@ -29,7 +29,8 @@ typedef enum {
 	rdf_type_bitmap,/* rr type bitmap */
 	rdf_salt,	/* length-prefixed salt value (hex presentation) */
 	rdf_hash,	/* length-prefixed hash value (base32 presentation) */
-	rdf_end		/* sentinel (terminal) */
+	rdf_svcparams,	/* list of space separated key=value pairs */
+	rdf_end,	/* sentinel (terminal) */
 } rdf_type;
 
 typedef struct {
@@ -39,5 +40,42 @@ typedef struct {
 
 extern const record_descr	record_descr_array[];
 extern const size_t		record_descr_len;
+
+/*
+ * Service Binding (SVCB) Parameter Registry
+ */
+typedef enum {
+	spr_mandatory = 0,
+
+	/*
+	 * The "alpn" and "no-default-alpn" SvcParamKeys together indicate the
+	 * set of Application Layer Protocol Negotiation (ALPN) protocol
+	 * identifiers [ALPN] and associated transport protocols supported by
+	 * this service endpoint.
+	 */
+	spr_alpn = 1,
+	spr_nd_alpn = 2,
+
+	/*
+	 * TCP or UDP port that should be used to reach this alternative
+	 * endpoint. If this key is not present, clients SHALL use the
+	 * authority endpoint's port number.
+	 */
+	spr_port = 3,
+
+	/* Encrypted ClientHello info */
+	spr_echconfig = 5,
+
+	/*
+	 * The "hint" keys convey IP addresses that clients MAY use to reach
+	 * the service.
+	 */
+	spr_ipv4hint = 4,
+	spr_ipv6hint = 6,
+
+	/* Reserved ("Invalid Key") */
+	spr_invalid = 65535,
+
+} svcb_svcparam_keys;
 
 #endif /* WDNS_RECORD_DESCR_H */

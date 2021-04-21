@@ -254,6 +254,149 @@ static const struct test tdata[] = {
 	{ "NSEC3 10 3 172800 1443179274 1440584754 25427 go.id. TzGzKBNpQysYIEBHzCMub5PSg6H564xt2c/JYW6fCOyoUesDqECbJHDl 6pgyQaicCrsdSuqImSi1Ej63OEgJ1o5gKUQh0brq7i8oDZ343M57j9O7 hk7Hm+066r2dEKAD2c0SKeFTdOhjWk01Opkw+DW0SbhvKbsngII3e5mb y7+uSW3TH0OX/nOZMte8F1z98UyGKjRsInlXfc4nh2TknrwvGFgRZoS1 X2PWLkzVQSjGsfLS1/N01TYVGe0IyDWoY6csNQhnSS53Z1WAIZOuSoV5 oBBCQIQFDjknqT9/YkqQNCJso0xGcr2CyQHKcVduxYGgVarEABANrDQV DxpuEeaYGS7+eGJT+sznItOTQeSSYougSu6DsxVwYyTix/alO+KpUwzP 7YZBJIssnHYdqUvXQlcxpYtlhEYcISlcP5Ate/A2hoDR+KXo1+6ydBUy gmNTLRYVX7N+ajRnBIAhAoaGotpgzUe3uZIoiKi8FY/L4glE93mFCBqb +4mJ7O5rtWlnHy9jMlW9AIzoqfDmLoNaTUF1D6mdkVU5Gs+E0gST6Mln arJtIHttDLz/GZMOnd79+GKTdKUr5Ch4QP5LALys6WDWa2EdUg2ZWH5m hqU+5XQDMcOFyeyLsqudy4DkXk2rFMtGQlU0crzaKKyf+qSeMbXMda1F GU+kwrQvgtE=", WDNS_TYPE_RRSIG, WDNS_CLASS_IN, "\x00""2\x0a\x03\x00\x02\xa3\x00V\x05+\x0aU\xdd\x94""2cS\x02go\x02id\x00O1\xb3(\x13iC+\x18 @G\xcc#.o\x93\xd2\x83\xa1\xf9\xeb\x8cm\xd9\xcf\xc9""an\x9f\x08\xec\xa8Q\xeb\x03\xa8@\x9b$p\xe5\xea\x98""2A\xa8\x9c\x0a\xbb\x1dJ\xea\x88\x99(\xb5\x12>\xb7""8H\x09\xd6\x8e`)D!\xd1\xba\xea\xee/(\x0d\x9d\xf8\xdc\xce{\x8f\xd3\xbb\x86N\xc7\x9b\xed:\xea\xbd\x9d\x10\xa0\x03\xd9\xcd\x12)\xe1St\xe8""cZM5:\x99""0\xf8""5\xb4I\xb8o)\xbb'\x80\x82""7{\x99\x9b\xcb\xbf\xaeIm\xd3\x1f""C\x97\xfes\x99""2\xd7\xbc\x17\\\xfd\xf1L\x86*4l\"yW}\xce'\x87""d\xe4\x9e\xbc/\x18X\x11""f\x84\xb5_c\xd6.L\xd5""A(\xc6\xb1\xf2\xd2\xd7\xf3t\xd5""6\x15\x19\xed\x08\xc8""5\xa8""c\xa7,5\x08gI.wgU\x80!\x93\xaeJ\x85y\xa0\x10""B@\x84\x05\x0e""9'\xa9?\x7f""bJ\x90""4\"l\xa3LFr\xbd\x82\xc9\x01\xcaqWn\xc5\x81\xa0U\xaa\xc4\x00\x10\x0d\xac""4\x15\x0f\x1an\x11\xe6\x98\x19.\xfexbS\xfa\xcc\xe7\"\xd3\x93""A\xe4\x92""b\x8b\xa0J\xee\x83\xb3\x15pc$\xe2\xc7\xf6\xa5;\xe2\xa9S\x0c\xcf\xed\x86""A$\x8b,\x9cv\x1d\xa9K\xd7""BW1\xa5\x8b""e\x84""F\x1c!)\\?\x90-{\xf0""6\x86\x80\xd1\xf8\xa5\xe8\xd7\xee\xb2t\x15""2\x82""cS-\x16\x15_\xb3~j4g\x04\x80!\x02\x86\x86\xa2\xda`\xcdG\xb7\xb9\x92(\x88\xa8\xbc\x15\x8f\xcb\xe2\x09""D\xf7y\x85\x08\x1a\x9b\xfb\x89\x89\xec\xeek\xb5ig\x1f/c2U\xbd\x00\x8c\xe8\xa9\xf0\xe6.\x83ZMAu\x0f\xa9\x9d\x91U9\x1a\xcf\x84\xd2\x04\x93\xe8\xc9gj\xb2m {m\x0c\xbc\xff\x19\x93\x0e\x9d\xde\xfd\xf8""b\x93t\xa5+\xe4(x@\xfeK\x00\xbc\xac\xe9`\xd6ka\x1dR\x0d\x99X~f\x86\xa5>\xe5t\x03""1\xc3\x85\xc9\xec\x8b\xb2\xab\x9d\xcb\x80\xe4^M\xab\x14\xcb""FBU4r\xbc\xda(\xac\x9f\xfa\xa4\x9e""1\xb5\xccu\xad""E\x19O\xa4\xc2\xb4/\x82\xd1", 537, wdns_res_success },
 	/* generic encodings */
 	{ "\\# 24 d5 79 08 01 98 4e d2 96 9a 76 0c f6 09 8e a1 4a 84 65 16 9c aa 9c 48 07", 32769, WDNS_CLASS_IN, "\xd5\x79\x08\x01\x98\x4e\xd2\x96\x9a\x76\x0c\xf6\x09\x8e\xa1\x4a\x84\x65\x16\x9c\xaa\x9c\x48\x07", 24, wdns_res_success },
+
+	/* HTTPS tests */
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . alpn=h2",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x01"		/* alpn in network order */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02h2",		/* length-value */
+		.expected_len = 10,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . alpn=h2,h3",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x01"		/* alpn in network order */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02h2"		/* length-value */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02h3",		/* length-value */
+		.expected_len = 15,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . alpn=h2,h3 no-default-alpn",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x01"		/* alpn in network order */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02h2"		/* length-value */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02h3"		/* length-value */
+		    "\x00\x02",
+		.expected_len = 17,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . port=1111",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x03"		/* port key in network order */
+		    "\x04W",		/* port value in network order */
+		.expected_len = 7,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . ipv4hint=192.168.0.1",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x04"		/* ipv4hint in network order */
+		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\xc0\xa8\x00\x01",	/* ipv4hint */
+		.expected_len = 11,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . ipv4hint=192.168.0.1,192.168.0.2",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x04"		/* ipv4hint in network order */
+		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\xc0\xa8\x00\x01"	/* ipv4hint */
+		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\xc0\xa8\x00\x02",	/* ipv4hint */
+		.expected_len = 17,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . ipv6hint=2001:1:2:3:4:5:6:7",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x06"		/* ipv6hint in network order */
+		    "\x00\x10"		/* length of ipv6hint in net order */
+		    " \x01\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07",/* ipv6hint */
+		.expected_len = 23,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . echconfig=abcdefghijkl",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x05"		/* echconfig key in network order */
+		    "i\xb7\x1dy\xf8!\x8a""""9%",	/* echconfig value */
+		.expected_len = 14,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . mandatory=port alpn=h2,h3 port=1111"
+		    " ipv4hint=192.168.0.1,192.168.0.2"
+		    " ipv6hint=2001:1:2:3:4:5:6:7",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x00"		/* mandatory key */
+		    "\x00\x03"		/* port key in network order */
+		    "\x00\x01"		/* alpn in network order */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02h2"		/* length-value */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02h3"		/* length-value */
+		    "\x00\x03"		/* port key in network order */
+		    "\x04W"		/* port value in network order */
+		    "\x00\x04"		/* ipv4hint in network order */
+		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\xc0\xa8\x00\x01"	/* ipv4hint */
+		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\xc0\xa8\x00\x02"	/* ipv4hint */
+		    "\x00\x06"		/* ipv6hint in network order */
+		    "\x00\x10"		/* length of ipv6hint in net order */
+		    " \x01\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07",/* ipv6hint */
+		.expected_len = 57,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . key10=222",
+		.expected = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x0a"		/* '10' in network order */
+		    "\x03""""222",	/* '222' value */
+		.expected_len = 9,
+		.expected_res = wdns_res_success,
+	},
+
 	{ 0 }
 };
 
