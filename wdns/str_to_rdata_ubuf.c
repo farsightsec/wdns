@@ -122,8 +122,8 @@ static wdns_res
 str_to_svcparam(ubuf *u, char *keyval)
 {
 	char *tok, *endp = NULL;
-	size_t tok_len;
-	uint16_t key, tmp;
+	size_t val_len_offset, tok_len;
+	uint16_t key, val_len = 0, tmp;
 	unsigned char v4buf[4];
 	unsigned char v6buf[16];
 
@@ -143,118 +143,178 @@ str_to_svcparam(ubuf *u, char *keyval)
 	ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
 
 	/*
-	 * Note that not all key types accept multiple values, but it's cleaner
-	 * to handle all of them inside the same while loop.
+	 * 'no-default-alpn' must not have a value.
 	 */
-	while ((tok = strtok_r(NULL, ",", &endp)) != NULL) {
-		tok_len = strlen(tok);
+	if (key == spr_nd_alpn) {
+		if (endp != NULL && *endp != '\0') {
+			return (wdns_res_parse_error);
+		} else {
+			return (wdns_res_success);
+		}
+	}
 
-		switch (key) {
-		case spr_mandatory:
+	/*
+	 * A 2 octet field containing the length of the SvcParamValue also in
+	 * network byte order. We set this to zero for now and fill it later
+	 * once we know the length of the value.
+	 */
+	val_len_offset = ubuf_size(u);
+	ubuf_append(u, (uint8_t*)&val_len, sizeof(val_len));
+
+	/*
+	 * Let's parse the value(s) now.
+	 */
+	switch (key) {
+	case spr_mandatory:
+		tok = strtok_r(NULL, ",", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		do {
 			tmp = _wdns_str_to_svcparamkey(tok);
 			tmp = htons(tmp);
 			ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
-			break;
+			val_len += sizeof(tmp);
+		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
+		break;
 
-		case spr_alpn:
-			/*
-			 * The wire format value for "alpn" consists of at
-			 * least one "alpn-id" prefixed by its length as a
-			 * single octet, and these length-value pairs are
-			 * concatenated to form the SvcParamValue. These pairs
-			 * MUST exactly fill the SvcParamValue; otherwise, the
-			 * SvcParamValue is malformed.
-			 */
+	case spr_alpn:
+		/*
+		 * The wire format value for "alpn" consists of at least one
+		 * "alpn-id" prefixed by its length as a single octet, and
+		 * these length-value pairs are concatenated to form the
+		 * SvcParamValue. These pairs MUST exactly fill the
+		 * SvcParamValue; otherwise, the SvcParamValue is malformed.
+		 */
+		tok = strtok_r(NULL, ",", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		do {
+			tok_len = strlen(tok);
 			if (tok_len > UINT8_MAX) {
 				return (wdns_res_parse_error);
 			}
-			tmp = htons(sizeof (uint8_t) + tok_len);
-			ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
+
 			ubuf_append(u, (uint8_t *)&tok_len, sizeof (uint8_t));
 			ubuf_append(u, (uint8_t *)tok, tok_len);
-			break;
+			val_len += sizeof(uint8_t) + tok_len;
+		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
+		break;
 
-		case spr_nd_alpn:
-			/*
-			 * This clause should never be reached since the
-			 * 'no-default-alpn' key must not have a value.
-			 */
-			return (wdns_res_parse_error);
-
-		case spr_port: {
-			unsigned long int tmpul;
-			char *endport;
-
-			if (*endp != '\0') {
-				return (wdns_res_parse_error);
-			}
-
-			/*
-			 * The wire format of the SvcParamValue is the
-			 * corresponding 2 octet numeric value in network byte
-			 * order.
-			 */
-			tmpul = strtoul(tok, &endport, 10);
-
-			if (*endport != '\0' ||
-			    tmpul >= (unsigned long int)spr_invalid) {
-				return (wdns_res_parse_error);
-			}
-
-			tmp = htons((uint16_t)tmpul);
-			ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
-			break;
-		}
-
-		case spr_echconfig:
-			/*
-			 * In wire format, the value of the parameter is an
-			 * ECHConfigList [ECH], including the redundant length
-			 * prefix.
-			 */
-			if (*endp != '\0') {
-				return (wdns_res_parse_error);
-			}
-
-			base64_str_to_ubuf(tok, tok_len, u);
-			break;
+	case spr_port: {
+		unsigned long int tmpul;
+		char *endport;
 
 		/*
-		 * The wire format for IP hints is a sequence of IP addresses in
-		 * network byte order. An empty list of addresses is invalid.
+		 * The wire format of the SvcParamValue is the corresponding
+		 * 2 octet numeric value in network byte order.
 		 */
-		case spr_ipv4hint:
+		tok = strtok_r(NULL, " ", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		tmpul = strtoul(tok, &endport, 10);
+
+		if ((endport != NULL && *endport != '\0') ||
+		    tmpul >= (unsigned long int)spr_invalid) {
+			return (wdns_res_parse_error);
+		}
+
+		tmp = htons((uint16_t)tmpul);
+		ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
+		val_len = sizeof(tmp);
+		break;
+	}
+	case spr_echconfig:
+		/*
+		 * In wire format, the value of the parameter is an
+		 * ECHConfigList [ECH], including the redundant length prefix.
+		 */
+		tok = strtok_r(NULL, " ", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		tok_len = strlen(tok);
+		if (tok_len > UINT8_MAX) {
+			return (wdns_res_parse_error);
+		}
+		base64_str_to_ubuf(tok, tok_len, u);
+		val_len = tok_len;
+		break;
+
+	/*
+	 * The wire format for IP hints is a sequence of IP addresses in
+	 * network byte order. An empty list of addresses is invalid.
+	 */
+	case spr_ipv4hint:
+		tok = strtok_r(NULL, ",", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		do {
 			if (inet_pton(AF_INET, tok, v4buf) != 1) {
 				return (wdns_res_parse_error);
 			}
 
-			tmp = htons(sizeof (v4buf));
-			ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
 			ubuf_append(u, (uint8_t *)v4buf, sizeof (v4buf));
-			break;
+			val_len += sizeof(v4buf);
+		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
+		break;
 
-		case spr_ipv6hint:
+	case spr_ipv6hint:
+		tok = strtok_r(NULL, ",", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		do {
 			if (inet_pton(AF_INET6, tok, v6buf) != 1) {
 				return (wdns_res_parse_error);
 			}
 
-			tmp = htons(sizeof (v6buf));
-			ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
 			ubuf_append(u, (uint8_t *)v6buf, sizeof (v6buf));
-			break;
+			val_len += sizeof(v6buf);
+		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
+		break;
 
-		case spr_invalid:
-			break;
-
-		default:
-			/* arbitrary key=val pair */
-			if (*endp != '\0') {
-				return (wdns_res_parse_error);
-			}
-			(void) str_to_ubuf(tok, u, NULL);
-			break;
+	default:
+		/*
+		 * Parse an arbitrary keyNNNN=val pair.
+		 *
+		 * The rfc doesn't specify whether these types of keys can have
+		 * multiple values or not, so for now we treat it as a single
+		 * string (that could contain multiple comma separated values).
+		*/
+		tok = strtok_r(NULL, " ", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
 		}
+
+		(void) str_to_ubuf(tok, u, NULL);
+		val_len = strlen(tok);
+		break;
 	}
+
+	/*
+	 * Check that we processed all values (and that the ones who only
+	 * accept a single value don't have multiple).
+	 */
+	if (endp != NULL && *endp != '\0') {
+		return (wdns_res_parse_error);
+	}
+
+	/*
+	 * Set the correct length for the SvcParamValue.
+	 */
+	val_len = htons(val_len);
+	(void) memcpy(&ubuf_data(u)[val_len_offset], &val_len,
+	    sizeof (val_len));
 
 	return (wdns_res_success);
 }

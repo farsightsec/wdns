@@ -263,7 +263,7 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x00\x03"		/* length of the SvcParamValue */
 		    "\x02h2",		/* length-value */
 		.expected_len = 10,
 		.expected_res = wdns_res_success,
@@ -275,11 +275,10 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x00\x06"		/* length of the SvcParamValue */
 		    "\x02h2"		/* length-value */
-		    "\x00\x03"		/* length of the alpnid in net order */
 		    "\x02h3",		/* length-value */
-		.expected_len = 15,
+		.expected_len = 13,
 		.expected_res = wdns_res_success,
 	},
 	{
@@ -289,12 +288,11 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x00\x06"		/* length of the SvcParamValue */
 		    "\x02h2"		/* length-value */
-		    "\x00\x03"		/* length of the alpnid in net order */
 		    "\x02h3"		/* length-value */
-		    "\x00\x02",
-		.expected_len = 17,
+		    "\x00\x02",		/* no-default-alpn in net order */
+		.expected_len = 15,
 		.expected_res = wdns_res_success,
 	},
 	{
@@ -303,9 +301,10 @@ static const struct test tdata[] = {
 		.input = "1 . port=1111",
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
-		    "\x00\x03"		/* port key in network order */
+		    "\x00\x03"		/* port in network order */
+		    "\x00\x02"		/* length of the SvcParamValue */
 		    "\x04W",		/* port value in network order */
-		.expected_len = 7,
+		.expected_len = 9,
 		.expected_res = wdns_res_success,
 	},
 	{
@@ -315,7 +314,7 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x04"		/* ipv4hint in network order */
-		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\x00\x04"		/* length of the SvcParamValue */
 		    "\xc0\xa8\x00\x01",	/* ipv4hint */
 		.expected_len = 11,
 		.expected_res = wdns_res_success,
@@ -327,11 +326,10 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x04"		/* ipv4hint in network order */
-		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\x00\x08"		/* length of the SvcParamValue */
 		    "\xc0\xa8\x00\x01"	/* ipv4hint */
-		    "\x00\x04"		/* length of ipv4hint in net order */
 		    "\xc0\xa8\x00\x02",	/* ipv4hint */
-		.expected_len = 17,
+		.expected_len = 15,
 		.expected_res = wdns_res_success,
 	},
 	{
@@ -341,7 +339,7 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x06"		/* ipv6hint in network order */
-		    "\x00\x10"		/* length of ipv6hint in net order */
+		    "\x00\x10"		/* length of the SvcParamValue */
 		    " \x01\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07",/* ipv6hint */
 		.expected_len = 23,
 		.expected_res = wdns_res_success,
@@ -353,8 +351,9 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x05"		/* echconfig key in network order */
+		    "\x00\x0c"		/* length of the SvcParamValue */
 		    "i\xb7\x1dy\xf8!\x8a""""9%",	/* echconfig value */
-		.expected_len = 14,
+		.expected_len = 16,
 		.expected_res = wdns_res_success,
 	},
 	{
@@ -366,21 +365,21 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x00"		/* mandatory key */
+		    "\x00\x02"		/* length of the SvcParamValue */
 		    "\x00\x03"		/* port key in network order */
 		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x00\x06"		/* length of the SvcParamValue */
 		    "\x02h2"		/* length-value */
-		    "\x00\x03"		/* length of the alpnid in net order */
 		    "\x02h3"		/* length-value */
 		    "\x00\x03"		/* port key in network order */
+		    "\x00\x02"		/* length of the SvcParamValue */
 		    "\x04W"		/* port value in network order */
 		    "\x00\x04"		/* ipv4hint in network order */
-		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\x00\x08"		/* length of the SvcParamValue */
 		    "\xc0\xa8\x00\x01"	/* ipv4hint */
-		    "\x00\x04"		/* length of ipv4hint in net order */
 		    "\xc0\xa8\x00\x02"	/* ipv4hint */
 		    "\x00\x06"		/* ipv6hint in network order */
-		    "\x00\x10"		/* length of ipv6hint in net order */
+		    "\x00\x10"		/* length of the SvcParamValue */
 		    " \x01\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07",/* ipv6hint */
 		.expected_len = 57,
 		.expected_res = wdns_res_success,
@@ -392,8 +391,9 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x0a"		/* '10' in network order */
+		    "\x00\x03"		/* length of the SvcParamValue */
 		    "\x03""""222",	/* '222' value */
-		.expected_len = 9,
+		.expected_len = 11,
 		.expected_res = wdns_res_success,
 	},
 
