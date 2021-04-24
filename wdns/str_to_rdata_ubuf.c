@@ -62,7 +62,7 @@ err:
 }
 
 /*
- * base64_to_str() decodes a base64 value and appends it to the given ubuf.
+ * base64_str_to_ubuf() decodes a base64 value and appends it to the given ubuf.
  */
 static void
 base64_str_to_ubuf(const char *str, size_t str_len, ubuf *u)
