@@ -342,6 +342,10 @@ test_rdata_to_str(void) {
 
 			failures++;
 		} else {
+			uint8_t *rdata = NULL;
+			size_t rdlen = 0;
+			wdns_res res;
+
 			ubuf_add_fmt(u, "PASS %" PRIu64 ": input=", cur-tdata);
 			escape(u, cur->input, cur->input_len);
 			ubuf_add_fmt(u, " %s %s",
@@ -350,6 +354,20 @@ test_rdata_to_str(void) {
 
 			ubuf_add_cstr(u, " value=");
 			escape(u, (const uint8_t*)actual, strlen(actual));
+
+			/* round trip test */
+			res = wdns_str_to_rdata(actual, cur->rrtype,
+			    cur->rrclass, &rdata, &rdlen);
+			if ((res != wdns_res_success) ||
+			    (rdlen != cur->input_len) ||
+			    memcmp(rdata, cur->input, cur->input_len)) {
+			        ubuf_add_fmt(u, "\nFAIL %" PRIu64
+				    " (round trip): parsed=",
+				    cur-tdata);
+			        escape(u, rdata, rdlen);
+			        failures++;
+			}
+			free(rdata);
 		}
 
 		fprintf (stderr, "%s\n", ubuf_cstr(u));

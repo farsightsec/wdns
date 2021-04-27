@@ -146,7 +146,7 @@ str_to_svcparam(ubuf *u, char *keyval)
 	 * 'no-default-alpn' must not have a value.
 	 */
 	if (key == spr_nd_alpn) {
-		if (endp != NULL && *endp != '\0') {
+		if (strtok_r(NULL, " ", &endp) != NULL) {
 			return (wdns_res_parse_error);
 		} else {
 			return (wdns_res_success);
@@ -218,9 +218,9 @@ str_to_svcparam(ubuf *u, char *keyval)
 		}
 
 		tmpul = strtoul(tok, &endport, 10);
+		assert(endport != NULL);
 
-		if ((endport != NULL && *endport != '\0') ||
-		    tmpul >= (unsigned long int)spr_invalid) {
+		if (*endport != '\0' || tmpul > UINT16_MAX) {
 			return (wdns_res_parse_error);
 		}
 
@@ -296,8 +296,13 @@ str_to_svcparam(ubuf *u, char *keyval)
 			return (wdns_res_parse_error);
 		}
 
-		(void) str_to_ubuf(tok, u, NULL);
-		val_len = strlen(tok);
+		val_len = ubuf_size(u);
+
+		if (rdata_from_str_string((uint8_t *)tok, u) == 0) {
+			return (wdns_res_parse_error);
+		}
+
+		val_len = ubuf_size(u) - val_len;
 		break;
 	}
 
@@ -305,7 +310,7 @@ str_to_svcparam(ubuf *u, char *keyval)
 	 * Check that we processed all values (and that the ones who only
 	 * accept a single value don't have multiple).
 	 */
-	if (endp != NULL && *endp != '\0') {
+	if (strtok_r(NULL, " ", &endp) != NULL) {
 		return (wdns_res_parse_error);
 	}
 
