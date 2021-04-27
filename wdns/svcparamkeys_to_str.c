@@ -62,14 +62,15 @@ _wdns_str_to_svcparamkey(char *str)
 		unsigned long int key;
 		char *endp;
 
-		key = (uint16_t)strtoul(str + strlen("key"), &endp, 10);
+		key = strtoul(str + strlen("key"), &endp, 10);
+		assert(endp != NULL);
 
 		if (*endp != '\0' || key >= (unsigned long int)spr_invalid) {
 			return (spr_invalid);
 		}
 
 		if (key < spr_invalid) {
-			return (key);
+			return ((uint16_t)key);
 		}
 	}
 

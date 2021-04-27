@@ -392,8 +392,8 @@ static const struct test tdata[] = {
 		    "\x00"		/* Target */
 		    "\x00\x0a"		/* '10' in network order */
 		    "\x00\x03"		/* length of the SvcParamValue */
-		    "\x03""""222",	/* '222' value */
-		.expected_len = 11,
+		    """""222",		/* '222' value */
+		.expected_len = 10,
 		.expected_res = wdns_res_success,
 	},
 
