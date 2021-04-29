@@ -355,7 +355,12 @@ test_rdata_to_str(void) {
 			ubuf_add_cstr(u, " value=");
 			escape(u, (const uint8_t*)actual, strlen(actual));
 
-			/* round trip test */
+			/*
+			 * Send the result of the first test, which processed
+			 * an rdata input into a string, through a 'round trip'
+			 * test back from string to rdata and compare the two
+			 * end result with the initial rdata.
+			 */
 			res = wdns_str_to_rdata(actual, cur->rrtype,
 			    cur->rrclass, &rdata, &rdlen);
 			if ((res != wdns_res_success) ||
@@ -363,7 +368,7 @@ test_rdata_to_str(void) {
 			    memcmp(rdata, cur->input, cur->input_len)) {
 			        ubuf_add_fmt(u, "\nFAIL %" PRIu64
 				    " (round trip): parsed=",
-				    cur-tdata);
+				    cur - tdata);
 			        escape(u, rdata, rdlen);
 			        failures++;
 			}
