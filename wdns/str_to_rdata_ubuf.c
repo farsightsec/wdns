@@ -536,8 +536,8 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 				end = strpbrk(str, " \t\r\n");
 
-				uint8_t oclen = prefix_len / 8;
-				if (prefix_len % 8 > 0) {
+				uint8_t oclen = (128 - prefix_len) / 8;
+				if (prefix_len % 8 != 0) {
 					oclen++;
 				}
 
