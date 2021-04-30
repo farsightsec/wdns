@@ -218,8 +218,6 @@ str_to_svcparam(ubuf *u, char *keyval)
 		}
 
 		tmpul = strtoul(tok, &endport, 10);
-		assert(endport != NULL);
-
 		if (*endport != '\0' || tmpul > UINT16_MAX) {
 			return (wdns_res_parse_error);
 		}
@@ -555,12 +553,13 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 				if (pton_res == 1) {
 					ubuf_append(u, addr, oclen);
+					str = end;
 				} else {
-					res = wdns_res_parse_error;
-					goto err;
+					if (prefix_len != 128) {
+						res = wdns_res_parse_error;
+						goto err;
+					}
 				}
-
-				str = end;
 			}
 
 			break;

@@ -17,13 +17,14 @@ struct test {
 	uint16_t rrtype;
 	uint16_t rrclass;
 	const char *expected;
+	const void *reparsed;
+	size_t reparsed_len;
 };
 
 struct test tdata[] = {
-	{ "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef", 17, WDNS_TYPE_A6, WDNS_CLASS_IN, "0 2000::dead:beef" },
+	{ "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef", 17, WDNS_TYPE_A6, WDNS_CLASS_IN, "0 2000::dead:beef", "\x00\x0f""2000::dead:beef\x00", 18 },
 	{ "\x01\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef\x03""fsi\x02io\x00", 25, WDNS_TYPE_A6, WDNS_CLASS_IN, "1 2000::dead:beef fsi.io." },
 	{ "\x80\x03""fsi\x02io\x00", 9, WDNS_TYPE_A6, WDNS_CLASS_IN, "128 fsi.io." },
-	{ "\x80", 1, WDNS_TYPE_A6, WDNS_CLASS_IN, "128" },
 
 	{
 		.input = "\x00\x0a" "\x00\x01" "ftp://ftp1.example.com/public",
@@ -343,7 +344,8 @@ test_rdata_to_str(void) {
 			failures++;
 		} else {
 			uint8_t *rdata = NULL;
-			size_t rdlen = 0;
+			const uint8_t *cmp;
+			size_t rdlen = 0, cmp_len;
 			wdns_res res;
 
 			ubuf_add_fmt(u, "PASS %" PRIu64 ": input=", cur-tdata);
@@ -363,14 +365,34 @@ test_rdata_to_str(void) {
 			 */
 			res = wdns_str_to_rdata(actual, cur->rrtype,
 			    cur->rrclass, &rdata, &rdlen);
-			if ((res != wdns_res_success) ||
-			    (rdlen != cur->input_len) ||
-			    memcmp(rdata, cur->input, cur->input_len)) {
+
+			if (res != wdns_res_success) {
 			        ubuf_add_fmt(u, "\nFAIL %" PRIu64
-				    " (round trip): parsed=",
-				    cur - tdata);
-			        escape(u, rdata, rdlen);
+				    ": round trip parsing failed (%s), "
+				    "rrtype=%s input=",
+				    cur - tdata, wdns_res_to_str(res),
+				    wdns_rrtype_to_str(cur->rrtype), actual);
+
+				escape(u, (const uint8_t*)actual,
+				    strlen(actual));
 			        failures++;
+			} else {
+				if (cur->reparsed != NULL) {
+					cmp = cur->reparsed;
+					cmp_len = cur->reparsed_len;
+				} else {
+					cmp = cur->input;
+					cmp_len = cur->input_len;
+				}
+
+				if (rdlen != cmp_len ||
+				    memcmp(rdata, cmp, cmp_len)) {
+				        ubuf_add_fmt(u, "\nFAIL %" PRIu64
+					    " (round trip): parsed=",
+					    cur - tdata);
+				        escape(u, rdata, rdlen);
+				        failures++;
+				}
 			}
 			free(rdata);
 		}
