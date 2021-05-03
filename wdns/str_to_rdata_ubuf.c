@@ -526,39 +526,52 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				}
 			}
 
-			if (prefix_len > 0) {
-				if (str == NULL || *str == 0) {
-					res = wdns_res_parse_error;
-					goto err;
-				}
+			if (str == NULL || *str == 0) {
+				res = wdns_res_parse_error;
+				goto err;
+			}
 
-				end = strpbrk(str, " \t\r\n");
+			end = strpbrk(str, " \t\r\n");
 
-				uint8_t oclen = (128 - prefix_len) / 8;
-				if (prefix_len % 8 != 0) {
-					oclen++;
-				}
+			uint8_t oclen = (128 - prefix_len) / 8;
+			if (prefix_len % 8 != 0) {
+				oclen++;
+			}
 
-				uint8_t addr[16];
-				char * pres;
+			uint8_t addr[16];
+			char * pres;
 
-				if (end != NULL) {
-					pres = strndup(str, end-str);
-				} else {
-					pres = strdup(str);
-				}
+			if (end != NULL) {
+				pres = strndup(str, end-str);
+			} else {
+				pres = strdup(str);
+			}
 
-				int pton_res = inet_pton(AF_INET6, pres, addr);
-				free(pres);
+			int pton_res = inet_pton(AF_INET6, pres, addr);
+			free(pres);
 
-				if (pton_res == 1) {
-					ubuf_append(u, addr, oclen);
-					str = end;
-				} else {
-					if (prefix_len != 128) {
+			if (pton_res == 1) {
+				ubuf_append(u, addr, oclen);
+				str = end;
+				if (prefix_len == 0 && str != NULL) {
+					/*
+					 * An A6 record with prefix length zero
+					 * may not have a hostname component, so
+					 * the text representation must end with the
+					 * IPv6 address.
+					 */
+					while (isspace(*str))
+						str++;
+					if (*str != '\0') {
 						res = wdns_res_parse_error;
 						goto err;
 					}
+					str = NULL;
+				}
+			} else {
+				if (prefix_len != 128) {
+					res = wdns_res_parse_error;
+					goto err;
 				}
 			}
 
