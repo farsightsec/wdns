@@ -326,7 +326,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 			if (oclen > 0) {
 				memset(addr, 0, sizeof(addr));
-				memcpy(addr, src, oclen);
+				memcpy(addr + sizeof(addr) - oclen, src, oclen);
 				inet_ntop(AF_INET6, addr, pres, sizeof(pres));
 				ubuf_add_cstr(u, pres);
 				ubuf_add_cstr(u, " ");

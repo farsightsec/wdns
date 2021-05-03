@@ -551,7 +551,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			free(pres);
 
 			if (pton_res == 1) {
-				ubuf_append(u, addr, oclen);
+				ubuf_append(u, addr + sizeof(addr) - oclen, oclen);
 				str = end;
 				if (prefix_len == 0 && str != NULL) {
 					/*
