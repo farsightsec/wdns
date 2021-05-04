@@ -64,7 +64,7 @@ err:
 /*
  * base64_str_to_ubuf() decodes a base64 value and appends it to the given ubuf.
  */
-static void
+static size_t
 base64_str_to_ubuf(const char *str, size_t str_len, ubuf *u)
 {
 	base64_decodestate b64;
@@ -76,6 +76,8 @@ base64_str_to_ubuf(const char *str, size_t str_len, ubuf *u)
 	buf_len = base64_decode_block((const char *) str, str_len, buf, &b64);
 	ubuf_append(u, (uint8_t *) buf, buf_len);
 	free(buf);
+
+	return (buf_len);
 }
 
 /*
@@ -241,8 +243,7 @@ str_to_svcparam(ubuf *u, char *keyval)
 		if (tok_len > UINT8_MAX) {
 			return (wdns_res_parse_error);
 		}
-		base64_str_to_ubuf(tok, tok_len, u);
-		val_len = tok_len;
+		val_len = base64_str_to_ubuf(tok, tok_len, u);
 		break;
 
 	/*
@@ -469,9 +470,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			break;
 
 		case rdf_bytes_b64: {
-			size_t str_len = strlen(str);
-			base64_str_to_ubuf(str, str_len, u);
-			str += str_len;
+			str += base64_str_to_ubuf(str, strlen(str), u);
 			break;
 		}
 
