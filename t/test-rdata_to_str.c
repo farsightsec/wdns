@@ -17,8 +17,6 @@ struct test {
 	uint16_t rrtype;
 	uint16_t rrclass;
 	const char *expected;
-	const void *reparsed;
-	size_t reparsed_len;
 };
 
 struct test tdata[] = {
@@ -344,8 +342,7 @@ test_rdata_to_str(void) {
 			failures++;
 		} else {
 			uint8_t *rdata = NULL;
-			const uint8_t *cmp;
-			size_t rdlen = 0, cmp_len;
+			size_t rdlen = 0;
 			wdns_res res;
 
 			ubuf_add_fmt(u, "PASS %" PRIu64 ": input=", cur-tdata);
@@ -360,7 +357,7 @@ test_rdata_to_str(void) {
 			/*
 			 * Send the result of the first test, which processed
 			 * an rdata input into a string, through a 'round trip'
-			 * test back from string to rdata and compare the two
+			 * test back from string to rdata and compare the
 			 * end result with the initial rdata.
 			 */
 			res = wdns_str_to_rdata(actual, cur->rrtype,
@@ -377,16 +374,8 @@ test_rdata_to_str(void) {
 				    strlen(actual));
 			        failures++;
 			} else {
-				if (cur->reparsed != NULL) {
-					cmp = cur->reparsed;
-					cmp_len = cur->reparsed_len;
-				} else {
-					cmp = cur->input;
-					cmp_len = cur->input_len;
-				}
-
-				if (rdlen != cmp_len ||
-				    memcmp(rdata, cmp, cmp_len)) {
+				if (rdlen != cur->input_len ||
+				    memcmp(rdata, cur->input, cur->input_len)) {
 				        ubuf_add_fmt(u, "\nFAIL %" PRIu64
 					    " (round trip): parsed=",
 					    cur - tdata);

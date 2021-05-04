@@ -217,17 +217,17 @@ static const struct test tdata[] = {
 	{ "127.0.0.0.1", WDNS_TYPE_A, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "::1", WDNS_TYPE_A, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "fsi", WDNS_TYPE_A, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
-	{ "305419896 127 00deadbeef00", WDNS_TYPE_WKS, WDNS_CLASS_IN, "\x12\x34\x56\x78\x7f\x00\xde\xad\xbe\xef\x00", 11, wdns_res_success},
+	{ "305419896 127 00deadbeef00", WDNS_TYPE_WKS, WDNS_CLASS_IN, "\x12\x34\x56\x78\x7f\x00\xde\xad\xbe\xef\x00", 11, wdns_res_success },
 	{ "4294967297 127 00deadbeef00", WDNS_TYPE_WKS, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "-1 127 00deadbeef00", WDNS_TYPE_WKS, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
-	{ "128 2000::dead:beef fsi.io.", WDNS_TYPE_A6, WDNS_CLASS_IN, "\x80\x03""fsi\x02io\x00", 9, wdns_res_success},
-	{ "120 2000::dead:beef fsi.io.", WDNS_TYPE_A6, WDNS_CLASS_IN, "\x78\xef\x03""fsi\x02io\x00", 10, wdns_res_success},
+	{ "128 2000::dead:beef fsi.io.", WDNS_TYPE_A6, WDNS_CLASS_IN, "\x80\x03""fsi\x02io\x00", 9, wdns_res_success },
+	{ "120 2000::dead:beef fsi.io.", WDNS_TYPE_A6, WDNS_CLASS_IN, "\x78\xef\x03""fsi\x02io\x00", 10, wdns_res_success },
 	{ "2000::dead:beef fsi.io.", WDNS_TYPE_A6, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "0 ::", WDNS_TYPE_A6, WDNS_CLASS_IN, "\x00""\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 17, wdns_res_success},
 	{ "0 :: fsi.io", WDNS_TYPE_A6, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "::", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 16, wdns_res_success},
 	{ "1234:4567::abcd:ef01", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "\x12\x34\x45\x67\x00\x00\x00\x00\x00\x00\x00\x00\xab\xcd\xef\x01", 16, wdns_res_success},
-	{ "::abcd:ef01", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xab\xcd\xef\x01", 16, wdns_res_success},
+	{ "::abcd:ef01", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xab\xcd\xef\x01", 16, wdns_res_success },
 	{ "", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "", 0, wdns_res_success},
 	{ "127.0.0.1", WDNS_TYPE_AAAA, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "fsi.io", WDNS_TYPE_AAAA, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
@@ -351,7 +351,7 @@ static const struct test tdata[] = {
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x05"		/* echconfig key in network order */
-		    "\x00\x0c"		/* length of the SvcParamValue */
+		    "\x00\x09"		/* length of the SvcParamValue */
 		    "i\xb7\x1dy\xf8!\x8a""""9%",	/* echconfig value */
 		.expected_len = 16,
 		.expected_res = wdns_res_success,
@@ -399,7 +399,6 @@ static const struct test tdata[] = {
 
 	{ 0 }
 };
-
 
 static size_t
 test_str_to_rdata(void) {
@@ -454,6 +453,8 @@ test_str_to_rdata(void) {
 
 			failures++;
 		} else {
+			char *roundtrip;
+
 			ubuf_add_fmt(u, "PASS %" PRIu64 ": input=", cur-tdata);
 			escape(u, (uint8_t*)cur->input, strlen(cur->input));
 			ubuf_add_fmt(u, " %s %s res=%s",
@@ -464,6 +465,49 @@ test_str_to_rdata(void) {
 			if (res == wdns_res_success) {
 				ubuf_add_cstr(u, " value=");
 				escape(u, actual, actual_len);
+			}
+
+			if (cur->expected_res != wdns_res_parse_error) {
+				/*
+				 * Send the result of the first test, which
+				 * processed an string into an rdata, through a
+				 * 'round trip' test back from rdata to string
+				 * and compare the end result with the initial
+				 * string.
+				 */
+				roundtrip = wdns_rdata_to_str(actual,
+				    actual_len, cur->rrtype, cur->rrclass);
+
+				if (roundtrip == NULL) {
+					ubuf_add_fmt(u, "\nFAIL %" PRIu64
+					    ": round trip failed, "
+					    "rrtype=%s input=",
+					    cur - tdata,
+					    wdns_rrtype_to_str(cur->rrtype),
+					    cur->input);
+
+					escape(u, (const uint8_t*)cur->input,
+					    strlen(cur->input));
+					failures++;
+
+				} else if (strncasecmp(cur->input, roundtrip,
+				    strlen(cur->input)) != 0) {
+					ubuf_add_fmt(u, "\nFAIL %" PRIu64
+					    ": round trip mismatch, "
+					    "rrtype=%s input=",
+					    cur - tdata,
+					    wdns_rrtype_to_str(cur->rrtype),
+					    cur->input);
+					escape(u, (const uint8_t *)cur->input,
+					    strlen(cur->input));
+
+					ubuf_add_fmt(u, " value=%s", roundtrip);
+					failures++;
+
+					free(roundtrip);
+				} else {
+					free(roundtrip);
+				}
 			}
 		}
 
