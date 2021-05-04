@@ -500,39 +500,54 @@ test_str_to_rdata(void) {
 					free(actual);
 					actual = NULL;
 
-					res = wdns_str_to_rdata(roundtrip, cur->rrtype, cur->rrclass, &actual, &actual_len);
+					res = wdns_str_to_rdata(roundtrip,
+					    cur->rrtype, cur->rrclass, &actual,
+					    &actual_len);
 					if (res != wdns_res_success) {
-						ubuf_add_fmt(u, "\nFAIL %" PRIu64
-							": round trip res=%s,"
-							"rrtype=%s input=",
-							cur - tdata,
-							wdns_res_to_str(res),
-							wdns_rrtype_to_str(cur->rrtype));
-						escape(u, (const uint8_t *)roundtrip,
-							strlen(roundtrip));
+						ubuf_add_fmt(u,
+						    "\nFAIL %" PRIu64
+						    ": round trip res=%s,"
+						    "rrtype=%s input=",
+						    cur - tdata,
+						    wdns_res_to_str(res),
+						    wdns_rrtype_to_str(
+							    cur->rrtype));
+						escape(u,
+						    (const uint8_t *)roundtrip,
+						    strlen(roundtrip));
 						failures++;
-					} else if ((actual_len != cur->expected_len) ||
-						   memcmp(actual, cur->expected, actual_len)) {
-						ubuf_add_fmt(u, "\nFAIL %" PRIu64
-							": round trip mismatch, "
-							"rrtype=%s input=",
-							cur - tdata,
-							wdns_rrtype_to_str(cur->rrtype));
-						escape(u, (const uint8_t *)roundtrip,
-							strlen(roundtrip));
+
+					} else if ((actual_len !=
+					    cur->expected_len) ||
+						memcmp(actual, cur->expected,
+						    actual_len)) {
+						ubuf_add_fmt(u,
+						    "\nFAIL %" PRIu64
+						    ": round trip mismatch, "
+						    "rrtype=%s input=",
+						    cur - tdata,
+						    wdns_rrtype_to_str(
+						    cur->rrtype));
+						escape(u,
+						    (const uint8_t *)roundtrip,
+						    strlen(roundtrip));
 						ubuf_add_cstr(u, " value=");
 						escape(u, actual, actual_len);
 						ubuf_add_cstr(u, " != ");
-						escape(u, cur->expected, cur->expected_len);
+						escape(u, cur->expected,
+						    cur->expected_len);
 						failures++;
 					} else {
-						ubuf_add_fmt(u, "\nPASS %" PRIu64
-							": round trip match, "
-							"rrtype=%s roundtrip=",
-							cur - tdata,
-							wdns_rrtype_to_str(cur->rrtype));
-						escape(u, (const uint8_t *)roundtrip,
-							strlen(roundtrip));
+						ubuf_add_fmt(u,
+						    "\nPASS %" PRIu64
+						    ": round trip match, "
+						    "rrtype=%s roundtrip=",
+						    cur - tdata,
+						    wdns_rrtype_to_str(
+						    cur->rrtype));
+						escape(u,
+						    (const uint8_t *)roundtrip,
+						    strlen(roundtrip));
 						ubuf_add_cstr(u, " value=");
 						escape(u, actual, actual_len);
 					}
