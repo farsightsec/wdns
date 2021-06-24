@@ -70,6 +70,45 @@ printf("unpack bitmap failed\n");
         return (0);
 }
 
+static bool
+rrtype_bitmap_check(uint16_t rrtype, uint8_t *rrtype_map, size_t rrtype_map_size);
+
+static bool
+rrtype_bitmap_check(uint16_t rrtype, uint8_t *rrtype_map, size_t rrtype_map_size)
+{
+        if (rrtype_map_size < (signed)2)
+                return false; /* corrupt encoding */
+
+        uint8_t want_window = rrtype / 256;
+
+        uint8_t offset = rrtype % 256;
+        uint8_t byte = offset / 8;
+        uint8_t bit = offset % 8;
+        uint8_t net_order_bit = 0x80 >> bit;
+
+        while (rrtype_map_size >= 2) {
+                uint8_t window_block = *rrtype_map;
+                uint8_t bitmap_len = *(rrtype_map + 1);
+                rrtype_map_size -= 2;
+                rrtype_map += 2;
+                if (rrtype_map_size < bitmap_len)
+                        return false; /* corrupt encoding */
+
+                if (window_block != want_window) {
+                        rrtype_map_size -= bitmap_len;
+                        rrtype_map += bitmap_len;
+                        continue;
+                }
+                /* at the right block  */
+
+                if (offset > bitmap_len)
+                        return false; /* not enough bytes in this block */
+                return (rrtype_map[byte] & net_order_bit);
+        }
+        return false;
+}
+
+
 
 int
 main(int argc, char **argv)
@@ -133,8 +172,7 @@ main(int argc, char **argv)
 	bitmap_len = 0;
 	last_rrtype = 0;
 
-	ubuf *u_result;
-	u_result = ubuf_new();
+	ubuf *u_result = ubuf_new();
 
 	for (n = 0; n < u16buf_size(rrtypes); n++) {
 		my_rrtype = u16buf_value(rrtypes, n);
@@ -193,5 +231,14 @@ main(int argc, char **argv)
                 free(result_rrtypes);
         }
 
+        printf("\nChecking some rrtypes to see if they are present:\n");
+        char *some_types[] = {"A", "NS", "ANY", "CAA", "DLV"};
+        for (u_int i = 0; i < sizeof some_types / sizeof(char *); i++) {
+                char *type = some_types[i];
+                uint16_t type_v = wdns_str_to_rrtype(type);
+                printf("\trrtype %s (%d)? %s\n", type, type_v,
+                       rrtype_bitmap_check(type_v, ubuf_data(u_result),
+                                   ubuf_size(u_result)) ? "yes" : "no");
+        }
 	return 0;
 }
