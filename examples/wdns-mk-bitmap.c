@@ -11,6 +11,65 @@ cmp_u16(const void *a, const void *b) {
 	return u1 == u2 ? 0 : u1 > u2 ? 1 : -1;
 }
 
+/*
+ * Unpack an rrtype bitmap encoded per RFC4043.
+ * Return it in an array of 16 bit rrtypes.
+ * The caller must free the array.
+ *
+ * Limits how many rrtypes it will support by truncating what it returns.  
+ * In theory, there can be 2^16-1 bits set, since the rrtype values
+ * allowed are not restricted to those in the DNS RFCs and Assigned
+ * Numbers.
+ */
+static int
+rrtype_bitmap_unpack(uint8_t *rrtype_map, size_t rrtype_map_size, uint16_t **rrtypes, size_t *rrtypes_len)
+{
+#define MAX_RRTYPES_MAPPABLE 200
+        uint16_t tmp_rrtypes_array[MAX_RRTYPES_MAPPABLE];
+        int count_rrtypes = 0;
+        uint16_t lo;
+        uint8_t a, b, window_block, bitmap_len;
+
+        if (rrtype_map_size < 2)
+                goto err;
+        while (rrtype_map_size >= 2) {
+                window_block = *rrtype_map;
+                bitmap_len = *(rrtype_map + 1);
+                rrtype_map_size -= 2;
+                rrtype_map += 2;
+                if (rrtype_map_size < bitmap_len)
+                        goto err;
+
+                lo = 0;
+                for (int i = 0; i < bitmap_len; i++) {
+                        a = rrtype_map[i];
+                        for (int j = 1; j <= 8; j++) {
+                                b = a & (1 << (8 - j));
+                                if (b != 0) {
+                                        /* check if too many rrtypes in the map */
+                                        if (count_rrtypes < MAX_RRTYPES_MAPPABLE)
+                                                tmp_rrtypes_array[count_rrtypes++] = (window_block << 8) | lo;
+                                }
+                                lo += 1;
+                        }
+                }
+                rrtype_map_size -= bitmap_len;
+                rrtype_map += bitmap_len;
+        }
+
+        *rrtypes_len = count_rrtypes;
+        *rrtypes = my_malloc(count_rrtypes * sizeof(uint16_t));
+        for (int i = 0; i < count_rrtypes; i++)
+                (*rrtypes)[i] = tmp_rrtypes_array[i];
+
+        return (1);
+
+
+err:
+printf("unpack bitmap failed\n");
+        return (0);
+}
+
 
 int
 main(int argc, char **argv)
@@ -67,7 +126,6 @@ main(int argc, char **argv)
 		return (EXIT_FAILURE);
 	}
 
-
 	qsort(u16buf_data(rrtypes), u16buf_size(rrtypes), sizeof(uint16_t), cmp_u16);
 
 	memset(bitmap, 0, sizeof(bitmap));
@@ -113,5 +171,27 @@ main(int argc, char **argv)
 		printf("%02x ", (unsigned char)ubuf_value(u_result, n));
 	}
 	printf("\n");
+
+        printf("\nNow unpacking the bitmap we just made:\n");
+
+        uint16_t *result_rrtypes;
+        size_t result_rrtypes_len;
+
+        int r = rrtype_bitmap_unpack(ubuf_data(u_result), ubuf_size(u_result), &result_rrtypes, &result_rrtypes_len);
+
+        if (r == 0) {
+                printf("rrtype_bitmap_unpack failed\n");
+                return 0;
+        }
+
+        if (result_rrtypes != NULL) {
+                for (size_t x = 0; x < result_rrtypes_len; x++) {
+                        const char *s_rtype = wdns_rrtype_to_str(result_rrtypes[x]);
+                        printf("rrtype = %d = %s\n", result_rrtypes[x], s_rtype != NULL ? s_rtype : "(not assigned)");
+                }
+
+                free(result_rrtypes);
+        }
+
 	return 0;
 }
