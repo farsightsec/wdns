@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2015-2018, 2021 by Farsight Security, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -21,9 +37,8 @@ struct test {
 
 struct test tdata[] = {
 	{ "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef", 17, WDNS_TYPE_A6, WDNS_CLASS_IN, "0 2000::dead:beef" },
-	{ "\x01\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef\x03""fsi\x02io\x00", 25, WDNS_TYPE_A6, WDNS_CLASS_IN, "1 2000::dead:beef fsi.io." },
+	{ "\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef\x03""fsi\x02io\x00", 24, WDNS_TYPE_A6, WDNS_CLASS_IN, "8 ::222.173.190.239 fsi.io." },
 	{ "\x80\x03""fsi\x02io\x00", 9, WDNS_TYPE_A6, WDNS_CLASS_IN, "128 fsi.io." },
-	{ "\x80", 1, WDNS_TYPE_A6, WDNS_CLASS_IN, "128" },
 
 	{
 		.input = "\x00\x0a" "\x00\x01" "ftp://ftp1.example.com/public",
@@ -62,13 +77,13 @@ struct test tdata[] = {
 	/* TXT test for: one quote sent over the wire */
 	{
 		.input = "\x03" "one" "\x05" "quote" "\x01" "\"" "\x04" "sent" "\x04" "over" "\x03" "the" "\x04" "wire",
-		.input_len = 1 + 3 + 1 + 5 + 1 + 1 + 1 + 4 + 1 + 4 + 1 + 3 + 1 + 4, 
+		.input_len = 1 + 3 + 1 + 5 + 1 + 1 + 1 + 4 + 1 + 4 + 1 + 3 + 1 + 4,
 		.rrtype = WDNS_TYPE_TXT,
 		.rrclass = WDNS_CLASS_IN,
 		.expected = "\"one\" \"quote\" \"\\\"\" \"sent\" \"over\" \"the\" \"wire\"",
 	},
 
-	/* TXT test for: 256 characters in length (including the length 
+	/* TXT test for: 256 characters in length (including the length
 	   octet) */
 	{
 		.input = "\xff" "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -276,6 +291,38 @@ struct test tdata[] = {
 		.expected = "fsi.io. A CAA DLV",
 	},
 
+	/* HTTPS test */
+	{
+		.input = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x01"		/* alpn in network order */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02\x68\x32"	/* length-value */
+		    "\x00\x04"		/* ipv4hint in network order */
+		    "\x00\x04"		/* length of ipv4hint in net order */
+		    "\xc0\xa8\x00\x01",	/* ipv4hint */
+		.input_len = 18,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_HTTPS,
+		.expected = "1 . alpn=h2 ipv4hint=192.168.0.1",
+	},
+
+	/* HTTPS test for an arbitrary key type 9 */
+	{
+		.input = "\x00\x01"	/* SvcPriority */
+		    "\x00"		/* Target */
+		    "\x00\x01"		/* alpn in network order */
+		    "\x00\x03"		/* length of the alpnid in net order */
+		    "\x02\x68\x32"	/* length-value */
+		    "\x00\x09"		/* key9 in network order */
+		    "\x00\x03"		/* length of key9 in net order */
+		    "\x61\x6e\x79",	/* length-value */
+		.input_len = 17,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_HTTPS,
+		.expected = "1 . alpn=h2 key9=\"any\"",
+	},
+
 	{ 0 }
 };
 
@@ -310,6 +357,10 @@ test_rdata_to_str(void) {
 
 			failures++;
 		} else {
+			uint8_t *rdata = NULL;
+			size_t rdlen = 0;
+			wdns_res res;
+
 			ubuf_add_fmt(u, "PASS %" PRIu64 ": input=", cur-tdata);
 			escape(u, cur->input, cur->input_len);
 			ubuf_add_fmt(u, " %s %s",
@@ -318,6 +369,37 @@ test_rdata_to_str(void) {
 
 			ubuf_add_cstr(u, " value=");
 			escape(u, (const uint8_t*)actual, strlen(actual));
+
+			/*
+			 * Send the result of the first test, which processed
+			 * an rdata input into a string, through a 'round trip'
+			 * test back from string to rdata and compare the
+			 * end result with the initial rdata.
+			 */
+			res = wdns_str_to_rdata(actual, cur->rrtype,
+			    cur->rrclass, &rdata, &rdlen);
+
+			if (res != wdns_res_success) {
+			        ubuf_add_fmt(u, "\nFAIL %" PRIu64
+				    ": round trip parsing failed (%s), "
+				    "rrtype=%s input=",
+				    cur - tdata, wdns_res_to_str(res),
+				    wdns_rrtype_to_str(cur->rrtype), actual);
+
+				escape(u, (const uint8_t*)actual,
+				    strlen(actual));
+			        failures++;
+			} else {
+				if (rdlen != cur->input_len ||
+				    memcmp(rdata, cur->input, cur->input_len)) {
+				        ubuf_add_fmt(u, "\nFAIL %" PRIu64
+					    " (round trip): parsed=",
+					    cur - tdata);
+				        escape(u, rdata, rdlen);
+				        failures++;
+				}
+			}
+			free(rdata);
 		}
 
 		fprintf (stderr, "%s\n", ubuf_cstr(u));

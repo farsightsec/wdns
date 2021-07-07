@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2015-2018, 2021 by Farsight Security, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 VECTOR_GENERATE(u16buf, uint16_t)
 
 static size_t
@@ -59,6 +75,268 @@ rdata_from_str_string(const uint8_t *src, ubuf *u) {
 err:
 	ubuf_clip(u, u_orig_size);
 	return 0;
+}
+
+/*
+ * base64_str_to_ubuf() decodes a base64 value and appends it to the given ubuf.
+ */
+static size_t
+base64_str_to_ubuf(const char *str, size_t str_len, ubuf *u)
+{
+	base64_decodestate b64;
+	char *buf;
+	size_t buf_len;
+
+	base64_init_decodestate(&b64);
+	buf = malloc(str_len+1);
+	buf_len = base64_decode_block((const char *) str, str_len, buf, &b64);
+	ubuf_append(u, (uint8_t *) buf, buf_len);
+	free(buf);
+
+	return (buf_len);
+}
+
+/*
+ * str_to_ubuf() appends a string to a ubuf, prepending its length first.
+ */
+static wdns_res
+str_to_ubuf(const char *str, ubuf *u, const char **retp)
+{
+	const char *end = str;
+	size_t u_oclen_offset;
+	size_t str_len;
+	uint8_t oclen = 0;
+
+	u_oclen_offset = ubuf_size(u);
+	ubuf_append(u, &oclen, sizeof(oclen));
+
+	end += rdata_from_str_string((const uint8_t*)str, u);
+	if (end == str) {
+	        return (wdns_res_parse_error);
+	}
+	str_len = ubuf_size(u) - u_oclen_offset - 1;
+
+	oclen = (uint8_t)str_len;
+	if (oclen != str_len) {
+	        return (wdns_res_parse_error);
+	}
+	ubuf_data(u)[u_oclen_offset] = oclen;
+
+	if (retp != NULL) {
+		*retp = end;
+	}
+
+	return (wdns_res_success);
+}
+
+/*
+ * str_to_svcparam() translates a "key=val" string to the SVCB/HTTPS wire format
+ * as specified in draft-ietf-dnsop-svcb-https, section 2.2. Note that some keys
+ * don't require a value while some can have more than one.
+ *
+ * See svcparam_to_str() for the opposite functionality.
+ */
+static wdns_res
+str_to_svcparam(ubuf *u, char *keyval)
+{
+	char *tok, *endp = NULL;
+	size_t val_len_offset, tok_len;
+	uint16_t key, val_len = 0, tmp;
+	unsigned char v4buf[4];
+	unsigned char v6buf[16];
+
+	assert(u != NULL);
+	assert(keyval != NULL);
+
+	tok = strtok_r(keyval, "=", &endp);
+	key = _wdns_str_to_svcparamkey(tok);
+	if (key == spr_invalid) {
+		return (wdns_res_parse_error);
+	}
+
+	/*
+	 * A 2 octet field containing the SvcParamKey in network byte order.
+	 */
+	tmp = htons(key);
+	ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
+
+	/*
+	 * 'no-default-alpn' must not have a value.
+	 */
+	if (key == spr_nd_alpn) {
+		if (strtok_r(NULL, " ", &endp) != NULL) {
+			return (wdns_res_parse_error);
+		} else {
+			return (wdns_res_success);
+		}
+	}
+
+	/*
+	 * A 2 octet field containing the length of the SvcParamValue also in
+	 * network byte order. We set this to zero for now and fill it later
+	 * once we know the length of the value.
+	 */
+	val_len_offset = ubuf_size(u);
+	ubuf_append(u, (uint8_t*)&val_len, sizeof(val_len));
+
+	/*
+	 * Let's parse the value(s) now.
+	 */
+	switch (key) {
+	case spr_mandatory:
+		tok = strtok_r(NULL, ",", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		do {
+			tmp = _wdns_str_to_svcparamkey(tok);
+			tmp = htons(tmp);
+			ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
+			val_len += sizeof(tmp);
+		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
+		break;
+
+	case spr_alpn:
+		/*
+		 * The wire format value for "alpn" consists of at least one
+		 * "alpn-id" prefixed by its length as a single octet, and
+		 * these length-value pairs are concatenated to form the
+		 * SvcParamValue. These pairs MUST exactly fill the
+		 * SvcParamValue; otherwise, the SvcParamValue is malformed.
+		 */
+		tok = strtok_r(NULL, ",", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		do {
+			tok_len = strlen(tok);
+			if (tok_len > UINT8_MAX) {
+				return (wdns_res_parse_error);
+			}
+
+			ubuf_append(u, (uint8_t *)&tok_len, sizeof (uint8_t));
+			ubuf_append(u, (uint8_t *)tok, tok_len);
+			val_len += sizeof(uint8_t) + tok_len;
+		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
+		break;
+
+	case spr_port: {
+		unsigned long int tmpul;
+		char *endport;
+
+		/*
+		 * The wire format of the SvcParamValue is the corresponding
+		 * 2 octet numeric value in network byte order.
+		 */
+		tok = strtok_r(NULL, " ", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		tmpul = strtoul(tok, &endport, 10);
+		if (*endport != '\0' || tmpul > UINT16_MAX) {
+			return (wdns_res_parse_error);
+		}
+
+		tmp = htons((uint16_t)tmpul);
+		ubuf_append(u, (uint8_t *)&tmp, sizeof (tmp));
+		val_len = sizeof(tmp);
+		break;
+	}
+	case spr_echconfig:
+		/*
+		 * In wire format, the value of the parameter is an
+		 * ECHConfigList [ECH], including the redundant length prefix.
+		 */
+		tok = strtok_r(NULL, " ", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		tok_len = strlen(tok);
+		if (tok_len > UINT8_MAX) {
+			return (wdns_res_parse_error);
+		}
+		val_len = base64_str_to_ubuf(tok, tok_len, u);
+		break;
+
+	/*
+	 * The wire format for IP hints is a sequence of IP addresses in
+	 * network byte order. An empty list of addresses is invalid.
+	 */
+	case spr_ipv4hint:
+		tok = strtok_r(NULL, ",", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		do {
+			if (inet_pton(AF_INET, tok, v4buf) != 1) {
+				return (wdns_res_parse_error);
+			}
+
+			ubuf_append(u, (uint8_t *)v4buf, sizeof (v4buf));
+			val_len += sizeof(v4buf);
+		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
+		break;
+
+	case spr_ipv6hint:
+		tok = strtok_r(NULL, ",", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		do {
+			if (inet_pton(AF_INET6, tok, v6buf) != 1) {
+				return (wdns_res_parse_error);
+			}
+
+			ubuf_append(u, (uint8_t *)v6buf, sizeof (v6buf));
+			val_len += sizeof(v6buf);
+		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
+		break;
+
+	default:
+		/*
+		 * Parse an arbitrary keyNNNN=val pair.
+		 *
+		 * The rfc doesn't specify whether these types of keys can have
+		 * multiple values or not, so for now we treat it as a single
+		 * string (that could contain multiple comma separated values).
+		*/
+		tok = strtok_r(NULL, " ", &endp);
+		if (tok == NULL || *tok == '\0') {
+			return (wdns_res_parse_error);
+		}
+
+		val_len = ubuf_size(u);
+
+		if (rdata_from_str_string((uint8_t *)tok, u) == 0) {
+			return (wdns_res_parse_error);
+		}
+
+		val_len = ubuf_size(u) - val_len;
+		break;
+	}
+
+	/*
+	 * Check that we processed all values (and that the ones who only
+	 * accept a single value don't have multiple).
+	 */
+	if (strtok_r(NULL, " ", &endp) != NULL) {
+		return (wdns_res_parse_error);
+	}
+
+	/*
+	 * Set the correct length for the SvcParamValue.
+	 */
+	val_len = htons(val_len);
+	(void) memcpy(&ubuf_data(u)[val_len_offset], &val_len,
+	    sizeof (val_len));
+
+	return (wdns_res_success);
 }
 
 static int
@@ -208,17 +486,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			break;
 
 		case rdf_bytes_b64: {
-			base64_decodestate b64;
-			char *buf;
-			size_t str_len = strlen(str);
-			size_t buf_len;
-
-			base64_init_decodestate(&b64);
-			buf = malloc(str_len+1);
-			buf_len = base64_decode_block((const char *) str, str_len, buf, &b64);
-			ubuf_append(u, (uint8_t *) buf, buf_len);
-			free(buf);
-			str += str_len;
+			str += base64_str_to_ubuf(str, strlen(str), u);
 			break;
 		}
 
@@ -273,39 +541,53 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				}
 			}
 
-			if (prefix_len > 0) {
-				if (str == NULL || *str == 0) {
-					res = wdns_res_parse_error;
-					goto err;
-				}
+			if (str == NULL || *str == 0) {
+				res = wdns_res_parse_error;
+				goto err;
+			}
 
-				end = strpbrk(str, " \t\r\n");
+			end = strpbrk(str, " \t\r\n");
 
-				uint8_t oclen = prefix_len / 8;
-				if (prefix_len % 8 > 0) {
-					oclen++;
-				}
+			uint8_t oclen = (128 - prefix_len) / 8;
+			if (prefix_len % 8 != 0) {
+				oclen++;
+			}
 
-				uint8_t addr[16];
-				char * pres;
+			uint8_t addr[16];
+			char * pres;
 
-				if (end != NULL) {
-					pres = strndup(str, end-str);
-				} else {
-					pres = strdup(str);
-				}
+			if (end != NULL) {
+				pres = strndup(str, end-str);
+			} else {
+				pres = strdup(str);
+			}
 
-				int pton_res = inet_pton(AF_INET6, pres, addr);
-				free(pres);
+			int pton_res = inet_pton(AF_INET6, pres, addr);
+			free(pres);
 
-				if (pton_res == 1) {
-					ubuf_append(u, addr, oclen);
-				} else {
-					res = wdns_res_parse_error;
-					goto err;
-				}
-
+			if (pton_res == 1) {
+				ubuf_append(u, addr + sizeof(addr) - oclen, oclen);
 				str = end;
+				if (prefix_len == 0 && str != NULL) {
+					/*
+					 * An A6 record with prefix length zero
+					 * may not have a hostname component, so
+					 * the text representation must end with the
+					 * IPv6 address.
+					 */
+					while (isspace(*str))
+						str++;
+					if (*str != '\0') {
+						res = wdns_res_parse_error;
+						goto err;
+					}
+					str = NULL;
+				}
+			} else {
+				if (prefix_len != 128) {
+					res = wdns_res_parse_error;
+					goto err;
+				}
 			}
 
 			break;
@@ -579,29 +861,13 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 		}
 
 		case rdf_string: {
-			const char * end = str;
-			size_t u_oclen_offset;
-			size_t str_len;
-			uint8_t oclen = 0;
+			const char *retp = NULL;
 
-			u_oclen_offset = ubuf_size(u);
-			ubuf_append(u, &oclen, sizeof(oclen));
-
-			end += rdata_from_str_string((const uint8_t*)str, u);
-			if (end == str) {
-				res = wdns_res_parse_error;
+			res = str_to_ubuf(str, u, &retp);
+			if (res != wdns_res_success) {
 				goto err;
 			}
-			str_len = ubuf_size(u) - u_oclen_offset - 1;
-
-			oclen = (uint8_t)str_len;
-			if (oclen != str_len) {
-				res = wdns_res_parse_error;
-				goto err;
-			}
-			ubuf_data(u)[u_oclen_offset] = oclen;
-
-			str = end;
+			str = retp;
 			break;
 		}
 
@@ -664,6 +930,26 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			}
 
 			str = end;
+			break;
+		}
+
+		case rdf_svcparams: {
+			/* process ony key=val pair at a time */
+			char *buf, *tok, *endp = NULL;
+
+			buf = strndup(str, strlen(str));
+			tok = strtok_r(buf, " \t\r\n", &endp);
+
+			while (tok != NULL) {
+				res = str_to_svcparam(u, tok);
+				if (res != wdns_res_success) {
+					goto err;
+				}
+
+				tok = strtok_r(NULL, " ", &endp);
+			}
+
+			free(buf);
 			break;
 		}
 

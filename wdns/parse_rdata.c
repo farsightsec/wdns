@@ -1,3 +1,102 @@
+/*
+ * Copyright (c) 2009-2012, 2014, 2016, 2021 by Farsight Security, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * svcparam_key_validate() validates a SVCB svcparam key.
+ * Note that we're not checking things like keys being in increasing
+ * order or whether a mandatory key is actually present in the rdata.
+ */
+static bool
+svcparam_key_validate(uint16_t key, uint16_t val_len, const uint8_t *val)
+{
+	bool res = true;
+	uint8_t oclen, *ptr;
+
+	switch (key) {
+	case spr_mandatory:
+		if ((val_len % 2) != 0) {
+			res = false;
+		}
+		break;
+
+	case spr_alpn: {
+		if (val_len == 0) {
+			res = false;
+			break;
+		}
+
+		/*
+		 * For now, we only need parse 'val' for spr_alpn and must
+		 * rely on the caller to guarantee that we won't access
+		 * more bytes than there actually are.
+		 */
+		ptr = (uint8_t *)val;
+
+		while ((ptr - val) < val_len) {
+			oclen = *ptr;
+			ptr += 1 + oclen;
+		}
+
+		/*
+		 * The pair(s) of [length,alpn] must exactly fill SvcParamValue.
+		 */
+		if (ptr - val != val_len) {
+			res = false;
+		}
+		break;
+	}
+
+	case spr_nd_alpn:
+		if (val_len != 0) {
+			res = false;
+		}
+		break;
+
+	case spr_port:
+		if (val_len != 2) {
+			res = false;
+		}
+		break;
+
+	case spr_echconfig:
+		break;
+
+	case spr_ipv4hint:
+		if ((val_len % 4) != 0) {
+			res = false;
+		}
+		break;
+
+	case spr_ipv6hint:
+		if ((val_len % 16) != 0) {
+			res = false;
+		}
+		break;
+
+	case spr_invalid:
+		res = false;
+		break;
+
+	default:
+		break;
+	}
+
+	return (res);
+}
+
 /**
  * Parse the rdata component of a resource record.
  *
@@ -7,7 +106,6 @@
  * \param[in] rdata pointer to rdata
  * \param[in] rdlen
  */
-
 wdns_res
 _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 		  const uint8_t *rdata, uint16_t rdlen)
@@ -66,8 +164,10 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 			case rdf_name:
 			case rdf_uname:
 				res = wdns_unpack_name(p, eop, src, domain_name, &len);
-				if (res != wdns_res_success)
+
+				if (res != wdns_res_success) {
 					goto parse_error;
+				}
 				src_bytes -= wdns_skip_name(&src, eop);
 				if (src_bytes < 0) {
 					res = wdns_res_out_of_bounds;
@@ -148,6 +248,57 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 						res = wdns_res_out_of_bounds;
 						goto parse_error;
 					}
+				}
+				break;
+			}
+
+			case rdf_svcparams: {
+				/*
+				 * Wire format for the SvcParams portion of a
+				 * SVCB or HTTPS message, parsed per section
+				 * 2.2 of draft-ietf-dnsop-svcb-https.
+				 */
+				uint16_t key, val_len, kv_len;
+
+				while (src_bytes > 0) {
+					if (src_bytes < (int)(sizeof(key) +
+					    sizeof(val_len))) {
+						res = wdns_res_parse_error;
+						goto parse_error;
+					}
+
+					/*
+					 * A 2 octet field containing the
+					 * SvcParamKey in network byte order.
+					 */
+					(void) memcpy(&key, src, sizeof(key));
+					key = ntohs(key);
+
+					/*
+					 * A 2 octet field containing the length
+					 * of the SvcParamValue also in network
+					 * byte order.
+					 */
+					(void) memcpy(&val_len,
+					    src + sizeof (key),
+					    sizeof (val_len));
+					val_len = ntohs(val_len);
+
+					kv_len = sizeof(key) + sizeof(val_len) +
+					    val_len;
+					if (kv_len > src_bytes) {
+						res = wdns_res_out_of_bounds;
+						goto parse_error;
+					}
+
+					if (!svcparam_key_validate(key,
+					    val_len, src + sizeof(key) +
+					    sizeof(val_len))) {
+						res = wdns_res_parse_error;
+						goto parse_error;
+					}
+
+					copy_bytes(kv_len);
 				}
 				break;
 			}

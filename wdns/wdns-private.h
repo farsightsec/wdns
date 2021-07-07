@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2012-2015, 2021 by Farsight Security, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
 #endif
@@ -109,3 +125,9 @@ _wdns_rrset_to_ubuf(ubuf *, wdns_rrset_t *rrset, unsigned sec);
 
 void
 _wdns_rrset_array_to_ubuf(ubuf *, wdns_rrset_array_t *a, unsigned sec);
+
+uint16_t
+_wdns_str_to_svcparamkey(char *str);
+
+char *
+_wdns_svcparamkey_to_str(uint16_t key, char *buf, size_t len);
