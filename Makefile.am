@@ -203,6 +203,12 @@ examples_wdns_test_serialize_rrset_SOURCES = \
 	examples/wdns-hex-driver.c \
 	examples/wdns-test-serialize-rrset.c
 
+noinst_PROGRAMS += examples/wdns-mk-bitmap
+examples_wdns_mk_bitmap_LDADD = wdns/libwdns.la
+examples_wdns_mk_bitmap_SOURCES = \
+	examples/private.h \
+	examples/wdns-mk-bitmap.c
+
 #
 ##
 ### tests
