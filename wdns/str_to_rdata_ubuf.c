@@ -1010,9 +1010,13 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				uint8_t cur_window = my_rrtype / 256;
 
 				if (cur_window != window_block) {
-					ubuf_append(u, (const uint8_t*)&window_block, sizeof(window_block));
-					ubuf_append(u, (const uint8_t*)&bitmap_len, sizeof(bitmap_len));
-					ubuf_append(u, (const uint8_t*)bitmap, bitmap_len);
+					/* Per RFC6840, do not write out an empty bitmap */
+					if (bitmap_len > 0) {
+						ubuf_append(u, (const uint8_t*)&window_block, sizeof(window_block));
+						ubuf_append(u, (const uint8_t*)&bitmap_len, sizeof(bitmap_len));
+						ubuf_append(u, (const uint8_t*)bitmap, bitmap_len);
+						bitmap_len = 0;
+					}
 					memset(bitmap, 0, sizeof(bitmap));
 					window_block = cur_window;
 				}
@@ -1024,9 +1028,11 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				bitmap[byte] |= 0x80 >> bit;
 				bitmap_len = 1 + byte;
 			}
-			ubuf_append(u, (const uint8_t*)&window_block, sizeof(window_block));
-			ubuf_append(u, (const uint8_t*)&bitmap_len, sizeof(bitmap_len));
-			ubuf_append(u, (const uint8_t*)bitmap, bitmap_len);
+			if (bitmap_len != 0) {
+				ubuf_append(u, (const uint8_t*)&window_block, sizeof(window_block));
+				ubuf_append(u, (const uint8_t*)&bitmap_len, sizeof(bitmap_len));
+				ubuf_append(u, (const uint8_t*)bitmap, bitmap_len);
+			}
 
 			u16buf_destroy(&rrtypes);
 			break;
