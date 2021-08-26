@@ -33,8 +33,8 @@ _wdns_svcparamkey_to_str(uint16_t key, char *buf, size_t len)
 	case spr_port:
 		return (strncpy(buf, "port", len));
 
-	case spr_echconfig:
-		return (strncpy(buf, "echconfig", len));
+	case spr_ech:
+		return (strncpy(buf, "ech", len));
 
 	case spr_ipv4hint:
 		return (strncpy(buf, "ipv4hint", len));
@@ -65,8 +65,8 @@ _wdns_str_to_svcparamkey(char *str)
 		return (spr_nd_alpn);
 	} else if (strcmp(str, "port") == 0) {
 		return (spr_port);
-	} else if (strcmp(str, "echconfig") == 0) {
-		return (spr_echconfig);
+	} else if (strcmp(str, "ech") == 0) {
+		return (spr_ech);
 	} else if (strcmp(str, "ipv4hint") == 0) {
 		return (spr_ipv4hint);
 	} else if (strcmp(str, "ipv6hint") == 0) {

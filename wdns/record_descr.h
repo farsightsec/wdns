@@ -80,7 +80,7 @@ typedef enum {
 	spr_port = 3,
 
 	/* Encrypted ClientHello info */
-	spr_echconfig = 5,
+	spr_ech = 5,
 
 	/*
 	 * The "hint" keys convey IP addresses that clients MAY use to reach

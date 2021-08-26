@@ -165,7 +165,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		ubuf_add_fmt(u, "%hu ", val);
 		break;
 
-	case spr_echconfig:
+	case spr_ech:
 		/*
 		 * In wire format, the value of the parameter is an
 		 * ECHConfigList [ECH], including the redundant length prefix.

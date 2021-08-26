@@ -365,12 +365,12 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . echconfig=abcdefghijkl",
+		.input = "1 . ech=abcdefghijkl",
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
-		    "\x00\x05"		/* echconfig key in network order */
+		    "\x00\x05"		/* ech key in network order */
 		    "\x00\x09"		/* length of the SvcParamValue */
-		    "i\xb7\x1dy\xf8!\x8a""""9%",	/* echconfig value */
+		    "i\xb7\x1dy\xf8!\x8a""""9%",	/* ech value */
 		.expected_len = 16,
 		.expected_res = wdns_res_success,
 	},
