@@ -71,7 +71,7 @@ svcparam_key_validate(uint16_t key, uint16_t val_len, const uint8_t *val)
 		}
 		break;
 
-	case spr_echconfig:
+	case spr_ech:
 		break;
 
 	case spr_ipv4hint:

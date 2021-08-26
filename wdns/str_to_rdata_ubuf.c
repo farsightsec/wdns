@@ -245,7 +245,7 @@ str_to_svcparam(ubuf *u, char *keyval)
 		val_len = sizeof(tmp);
 		break;
 	}
-	case spr_echconfig:
+	case spr_ech:
 		/*
 		 * In wire format, the value of the parameter is an
 		 * ECHConfigList [ECH], including the redundant length prefix.
