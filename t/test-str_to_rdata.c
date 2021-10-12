@@ -253,6 +253,8 @@ static const struct test tdata[] = {
 	{ "65535 64 01 ZGVhZGJlZWZz", WDNS_TYPE_DNSKEY, WDNS_CLASS_IN, "\xff\xff@\x01""deadbeefs", 13, wdns_res_success},
 	{ "fsi.io A NS MX", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x02\x60\x01", 12, wdns_res_success},
 	{ "fsi.io", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success},
+	/* Test for not outputing an empty bitmap and test parsing a TYPE### RRtype*/
+	{ "fsi.io URI CAA TYPE258", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x01\x01\xe0", 11, wdns_res_success},
 	{ "fsi.io A NS MD MF CNAME SOA MB MG MR WKS PTR HINFO MINFO MX TXT RP AFSDB URI CAA", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x03\x7f\xdf\xe0\x01\x01\xc0", 16, wdns_res_success},
 	/* The next test case uses the same rrtypes as the previous, but
 	 * sorted by name in order to shuffle them by value.  */
