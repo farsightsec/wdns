@@ -273,7 +273,22 @@ static const struct test tdata[] = {
 	/* generic encodings */
 	{ "\\# 24 d5 79 08 01 98 4e d2 96 9a 76 0c f6 09 8e a1 4a 84 65 16 9c aa 9c 48 07", 32769, WDNS_CLASS_IN, "\xd5\x79\x08\x01\x98\x4e\xd2\x96\x9a\x76\x0c\xf6\x09\x8e\xa1\x4a\x84\x65\x16\x9c\xaa\x9c\x48\x07", 24, wdns_res_success },
 
-	/* HTTPS tests */
+	/* draft-ietf-dnsop-svcb-https-08 */
+	{ /* appendix D, figure 9 */
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "16 foo.example.org. alpn=f\\\\oo\\,bar,h2",
+		.expected = "\x00\x10"
+		    "\x03""foo\x07""example\x03org\x00"
+		    "\x00\x01"
+		    "\x00\x0c"
+		    "\x08"
+		    "f\\oo,bar"
+		    "\x02"
+		    "h2",
+		.expected_len = 35,
+		.expected_res = wdns_res_success,
+	},
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,

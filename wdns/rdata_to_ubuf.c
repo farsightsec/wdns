@@ -124,6 +124,8 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		 * SvcParamValue; otherwise, the SvcParamValue is malformed.
 		 */
 		while ((ptr - src) < len) {
+			uint8_t l;
+
 			oclen = *ptr;
 			ptr += 1;	/* skip the length */
 
@@ -131,8 +133,23 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 				return (wdns_res_parse_error);
 			}
 
-			(void) rdata_to_str_string_unquoted(ptr, oclen, u);
-			ptr += oclen;
+			l = oclen;
+
+			while (l--) {
+				uint8_t c = *ptr++;
+
+				if (c == '"') {
+				        ubuf_add_cstr(u, "\\\"");
+				} else if (c == '\\') {
+				        ubuf_add_cstr(u, "\\\\");
+				} else if (c == ',') {
+					ubuf_add_fmt(u, "\\,");
+				} else if (c >= ' ' && c <= '~') {
+				        ubuf_append(u, &c, 1);
+				} else {
+				        ubuf_add_fmt(u, "\\%.3d", c);
+				}
+			}
 
 			if ((ptr - src) < len) {
 				ubuf_add(u, ',');
@@ -229,7 +246,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		break;
 
 	default:
-		(void) rdata_to_str_string(ptr, len, u);
+		(void) rdata_to_str_string_unquoted(ptr, len, u);
 		break;
 	}
 
@@ -483,7 +500,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			/*
 			 * Wire format for the SvcParams portion of a
 			 * SVCB or HTTPS message, parsed per section
-			 * 2.2 of draft-ietf-dnsop-svcb-https.
+			 * 2.2 of draft-ietf-dnsop-svcb-https-08.
 			 */
 			uint16_t key, val_len;
 

@@ -130,9 +130,9 @@ str_to_ubuf(const char *str, ubuf *u, const char **retp)
 }
 
 /*
- * str_to_svcparam() translates a "key=val" string to the SVCB/HTTPS wire format
- * as specified in draft-ietf-dnsop-svcb-https, section 2.2. Note that some keys
- * don't require a value while some can have more than one.
+ * str_to_svcparam() translates a "key=val" string to the SVCB/HTTPS wire
+ * format as specified in draft-ietf-dnsop-svcb-https-08, section 2.2. Note
+ * that some keys don't require a value while others can have more than one.
  *
  * See svcparam_to_str() for the opposite functionality.
  */
@@ -197,7 +197,7 @@ str_to_svcparam(ubuf *u, char *keyval)
 		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
 		break;
 
-	case spr_alpn:
+	case spr_alpn: {
 		/*
 		 * The wire format value for "alpn" consists of at least one
 		 * "alpn-id" prefixed by its length as a single octet, and
@@ -205,23 +205,57 @@ str_to_svcparam(ubuf *u, char *keyval)
 		 * SvcParamValue. These pairs MUST exactly fill the
 		 * SvcParamValue; otherwise, the SvcParamValue is malformed.
 		 */
-		tok = strtok_r(NULL, ",", &endp);
+		char *src;
+		int len;
+		ubuf *v;
+		uint8_t c, bytes;
+
+		tok = strtok_r(NULL, " \t\r\n", &endp);
 		if (tok == NULL || *tok == '\0') {
 			return (wdns_res_parse_error);
 		}
 
-		do {
-			tok_len = strlen(tok);
-			if (tok_len > UINT8_MAX) {
-				return (wdns_res_parse_error);
+		src = strdup(tok);
+		len = strlen(src);
+
+		v = ubuf_new();
+		bytes = 0;
+
+		for (int i = 0; i < len; i++) {
+			c = src[i];
+
+			if (c == '\\') {
+				/* shouldn't happen, but just to be safe.. */
+				if (++i >= len) {
+					return (wdns_res_parse_error);
+				}
+				c = src[i];
+				ubuf_append(v, &c, 1);
+				bytes++;
+			} else if (c == ',') {
+				ubuf_append(u, (uint8_t *)&bytes,
+				    sizeof (uint8_t));
+				ubuf_append(u, (uint8_t *)ubuf_data(v), bytes);
+
+				ubuf_reset(v);
+				val_len += bytes + sizeof(uint8_t);;
+				bytes = 0;
+			} else {
+				ubuf_append(v, &c, 1);
+				bytes++;
 			}
+		}
 
-			ubuf_append(u, (uint8_t *)&tok_len, sizeof (uint8_t));
-			ubuf_append(u, (uint8_t *)tok, tok_len);
-			val_len += sizeof(uint8_t) + tok_len;
-		} while ((tok = strtok_r(NULL, ",", &endp)) != NULL);
+		if (bytes > 0) {
+			val_len += bytes + sizeof(uint8_t);;
+			ubuf_append(u, (uint8_t *)&bytes, sizeof (uint8_t));
+			ubuf_append(u, (uint8_t *)ubuf_data(v), bytes);
+		}
+
+		ubuf_destroy(&v);
+		free(src);
 		break;
-
+	}
 	case spr_port: {
 		unsigned long int tmpul;
 		char *endport;

@@ -39,7 +39,7 @@ svcparam_key_validate(uint16_t key, uint16_t val_len, const uint8_t *val)
 		}
 
 		/*
-		 * For now, we only need parse 'val' for spr_alpn and must
+		 * For now, we only need to parse 'val' for spr_alpn and must
 		 * rely on the caller to guarantee that we won't access
 		 * more bytes than there actually are.
 		 */
@@ -256,7 +256,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 				/*
 				 * Wire format for the SvcParams portion of a
 				 * SVCB or HTTPS message, parsed per section
-				 * 2.2 of draft-ietf-dnsop-svcb-https.
+				 * 2.2 of draft-ietf-dnsop-svcb-https-08.
 				 */
 				uint16_t key, val_len, kv_len;
 
