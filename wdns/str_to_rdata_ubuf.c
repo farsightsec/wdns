@@ -204,11 +204,16 @@ str_to_svcparam(ubuf *u, char *keyval)
 		 * these length-value pairs are concatenated to form the
 		 * SvcParamValue. These pairs MUST exactly fill the
 		 * SvcParamValue; otherwise, the SvcParamValue is malformed.
+		 *
+		 * Note that we always wrap alpn values around double quotes
+		 * in presentation format.
 		 */
 		char *src;
 		int len;
 		ubuf *v;
 		uint8_t c, bytes;
+		bool is_quoted;
+		int i = 0;
 
 		tok = strtok_r(NULL, " \t\r\n", &endp);
 		if (tok == NULL || *tok == '\0') {
@@ -221,10 +226,19 @@ str_to_svcparam(ubuf *u, char *keyval)
 		v = ubuf_new();
 		bytes = 0;
 
-		for (int i = 0; i < len; i++) {
+		if (src[i] == '"') {
+			is_quoted = true;
+			i++;
+		} else {
+			is_quoted = false;
+		}
+
+		for (; i < len; i++) {
 			c = src[i];
 
-			if (c == '\\') {
+			if (c == '"' && is_quoted) {
+				break;
+			} else if (c == '\\') {
 				/* shouldn't happen, but just to be safe.. */
 				if (++i >= len) {
 					return (wdns_res_parse_error);
@@ -233,12 +247,17 @@ str_to_svcparam(ubuf *u, char *keyval)
 				ubuf_append(v, &c, 1);
 				bytes++;
 			} else if (c == ',') {
+				/*
+				 * An unescaped comma dividing two values.
+				 * Add the current 'v' to 'u' and reset it for
+				 * the next value.
+				 */
 				ubuf_append(u, (uint8_t *)&bytes,
 				    sizeof (uint8_t));
 				ubuf_append(u, (uint8_t *)ubuf_data(v), bytes);
 
 				ubuf_reset(v);
-				val_len += bytes + sizeof(uint8_t);;
+				val_len += bytes + sizeof(uint8_t);
 				bytes = 0;
 			} else {
 				ubuf_append(v, &c, 1);
@@ -339,6 +358,9 @@ str_to_svcparam(ubuf *u, char *keyval)
 		 * The rfc doesn't specify whether these types of keys can have
 		 * multiple values or not, so for now we treat it as a single
 		 * string (that could contain multiple comma separated values).
+		 *
+		 * Note that we always wrap keyNNNN values around double quotes
+		 * in presentation format.
 		*/
 		tok = strtok_r(NULL, " ", &endp);
 		if (tok == NULL || *tok == '\0') {

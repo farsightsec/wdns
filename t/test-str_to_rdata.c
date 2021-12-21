@@ -277,7 +277,7 @@ static const struct test tdata[] = {
 	{ /* appendix D, figure 9 */
 		.rrtype = WDNS_TYPE_SVCB,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "16 foo.example.org. alpn=f\\\\oo\\,bar,h2",
+		.input = "16 foo.example.org. alpn=\"f\\\\oo\\,bar,h2\"",
 		.expected = "\x00\x10"
 		    "\x03""foo\x07""example\x03org\x00"
 		    "\x00\x01"
@@ -292,7 +292,7 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . alpn=h2",
+		.input = "1 . alpn=\"h2\"",
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x01"		/* alpn in network order */
@@ -304,7 +304,7 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . alpn=h2,h3",
+		.input = "1 . alpn=\"h2,h3\"",
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x01"		/* alpn in network order */
@@ -317,7 +317,7 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . alpn=h2,h3 no-default-alpn",
+		.input = "1 . alpn=\"h2,h3\" no-default-alpn",
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x01"		/* alpn in network order */
@@ -392,7 +392,7 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . mandatory=port alpn=h2,h3 port=1111"
+		.input = "1 . mandatory=port alpn=\"h2,h3\" port=1111"
 		    " ipv4hint=192.168.0.1,192.168.0.2"
 		    " ipv6hint=2001:1:2:3:4:5:6:7",
 		.expected = "\x00\x01"	/* SvcPriority */
@@ -420,7 +420,7 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . key10=222",
+		.input = "1 . key10=\"222\"",
 		.expected = "\x00\x01"	/* SvcPriority */
 		    "\x00"		/* Target */
 		    "\x00\x0a"		/* '10' in network order */

@@ -123,6 +123,8 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		 * SvcParamValue. These pairs MUST exactly fill the
 		 * SvcParamValue; otherwise, the SvcParamValue is malformed.
 		 */
+		ubuf_add_fmt(u, "\"");
+
 		while ((ptr - src) < len) {
 			uint8_t l;
 
@@ -154,9 +156,10 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 			if ((ptr - src) < len) {
 				ubuf_add(u, ',');
 			} else {
-				ubuf_add(u, ' ');
+				ubuf_add_fmt(u, "\"");
 			}
 		}
+		ubuf_add(u, ' ');
 		break;
 
 	case spr_nd_alpn:
@@ -246,7 +249,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		break;
 
 	default:
-		(void) rdata_to_str_string_unquoted(ptr, len, u);
+		(void) rdata_to_str_string(ptr, len, u);
 		break;
 	}
 

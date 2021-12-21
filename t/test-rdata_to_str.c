@@ -331,7 +331,7 @@ struct test tdata[] = {
 		.input_len = 28,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_SVCB,
-		.expected = "1 foo.example.com. key667=hello",
+		.expected = "1 foo.example.com. key667=\"hello\"",
 	},
 
 	{ /* appendix D, figure 5 */
@@ -343,7 +343,7 @@ struct test tdata[] = {
 		.input_len = 32,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_SVCB,
-		.expected = "1 foo.example.com. key667=hello\\210qoo",
+		.expected = "1 foo.example.com. key667=\"hello\\210qoo\"",
 	},
 
 	{ /* appendix D, figure 6 */
@@ -386,7 +386,7 @@ struct test tdata[] = {
                 .input_len = 35,
                 .rrclass = WDNS_CLASS_IN,
                 .rrtype = WDNS_TYPE_SVCB,
-                .expected = "16 foo.example.org. alpn=f\\\\oo\\,bar,h2",
+                .expected = "16 foo.example.org. alpn=\"f\\\\oo\\,bar,h2\"",
         },
 
 	{ /* HTTPS test with alpn and ipv4hint */
@@ -401,7 +401,7 @@ struct test tdata[] = {
 		.input_len = 18,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_HTTPS,
-		.expected = "1 . alpn=h2 ipv4hint=192.168.0.1",
+		.expected = "1 . alpn=\"h2\" ipv4hint=192.168.0.1",
 	},
 
 	{ /* HTTPS test for an arbitrary key type 9 */
@@ -416,7 +416,7 @@ struct test tdata[] = {
 		.input_len = 17,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_HTTPS,
-		.expected = "1 . alpn=h2 key9=any",
+		.expected = "1 . alpn=\"h2\" key9=\"any\"",
 	},
 
 	{ 0 }
