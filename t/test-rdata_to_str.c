@@ -334,18 +334,6 @@ struct test tdata[] = {
 		.expected = "1 foo.example.com. key667=\"hello\"",
 	},
 
-	{ /* appendix D, figure 5 */
-		.input = "\x00\x01"				/* priority */
-		    "\x03""foo\x07""example\x03""com\x00"	/* target */
-		    "\x02\x9b"					/* key667 */
-		    "\x00\x09"					/* length.. */
-		    "hello\xd2qoo",				/* ..val */
-		.input_len = 32,
-		.rrclass = WDNS_CLASS_IN,
-		.rrtype = WDNS_TYPE_SVCB,
-		.expected = "1 foo.example.com. key667=\"hello\\210qoo\"",
-	},
-
 	{ /* appendix D, figure 6 */
 		.input = "\x00\x01"				/* priority */
 		    "\x03""foo\x07""example\x03""com\x00"	/* target */

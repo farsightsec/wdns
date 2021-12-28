@@ -88,6 +88,9 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 	uint16_t val;
 	uint8_t oclen;
 
+	assert(key != spr_invalid);
+	assert(u != NULL);
+
 	switch (key) {
 	case spr_mandatory:
 		while ((ptr - src) < len) {
@@ -115,53 +118,6 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		}
 		break;
 
-	case spr_alpn:
-		/*
-		 * The wire format value for "alpn" consists of at least one
-		 * "alpn-id" prefixed by its length as a single octet, and
-		 * these length-value pairs are concatenated to form the
-		 * SvcParamValue. These pairs MUST exactly fill the
-		 * SvcParamValue; otherwise, the SvcParamValue is malformed.
-		 */
-		ubuf_add_fmt(u, "\"");
-
-		while ((ptr - src) < len) {
-			uint8_t l;
-
-			oclen = *ptr;
-			ptr += 1;	/* skip the length */
-
-			if ((ptr + oclen - src) > len) {
-				return (wdns_res_parse_error);
-			}
-
-			l = oclen;
-
-			while (l--) {
-				uint8_t c = *ptr++;
-
-				if (c == '"') {
-				        ubuf_add_cstr(u, "\\\"");
-				} else if (c == '\\') {
-				        ubuf_add_cstr(u, "\\\\");
-				} else if (c == ',') {
-					ubuf_add_fmt(u, "\\,");
-				} else if (c >= ' ' && c <= '~') {
-				        ubuf_append(u, &c, 1);
-				} else {
-				        ubuf_add_fmt(u, "\\%.3d", c);
-				}
-			}
-
-			if ((ptr - src) < len) {
-				ubuf_add(u, ',');
-			} else {
-				ubuf_add_fmt(u, "\"");
-			}
-		}
-		ubuf_add(u, ' ');
-		break;
-
 	case spr_nd_alpn:
 		/*
 		 * For "no-default-alpn", the presentation and wire format
@@ -169,6 +125,9 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		 * an RR, "alpn" must also be specified in order for the RR to
 		 * be "self-consistent".
 		 */
+		if (src != NULL) {
+			return (wdns_res_parse_error);
+		}
 		ubuf_add(u, ' ');
 		break;
 
@@ -245,11 +204,75 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		}
 		break;
 
-	case spr_invalid:
+	/*
+	 * The wire format value for "alpn" consists of at least one * "alpn-id"
+	 * prefixed by its length as a single octet, and these length-value
+	 * pairs are concatenated to form the SvcParamValue. These MUST exactly
+	 * fill the SvcParamValue; otherwise, the SvcParamValue is malformed.
+	 *
+	 * Note that we always wrap such values around double quotes in
+	 * presentation format.
+	 */
+	case spr_alpn:
+		ubuf_add_fmt(u, "\"");
+
+		while ((ptr - src) < len) {
+			uint8_t l;
+
+			oclen = *ptr;
+			ptr += 1;       /* skip the length */
+
+			if ((ptr + oclen - src) > len) {
+				return (wdns_res_parse_error);
+			}
+
+			l = oclen;
+
+			while (l--) {
+				uint8_t c = *ptr++;
+
+				if (c == '"') {
+					ubuf_add_cstr(u, "\\\"");
+				} else if (c == '\\') {
+					ubuf_add_cstr(u, "\\\\");
+				} else if (c == ',') {
+					ubuf_add_fmt(u, "\\,");
+				} else if (c >= ' ' && c <= '~') {
+					ubuf_append(u, &c, 1);
+				} else {
+					ubuf_add_fmt(u, "\\%.3d", c);
+				}
+			}
+
+			if ((ptr - src) < len) {
+				ubuf_add(u, ',');
+			} else {
+				ubuf_add_fmt(u, "\"");
+			}
+		}
+		ubuf_add(u, ' ');
 		break;
 
 	default:
-		(void) rdata_to_str_string(ptr, len, u);
+		ubuf_add_fmt(u, "\"");
+
+		while ((ptr - src) < len) {
+			uint8_t c = *ptr++;
+
+			if (c == '"') {
+				ubuf_add_cstr(u, "\\\"");
+			} else if (c == '\\') {
+				ubuf_add_cstr(u, "\\\\");
+			} else if (c == ',') {
+				ubuf_add_fmt(u, "\\,");
+			} else if (c >= ' ' && c <= '~') {
+				ubuf_append(u, &c, 1);
+			} else {
+				ubuf_add_fmt(u, "\\%.3d", c);
+			}
+		}
+
+		ubuf_add_fmt(u, "\"");
 		break;
 	}
 
@@ -506,6 +529,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			 * 2.2 of draft-ietf-dnsop-svcb-https-08.
 			 */
 			uint16_t key, val_len;
+			int prev_key = - 1;
 
 			while (src_bytes > 0) {
 				char key_str[16] = { 0 };
@@ -520,6 +544,15 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 				if (_wdns_svcparamkey_to_str(key, key_str,
 				    sizeof(key_str)) == NULL) {
+					goto err;
+				}
+
+				if (key == spr_invalid) {
+					goto err;
+				}
+
+				/* param keys must be in ascending order */
+				if (key <= prev_key) {
 					goto err;
 				}
 
