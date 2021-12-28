@@ -131,7 +131,8 @@ str_to_ubuf(const char *str, ubuf *u, const char **retp)
 
 /*
  * str_to_svcparam() translates a "key=val" string to the SVCB/HTTPS wire
- * format as specified in draft-ietf-dnsop-svcb-https-08, section 2.2.
+ * format as specified in draft-ietf-dnsop-svcb-https-08, section 2.2. Note
+ * that some keys don't require a value while others can have more than one.
  *
  * See svcparam_to_str() for the opposite functionality.
  */
@@ -257,7 +258,7 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 		break;
 	}
 	/*
-	 * The wire format value for "alpn" consists of at least one * "alpn-id"
+	 * The wire format value for "alpn" consists of at least one "alpn-id"
 	 * prefixed by its length as a single octet, and these length-value
 	 * pairs are concatenated to form the SvcParamValue. These MUST exactly
 	 * fill the SvcParamValue; otherwise, the SvcParamValue is malformed.
@@ -265,8 +266,8 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 	 * We parse arbitrary keyNNNN=val pairs in a similar way, but without
 	 * length-value paris (just one whole value).
 	 *
-	 * Note that we always wrap the two value types around double quotes in
-	 * presentation format, since escaped spaces and commas are allowed.
+	 * Note that we always wrap these two value types around double quotes
+	 * in presentation format, as escaped spaces and commas are allowed.
 	 */
 	case spr_alpn:
 	default: {

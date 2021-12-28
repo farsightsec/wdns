@@ -214,7 +214,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 	 * presentation format.
 	 */
 	case spr_alpn:
-		ubuf_add_fmt(u, "\"");
+		ubuf_add(u, '"');
 
 		while ((ptr - src) < len) {
 			uint8_t l;
@@ -254,7 +254,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		break;
 
 	default:
-		ubuf_add_fmt(u, "\"");
+		ubuf_add(u, '"');
 
 		while ((ptr - src) < len) {
 			uint8_t c = *ptr++;
@@ -272,7 +272,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 			}
 		}
 
-		ubuf_add_fmt(u, "\"");
+		ubuf_add(u, '"');
 		break;
 	}
 

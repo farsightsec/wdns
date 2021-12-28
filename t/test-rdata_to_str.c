@@ -315,7 +315,7 @@ struct test tdata[] = {
 		    "\x03""foo\x07""example\x03""com\x00"	/* target */
 		    "\x00\x03"					/* port */
 		    "\x00\x02"					/* length.. */
-		    "\x00\x35",					/* ..val */
+		    "\x00\x35",					/* ..value */
 		.input_len = 25,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_SVCB,
@@ -325,23 +325,25 @@ struct test tdata[] = {
 	{ /* appendix D, figure 4 */
 		.input = "\x00\x01"				/* priority */
 		    "\x03""foo\x07""example\x03""com\x00"	/* target */
-		    "\x02\x9b"					/* key667 */
+		    "\x02\x9b"					/* 667 */
 		    "\x00\x05"					/* length.. */
-		    "hello",					/* ..val */
+		    "hello",					/* ..value */
 		.input_len = 28,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_SVCB,
 		.expected = "1 foo.example.com. key667=\"hello\"",
 	},
 
+	/* appendix D, figure 5 is omitted as it fails the round trip test */
+
 	{ /* appendix D, figure 6 */
 		.input = "\x00\x01"				/* priority */
 		    "\x03""foo\x07""example\x03""com\x00"	/* target */
 		    "\x00\x06"					/* ipv6hint */
 		    "\x00\x20"					/* length.. */
-		    "\x20\x01\x0d\xb8\x00\x00\x00\x00"		/* addr */
+		    "\x20\x01\x0d\xb8\x00\x00\x00\x00"		/* ..value */
 		    "\x00\x00\x00\x00\x00\x00\x00\x01"
-		    "\x20\x01\x0d\xb8\x00\x00\x00\x00"		/* addr */
+		    "\x20\x01\x0d\xb8\x00\x00\x00\x00"
 		    "\x00\x00\x00\x00\x00\x53\x00\x01",
 		.input_len = 55,
 		.rrclass = WDNS_CLASS_IN,
@@ -354,7 +356,7 @@ struct test tdata[] = {
 		    "\x07""example\x03""com\x00"		/* target */
 		    "\x00\x06"					/* ipv6hint */
 		    "\x00\x10"					/* length.. */
-		    "\x00\x00\x00\x00\x00\x00\x00\x00"		/* ..val */
+		    "\x00\x00\x00\x00\x00\x00\x00\x00"		/* ..value */
 		    "\x00\x00\xff\xff\xc6\x33\x64\x64",
 		.input_len = 35,
 		.rrclass = WDNS_CLASS_IN,
@@ -362,12 +364,14 @@ struct test tdata[] = {
 		.expected = "1 example.com. ipv6hint=::ffff:198.51.100.100",
 	},
 
+	/* appendix D, figure 8 is omitted as it relies on re-ordering params */
+
 	{ /* appendix D, figure 9 (reverse test) */
-                .input = "\x00\x10"
-                    "\x03""foo\x07""example\x03org\x00"
-                    "\x00\x01"
-                    "\x00\x0c"
-                    "\x08"
+                .input = "\x00\x10"				/* priority */
+                    "\x03""foo\x07""example\x03org\x00"		/* target */
+                    "\x00\x01"					/* alpn */
+                    "\x00\x0c"					/* length.. */
+                    "\x08"					/* ..value */
                     "f\\oo,bar"
                     "\x02"
                     "h2",
@@ -378,14 +382,14 @@ struct test tdata[] = {
         },
 
 	{ /* HTTPS test with alpn and ipv4hint */
-		.input = "\x00\x01"	/* priority */
-		    "\x00"		/* Target */
-		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x03"		/* length of the alpnid in net order */
-		    "\x02\x68\x32"	/* length-value */
-		    "\x00\x04"		/* ipv4hint in network order */
-		    "\x00\x04"		/* length of ipv4hint in net order */
-		    "\xc0\xa8\x00\x01",	/* ipv4hint */
+		.input = "\x00\x01"				/* priority */
+		    "\x00"					/* target */
+		    "\x00\x01"					/* alpn */
+		    "\x00\x03"					/* length.. */
+		    "\x02\x68\x32"				/* ..value */
+		    "\x00\x04"					/* ipv4hint */
+		    "\x00\x04"					/* length.. */
+		    "\xc0\xa8\x00\x01",				/* ..value */
 		.input_len = 18,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_HTTPS,
@@ -393,14 +397,14 @@ struct test tdata[] = {
 	},
 
 	{ /* HTTPS test for an arbitrary key type 9 */
-		.input = "\x00\x01"	/* priority */
-		    "\x00"		/* Target */
-		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x03"		/* length of the alpnid in net order */
-		    "\x02\x68\x32"	/* length-value */
-		    "\x00\x09"		/* key9 in network order */
-		    "\x00\x03"		/* length of key9 in net order */
-		    "\x61\x6e\x79",	/* length-value */
+		.input = "\x00\x01"				/* priority */
+		    "\x00"					/* target */
+		    "\x00\x01"					/* alpn */
+		    "\x00\x03"					/* length.. */
+		    "\x02\x68\x32"				/* ..value */
+		    "\x00\x09"					/* 9 */
+		    "\x00\x03"					/* length.. */
+		    "\x61\x6e\x79",				/* ..value */
 		.input_len = 17,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_HTTPS,
@@ -409,7 +413,6 @@ struct test tdata[] = {
 
 	{ 0 }
 };
-
 
 static size_t
 test_rdata_to_str(void) {
