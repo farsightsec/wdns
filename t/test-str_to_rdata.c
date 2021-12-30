@@ -301,15 +301,15 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . alpn=\"h2, h3\" no-default-alpn",
+		.input = "1 . alpn=\"h2,h3\" no-default-alpn",
 		.expected = "\x00\x01"			/* priority */
 		    "\x00"				/* target */
 		    "\x00\x01"				/* alpn */
-		    "\x00\x07"				/* length.. */
+		    "\x00\x06"				/* length.. */
 		    "\x02h2"				/* ..value */
-		    "\x03 h3"				/* ..value */
+		    "\x02h3"				/* ..value */
 		    "\x00\x02",				/* no-default-alpn */
-		.expected_len = 16,
+		.expected_len = 15,
 		.expected_res = wdns_res_success,
 	},
 	{
@@ -413,12 +413,11 @@ static const struct test tdata[] = {
 		.expected_len = 10,
 		.expected_res = wdns_res_success,
 	},
-
 	/* draft-ietf-dnsop-svcb-https-08 */
 	{ /* appendix D, figure 9 */
 		.rrtype = WDNS_TYPE_SVCB,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "16 foo.example.org. alpn=\"f\\\\oo\\,bar,h2\"",
+		.input = "16 foo.example.org. alpn=\"f\\\\\\\\oo\\\\,bar,h2\"",
 		.expected = "\x00\x10"			/* priority */
 		    "\x03""foo\x07""example\x03org\x00"	/* target */
 		    "\x00\x01"				/* alpn */
@@ -429,36 +428,6 @@ static const struct test tdata[] = {
 		    "h2",
 		.expected_len = 35,
 		.expected_res = wdns_res_success,
-	},
-	{ /* fail case: parameters not in ascending order */
-		.rrtype = WDNS_TYPE_HTTPS,
-		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . alpn=h2 mandatory=alpn",
-		.expected = "\x00\x01"			/* priority */
-		    "\x00"				/* target */
-		    "\x00\x01"				/* alpn */
-		    "\x00\x02"				/* length.. */
-		    "\x02h2"				/* ..value */
-		    "\x00\x00"				/* mandatory */
-		    "\x00\x02"				/* length.. */
-		    "\x00\x01",				/* ..value */
-		.expected_len = 0,
-		.expected_res = wdns_res_parse_error,
-	},
-	{ /* fail case: repeated earameters */
-		.rrtype = WDNS_TYPE_HTTPS,
-		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . alpn=h2 alpn=h3",
-		.expected = "\x00\x01"			/* priority */
-		    "\x00"				/* target */
-		    "\x00\x01"				/* alpn */
-		    "\x00\x02"				/* length.. */
-		    "\x02h2"				/* ..value */
-		    "\x00\x01"				/* alpn */
-		    "\x00\x02"				/* length.. */
-		    "\x02h3",				/* ..value */
-		.expected_len = 0,
-		.expected_res = wdns_res_parse_error,
 	},
 	{ 0 }
 };

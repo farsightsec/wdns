@@ -247,32 +247,14 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 			if ((ptr - src) < len) {
 				ubuf_add(u, ',');
 			} else {
-				ubuf_add_fmt(u, "\"");
+				ubuf_add(u, '"');
 			}
 		}
 		ubuf_add(u, ' ');
 		break;
 
 	default:
-		ubuf_add(u, '"');
-
-		while ((ptr - src) < len) {
-			uint8_t c = *ptr++;
-
-			if (c == '"') {
-				ubuf_add_cstr(u, "\\\"");
-			} else if (c == '\\') {
-				ubuf_add_cstr(u, "\\\\");
-			} else if (c == ',') {
-				ubuf_add_fmt(u, "\\,");
-			} else if (c >= ' ' && c <= '~') {
-				ubuf_append(u, &c, 1);
-			} else {
-				ubuf_add_fmt(u, "\\%.3d", c);
-			}
-		}
-
-		ubuf_add(u, '"');
+		rdata_to_str_string(ptr, len, u);
 		break;
 	}
 

@@ -269,99 +269,78 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 	 * Note that we always wrap these two value types around double quotes
 	 * in presentation format, as escaped spaces and commas are allowed.
 	 */
-	case spr_alpn:
-	default: {
-		uint8_t c, bytes;
-		bool quoted;
-		char *src;
-		int len, i;
-		ubuf *v;
+	case spr_alpn: {
+		ubuf *v = ubuf_new();
+		char *dup;
+		size_t i, len, offset;
+		uint8_t oclen;
 
-		src = strdup(val);
-		len = strlen(src);
-
-		v = ubuf_new();
-		bytes = 0;
-		i = 0;
-
-		if (src[i] == '"') {
-			quoted = true;
-			i++;
-		} else {
-			quoted = false;
+		if (rdata_from_str_string((const uint8_t *)val, v) <= 0) {
+			ubuf_destroy(&v);
+			return (wdns_res_parse_error);
 		}
 
-		for (; i < len; i++) {
-			c = src[i];
+		dup = strdup(ubuf_cstr(v));
+		ubuf_destroy(&v);
 
-			/* check for escaped characters first */
+		len = strlen(dup);
+
+		offset = ubuf_size(u);
+		oclen = 0;
+		ubuf_append(u, &oclen, sizeof (uint8_t));
+
+		/*
+		 * Parse the resulting string for escaped commas and
+		 * backslashes.
+		 */
+		for (i = 0; i < len; i++) {
+			char c = dup[i];
+
 			if (c == '\\') {
 				/* shouldn't happen, but just to be safe.. */
 				if (++i >= len) {
 					return (wdns_res_parse_error);
 				}
-				c = src[i];
-				ubuf_append(v, &c, 1);
-				bytes++;
-				continue;
-			}
+				c = dup[i];
+				ubuf_append(u, (uint8_t *)&c, 1);
+				oclen++;
 
-			/*
-			 * We're at the end of a param if we find:
-			 *  - an unescaped, matching double quote;
-			 *  - a blank space outside of double quotes.
-			 */
-			if (c == '"') {
-				if (quoted) {
-					break;
-				} else {
-					return (wdns_res_parse_error);
-				}
-			}
-			if (c == ' ') {
-			       	if (!quoted) {
-					break;
-				}
-			}
+			} else if (c == ',') {
+				/*
+				 * An unescaped comma separates two values.
+				 */
+				ubuf_data(u)[offset] = oclen;
+				val_len += oclen + sizeof (uint8_t);
 
-			/*
-			 * An unescaped comma separates two values. Add the
-			 * current 'v' to 'u' and reset it for the next value.
-			 */
-			if (c == ',') {
-				if (key == spr_alpn) {
-					ubuf_append(u, (uint8_t *)&bytes,
-					    sizeof (uint8_t));
-				}
-				ubuf_append(u, (uint8_t *)ubuf_data(v), bytes);
-
-				ubuf_reset(v);
-				val_len += bytes;
-
-				if (key == spr_alpn) {
-					val_len += sizeof (uint8_t);
-				}
-				bytes = 0;
+				offset = ubuf_size(u);
+				oclen = 0;
+				ubuf_append(u, &oclen, sizeof (uint8_t));
 			} else {
-				ubuf_append(v, &c, 1);
-				bytes++;
+				ubuf_append(u, (uint8_t *)&c, 1);
+				oclen++;
 			}
 		}
 
-		if (bytes > 0) {
-			val_len += bytes;
-
-			if (key == spr_alpn) {
-				val_len += sizeof (uint8_t);
-				ubuf_append(u, (uint8_t *)&bytes,
-				    sizeof (uint8_t));
-			}
-
-			ubuf_append(u, (uint8_t *)ubuf_data(v), bytes);
+		if (oclen != 0) {
+			ubuf_data(u)[offset] = oclen;
+			val_len += oclen + sizeof (uint8_t);
 		}
 
+		free(dup);
+		break;
+	}
+	default: {
+		ubuf *v = ubuf_new();
+
+		if (rdata_from_str_string((const uint8_t *)val, v) == 0) {
+			ubuf_destroy(&v);
+			fprintf(stderr, "ERRR (%s)\n", val);
+			return (wdns_res_parse_error);
+		}
+
+		val_len = ubuf_size(v);
+		ubuf_append(u, (uint8_t *)ubuf_data(v), val_len);
 		ubuf_destroy(&v);
-		free(src);
 		break;
 		}
 	}
@@ -971,18 +950,18 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 		}
 
 		case rdf_svcparams: {
-			char *start, *eol;
-			int prev_key = -1;
+			const char *start, *eol;
 
-			eol = (char *)str;
+			eol = str;
 			while (eol != NULL && *eol != '\0') {
 				eol++;
 			}
 
-			start = (char *)str;
+			start = str;
 
 			while (start < eol) {
-				char *key, *val, *end, *dup;
+				const char *key, *val, *end;
+				char *dup;
 				uint16_t k;
 				bool quotes;
 
@@ -1016,21 +995,12 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				/*
 				 * Fail if the key:
 				 *  - is invalid;
-				 *  - it's numeric value is smaller than the
-				 *    previous key (i.e they're not in
-				 *    ascending order);
 				 *  - doesn't require a value but has one;
 				 *  - requires a value but has none.
 				 */
 				if (k == spr_invalid) {
 					return (wdns_res_parse_error);
 				}
-
-				if (k <= prev_key) {
-					return (wdns_res_parse_error);
-				}
-
-				prev_key = k;
 
 				if (*val == ' ' || val == eol) {
 					if (k != spr_nd_alpn) {
