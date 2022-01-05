@@ -1049,13 +1049,13 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				}
 
 				dup = strndup(val, end - val);
-
 				res = str_to_svcparam(u, k, dup);
+				free(dup);
+
 				if (res != wdns_res_success) {
 					return (res);
 				}
 
-				free(dup);
 				start = end;
 			}
 

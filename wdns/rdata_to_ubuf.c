@@ -237,10 +237,13 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 				 *
 				 * Here's an example case:
 				 *  (a) wire format "f\oo,bar"
-				 *  (b) represented as "f\\oo\\,bar"
-				 *  (c) presentation format "f\\\\oo\\\\,bar"
-				 *  (d) as a C character string
-				 *      "f\\\\\\\\oo\\\\,bar"
+				 *  (b) represented as "f\\oo\,bar"
+				 *  (c) presentation format "f\\\\oo\\,bar"
+				 *
+				 * Furthermore, these escape sequences are
+				 * expressed as C string literals below,
+				 * requiring another round of escaping for the
+				 * backslashes.
 				 */
 				uint8_t c = *ptr++;
 
