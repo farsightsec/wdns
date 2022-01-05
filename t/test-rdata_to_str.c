@@ -334,7 +334,17 @@ struct test tdata[] = {
 		.expected = "1 foo.example.com. key667=\"hello\"",
 	},
 
-	/* appendix D, figure 5 is omitted as it fails the round trip test */
+	{ /* appendix D, figure 5 */
+		.input = "\x00\x01"				/* priority */
+		    "\x03""foo\x07""example\x03""com\x00"	/* target */
+		    "\x02\x9b"					/* 667 */
+		    "\x00\x09"					/* length.. */
+		    "hello\xd2qoo",				/* ..value */
+		.input_len = 32,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_SVCB,
+		.expected = "1 foo.example.com. key667=\"hello\\210qoo\"",
+	},
 
 	{ /* appendix D, figure 6 */
 		.input = "\x00\x01"				/* priority */
@@ -378,7 +388,7 @@ struct test tdata[] = {
                 .input_len = 35,
                 .rrclass = WDNS_CLASS_IN,
                 .rrtype = WDNS_TYPE_SVCB,
-                .expected = "16 foo.example.org. alpn=\"f\\\\oo\\,bar,h2\"",
+		.expected = QUOTE(16 foo.example.org. alpn="f\\\\oo\\,bar,h2"),
         },
 
 	{ /* HTTPS test with alpn and ipv4hint */

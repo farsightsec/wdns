@@ -271,7 +271,6 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 	 */
 	case spr_alpn: {
 		ubuf *v = ubuf_new();
-		char *dup;
 		size_t i, len, offset;
 		uint8_t oclen;
 
@@ -280,11 +279,9 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 			return (wdns_res_parse_error);
 		}
 
-		dup = strdup(ubuf_cstr(v));
-		ubuf_destroy(&v);
+		len = ubuf_size(v);
 
-		len = strlen(dup);
-
+		/* append a 'length' byte to be updated later */
 		offset = ubuf_size(u);
 		oclen = 0;
 		ubuf_append(u, &oclen, sizeof (uint8_t));
@@ -294,17 +291,24 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 		 * backslashes.
 		 */
 		for (i = 0; i < len; i++) {
-			char c = dup[i];
+			char c = (char)ubuf_data(v)[i];
 
 			if (c == '\\') {
 				/* shouldn't happen, but just to be safe.. */
 				if (++i >= len) {
+					ubuf_destroy(&v);
 					return (wdns_res_parse_error);
 				}
-				c = dup[i];
+
+				c = ubuf_data(v)[i];
+
+				if (c != '\\' && c != ',') {
+					ubuf_destroy(&v);
+					return (wdns_res_parse_error);
+				}
+
 				ubuf_append(u, (uint8_t *)&c, 1);
 				oclen++;
-
 			} else if (c == ',') {
 				/*
 				 * An unescaped comma separates two values.
@@ -326,7 +330,7 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 			val_len += oclen + sizeof (uint8_t);
 		}
 
-		free(dup);
+		ubuf_destroy(&v);
 		break;
 	}
 	default: {
@@ -334,7 +338,6 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 
 		if (rdata_from_str_string((const uint8_t *)val, v) == 0) {
 			ubuf_destroy(&v);
-			fprintf(stderr, "ERRR (%s)\n", val);
 			return (wdns_res_parse_error);
 		}
 

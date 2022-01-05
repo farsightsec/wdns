@@ -417,7 +417,7 @@ static const struct test tdata[] = {
 	{ /* appendix D, figure 9 */
 		.rrtype = WDNS_TYPE_SVCB,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "16 foo.example.org. alpn=\"f\\\\\\\\oo\\\\,bar,h2\"",
+		.input = QUOTE(16 foo.example.org. alpn="f\\\\oo\\,bar,h2"),
 		.expected = "\x00\x10"			/* priority */
 		    "\x03""foo\x07""example\x03org\x00"	/* target */
 		    "\x00\x01"				/* alpn */

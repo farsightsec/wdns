@@ -229,14 +229,27 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 			l = oclen;
 
 			while (l--) {
+				/*
+				 * Presentation format is encoded as a
+				 * character string, which then needs to be
+				 * represented as a C character string. This
+				 * makes backslash escaping a bit tricky.
+				 *
+				 * Here's an example case:
+				 *  (a) wire format "f\oo,bar"
+				 *  (b) represented as "f\\oo\\,bar"
+				 *  (c) presentation format "f\\\\oo\\\\,bar"
+				 *  (d) as a C character string
+				 *      "f\\\\\\\\oo\\\\,bar"
+				 */
 				uint8_t c = *ptr++;
 
 				if (c == '"') {
 					ubuf_add_cstr(u, "\\\"");
 				} else if (c == '\\') {
-					ubuf_add_cstr(u, "\\\\");
+					ubuf_add_cstr(u, "\\\\\\\\");
 				} else if (c == ',') {
-					ubuf_add_fmt(u, "\\,");
+					ubuf_add_cstr(u, "\\\\,");
 				} else if (c >= ' ' && c <= '~') {
 					ubuf_append(u, &c, 1);
 				} else {
@@ -511,7 +524,6 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			 * 2.2 of draft-ietf-dnsop-svcb-https-08.
 			 */
 			uint16_t key, val_len;
-			int prev_key = - 1;
 
 			while (src_bytes > 0) {
 				char key_str[16] = { 0 };
@@ -530,11 +542,6 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 				}
 
 				if (key == spr_invalid) {
-					goto err;
-				}
-
-				/* param keys must be in ascending order */
-				if (key <= prev_key) {
 					goto err;
 				}
 
@@ -562,7 +569,12 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 				 * key specified in 'key'.
 				 */
 				bytes_required(val_len);
-				svcparam_to_str(key, src, val_len, u);
+
+				res = svcparam_to_str(key, src, val_len, u);
+				if (res != wdns_res_success) {
+					goto err_res;
+				}
+
 				bytes_consumed(val_len);
 			}
 			break;
