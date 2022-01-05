@@ -228,7 +228,7 @@ const record_descr record_descr_array[] = {
 		}
 	},
 
-	/* draft-ietf-dnsop-svcb-https */
+	/* draft-ietf-dnsop-svcb-https-08 */
 	[WDNS_TYPE_SVCB] = {	/* used to locate alt endpoints for a service */
 		class_in,
 		{
@@ -249,7 +249,7 @@ const record_descr record_descr_array[] = {
 		}
 	},
 
-	/* draft-ietf-dnsop-svcb-https */
+	/* draft-ietf-dnsop-svcb-https-08 */
 	[WDNS_TYPE_HTTPS] = {	/* a SVCB-compatible RR type for HTTPS */
 		class_in,
 		{

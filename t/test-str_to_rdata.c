@@ -273,43 +273,42 @@ static const struct test tdata[] = {
 	/* generic encodings */
 	{ "\\# 24 d5 79 08 01 98 4e d2 96 9a 76 0c f6 09 8e a1 4a 84 65 16 9c aa 9c 48 07", 32769, WDNS_CLASS_IN, "\xd5\x79\x08\x01\x98\x4e\xd2\x96\x9a\x76\x0c\xf6\x09\x8e\xa1\x4a\x84\x65\x16\x9c\xaa\x9c\x48\x07", 24, wdns_res_success },
 
-	/* HTTPS tests */
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . alpn=h2",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x03"		/* length of the SvcParamValue */
-		    "\x02h2",		/* length-value */
+		.input = "1 . alpn=\"h2\"",
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x01"				/* alpn */
+		    "\x00\x03"				/* length.. */
+		    "\x02h2",				/* ..value */
 		.expected_len = 10,
 		.expected_res = wdns_res_success,
 	},
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . alpn=h2,h3",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x06"		/* length of the SvcParamValue */
-		    "\x02h2"		/* length-value */
-		    "\x02h3",		/* length-value */
+		.input = "1 . alpn=\"h2,h3\"",
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x01"				/* alpn */
+		    "\x00\x06"				/* length */
+		    "\x02h2"				/* ..value */
+		    "\x02h3",				/* ..value */
 		.expected_len = 13,
 		.expected_res = wdns_res_success,
 	},
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . alpn=h2,h3 no-default-alpn",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x06"		/* length of the SvcParamValue */
-		    "\x02h2"		/* length-value */
-		    "\x02h3"		/* length-value */
-		    "\x00\x02",		/* no-default-alpn in net order */
+		.input = "1 . alpn=\"h2,h3\" no-default-alpn",
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x01"				/* alpn */
+		    "\x00\x06"				/* length.. */
+		    "\x02h2"				/* ..value */
+		    "\x02h3"				/* ..value */
+		    "\x00\x02",				/* no-default-alpn */
 		.expected_len = 15,
 		.expected_res = wdns_res_success,
 	},
@@ -317,11 +316,11 @@ static const struct test tdata[] = {
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
 		.input = "1 . port=1111",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x03"		/* port in network order */
-		    "\x00\x02"		/* length of the SvcParamValue */
-		    "\x04W",		/* port value in network order */
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x03"				/* port */
+		    "\x00\x02"				/* length.. */
+		    "\x04W",				/* ..value */
 		.expected_len = 9,
 		.expected_res = wdns_res_success,
 	},
@@ -329,11 +328,11 @@ static const struct test tdata[] = {
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
 		.input = "1 . ipv4hint=192.168.0.1",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x04"		/* ipv4hint in network order */
-		    "\x00\x04"		/* length of the SvcParamValue */
-		    "\xc0\xa8\x00\x01",	/* ipv4hint */
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x04"				/* ipv4hint */
+		    "\x00\x04"				/* length.. */
+		    "\xc0\xa8\x00\x01",			/* ..value */
 		.expected_len = 11,
 		.expected_res = wdns_res_success,
 	},
@@ -341,24 +340,25 @@ static const struct test tdata[] = {
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
 		.input = "1 . ipv4hint=192.168.0.1,192.168.0.2",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x04"		/* ipv4hint in network order */
-		    "\x00\x08"		/* length of the SvcParamValue */
-		    "\xc0\xa8\x00\x01"	/* ipv4hint */
-		    "\xc0\xa8\x00\x02",	/* ipv4hint */
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x04"				/* ipv4hint */
+		    "\x00\x08"				/* length.. */
+		    "\xc0\xa8\x00\x01"			/* ..value */
+		    "\xc0\xa8\x00\x02",			/* ..value */
 		.expected_len = 15,
 		.expected_res = wdns_res_success,
 	},
 	{
-		.rrtype = WDNS_TYPE_HTTPS,
+		.rrtype = WDNS_TYPE_SVCB,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . ipv6hint=2001:1:2:3:4:5:6:7",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x06"		/* ipv6hint in network order */
-		    "\x00\x10"		/* length of the SvcParamValue */
-		    " \x01\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07",/* ipv6hint */
+		.input = "1 . ipv6hint=2001:db8::1",
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"     				/* target */
+		    "\x00\x06"				/* ipv6hint */
+		    "\x00\x10"				/* length.. */
+		    "\x20\x01\x0d\xb8\x00\x00\x00\x00"	/* ..val */
+		    "\x00\x00\x00\x00\x00\x00\x00\x01",	/* ..val */
 		.expected_len = 23,
 		.expected_res = wdns_res_success,
 	},
@@ -366,55 +366,69 @@ static const struct test tdata[] = {
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
 		.input = "1 . ech=abcdefghijkl",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x05"		/* ech key in network order */
-		    "\x00\x09"		/* length of the SvcParamValue */
-		    "i\xb7\x1dy\xf8!\x8a""""9%",	/* ech value */
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x05"				/* ech */
+		    "\x00\x09"				/* length.. */
+		    "i\xb7\x1dy\xf8!\x8a""""9%",	/* ..value */
 		.expected_len = 16,
 		.expected_res = wdns_res_success,
 	},
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . mandatory=port alpn=h2,h3 port=1111"
-		    " ipv4hint=192.168.0.1,192.168.0.2"
-		    " ipv6hint=2001:1:2:3:4:5:6:7",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x00"		/* mandatory key */
-		    "\x00\x02"		/* length of the SvcParamValue */
-		    "\x00\x03"		/* port key in network order */
-		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x06"		/* length of the SvcParamValue */
-		    "\x02h2"		/* length-value */
-		    "\x02h3"		/* length-value */
-		    "\x00\x03"		/* port key in network order */
-		    "\x00\x02"		/* length of the SvcParamValue */
-		    "\x04W"		/* port value in network order */
-		    "\x00\x04"		/* ipv4hint in network order */
-		    "\x00\x08"		/* length of the SvcParamValue */
-		    "\xc0\xa8\x00\x01"	/* ipv4hint */
-		    "\xc0\xa8\x00\x02"	/* ipv4hint */
-		    "\x00\x06"		/* ipv6hint in network order */
-		    "\x00\x10"		/* length of the SvcParamValue */
-		    " \x01\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07",/* ipv6hint */
+		.input = "1 . mandatory=port alpn=\"h2,h3\" port=1111 ipv4hint=192.168.0.1,192.168.0.2 ipv6hint=2001:db8::1",
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x00"				/* mandatory */
+		    "\x00\x02"				/* length.. */
+		    "\x00\x03"				/* ..val */
+		    "\x00\x01"				/* alpn */
+		    "\x00\x06"				/* length.. */
+		    "\x02h2"				/* ..value */
+		    "\x02h3"				/* ..value */
+		    "\x00\x03"				/* port */
+		    "\x00\x02"				/* length.. */
+		    "\x04W"				/* ..value */
+		    "\x00\x04"				/* ipv4hint */
+		    "\x00\x08"				/* length.. */
+		    "\xc0\xa8\x00\x01"			/* ..value */
+		    "\xc0\xa8\x00\x02"			/* ..value */
+		    "\x00\x06"				/* ipv6hint */
+		    "\x00\x10"				/* length.. */
+		    "\x20\x01\x0d\xb8\x00\x00\x00\x00"	/* ..value */
+		    "\x00\x00\x00\x00\x00\x00\x00\x01",
 		.expected_len = 57,
 		.expected_res = wdns_res_success,
 	},
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . key10=222",
-		.expected = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x0a"		/* '10' in network order */
-		    "\x00\x03"		/* length of the SvcParamValue */
-		    """""222",		/* '222' value */
+		.input = "1 . key10=\"222\"",
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x0a"				/* 10 */
+		    "\x00\x03"				/* length.. */
+		    "222",				/* ..value */
 		.expected_len = 10,
 		.expected_res = wdns_res_success,
 	},
-
+	/* draft-ietf-dnsop-svcb-https-08 */
+	{ /* appendix D, figure 9 */
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = QUOTE(16 foo.example.org. alpn="f\\\\oo\\,bar,h2"),
+		.expected = "\x00\x10"			/* priority */
+		    "\x03""foo\x07""example\x03org\x00"	/* target */
+		    "\x00\x01"				/* alpn */
+		    "\x00\x0c"				/* length.. */
+		    "\x08"				/* ..value */
+		    "f\\oo,bar"
+		    "\x02"
+		    "h2",
+		.expected_len = 35,
+		.expected_res = wdns_res_success,
+	},
 	{ 0 }
 };
 

@@ -291,41 +291,138 @@ struct test tdata[] = {
 		.expected = "fsi.io. A CAA DLV",
 	},
 
-	/* HTTPS test */
-	{
-		.input = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x03"		/* length of the alpnid in net order */
-		    "\x02\x68\x32"	/* length-value */
-		    "\x00\x04"		/* ipv4hint in network order */
-		    "\x00\x04"		/* length of ipv4hint in net order */
-		    "\xc0\xa8\x00\x01",	/* ipv4hint */
+	/* draft-ietf-dnsop-svcb-https-08 */
+	{ /* appendix D, figure 1 */
+		.input = "\x00\x00"				/* priority */
+		    "\x03""foo\x07""example\x03""com\x00",	/* target */
+		.input_len = 19,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_HTTPS,
+		.expected = "0 foo.example.com.",
+	},
+
+	{ /* appendix D, figure 2 */
+		.input = "\x00\x01"				/* priority */
+		    "\x00",					/* target */
+		.input_len = 3,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_HTTPS,
+		.expected = "1 .",
+	},
+
+	{ /* appendix D, figure 3 */
+		.input = "\x00\x10"				/* priority */
+		    "\x03""foo\x07""example\x03""com\x00"	/* target */
+		    "\x00\x03"					/* port */
+		    "\x00\x02"					/* length.. */
+		    "\x00\x35",					/* ..value */
+		.input_len = 25,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_SVCB,
+		.expected = "16 foo.example.com. port=53",
+	},
+
+	{ /* appendix D, figure 4 */
+		.input = "\x00\x01"				/* priority */
+		    "\x03""foo\x07""example\x03""com\x00"	/* target */
+		    "\x02\x9b"					/* 667 */
+		    "\x00\x05"					/* length.. */
+		    "hello",					/* ..value */
+		.input_len = 28,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_SVCB,
+		.expected = "1 foo.example.com. key667=\"hello\"",
+	},
+
+	{ /* appendix D, figure 5 */
+		.input = "\x00\x01"				/* priority */
+		    "\x03""foo\x07""example\x03""com\x00"	/* target */
+		    "\x02\x9b"					/* 667 */
+		    "\x00\x09"					/* length.. */
+		    "hello\xd2qoo",				/* ..value */
+		.input_len = 32,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_SVCB,
+		.expected = "1 foo.example.com. key667=\"hello\\210qoo\"",
+	},
+
+	{ /* appendix D, figure 6 */
+		.input = "\x00\x01"				/* priority */
+		    "\x03""foo\x07""example\x03""com\x00"	/* target */
+		    "\x00\x06"					/* ipv6hint */
+		    "\x00\x20"					/* length.. */
+		    "\x20\x01\x0d\xb8\x00\x00\x00\x00"		/* ..value */
+		    "\x00\x00\x00\x00\x00\x00\x00\x01"
+		    "\x20\x01\x0d\xb8\x00\x00\x00\x00"
+		    "\x00\x00\x00\x00\x00\x53\x00\x01",
+		.input_len = 55,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_SVCB,
+		.expected = "1 foo.example.com. ipv6hint=2001:db8::1,2001:db8::53:1",
+	},
+
+	{ /* appendix D, figure 7 */
+		.input = "\x00\x01"				/* priority */
+		    "\x07""example\x03""com\x00"		/* target */
+		    "\x00\x06"					/* ipv6hint */
+		    "\x00\x10"					/* length.. */
+		    "\x00\x00\x00\x00\x00\x00\x00\x00"		/* ..value */
+		    "\x00\x00\xff\xff\xc6\x33\x64\x64",
+		.input_len = 35,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_SVCB,
+		.expected = "1 example.com. ipv6hint=::ffff:198.51.100.100",
+	},
+
+	/* appendix D, figure 8 is omitted as it relies on re-ordering params */
+
+	{ /* appendix D, figure 9 (reverse test) */
+                .input = "\x00\x10"				/* priority */
+                    "\x03""foo\x07""example\x03org\x00"		/* target */
+                    "\x00\x01"					/* alpn */
+                    "\x00\x0c"					/* length.. */
+                    "\x08"					/* ..value */
+                    "f\\oo,bar"
+                    "\x02"
+                    "h2",
+                .input_len = 35,
+                .rrclass = WDNS_CLASS_IN,
+                .rrtype = WDNS_TYPE_SVCB,
+		.expected = QUOTE(16 foo.example.org. alpn="f\\\\oo\\,bar,h2"),
+        },
+
+	{ /* HTTPS test with alpn and ipv4hint */
+		.input = "\x00\x01"				/* priority */
+		    "\x00"					/* target */
+		    "\x00\x01"					/* alpn */
+		    "\x00\x03"					/* length.. */
+		    "\x02\x68\x32"				/* ..value */
+		    "\x00\x04"					/* ipv4hint */
+		    "\x00\x04"					/* length.. */
+		    "\xc0\xa8\x00\x01",				/* ..value */
 		.input_len = 18,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_HTTPS,
-		.expected = "1 . alpn=h2 ipv4hint=192.168.0.1",
+		.expected = "1 . alpn=\"h2\" ipv4hint=192.168.0.1",
 	},
 
-	/* HTTPS test for an arbitrary key type 9 */
-	{
-		.input = "\x00\x01"	/* SvcPriority */
-		    "\x00"		/* Target */
-		    "\x00\x01"		/* alpn in network order */
-		    "\x00\x03"		/* length of the alpnid in net order */
-		    "\x02\x68\x32"	/* length-value */
-		    "\x00\x09"		/* key9 in network order */
-		    "\x00\x03"		/* length of key9 in net order */
-		    "\x61\x6e\x79",	/* length-value */
+	{ /* HTTPS test for an arbitrary key type 9 */
+		.input = "\x00\x01"				/* priority */
+		    "\x00"					/* target */
+		    "\x00\x01"					/* alpn */
+		    "\x00\x03"					/* length.. */
+		    "\x02\x68\x32"				/* ..value */
+		    "\x00\x09"					/* 9 */
+		    "\x00\x03"					/* length.. */
+		    "\x61\x6e\x79",				/* ..value */
 		.input_len = 17,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_HTTPS,
-		.expected = "1 . alpn=h2 key9=\"any\"",
+		.expected = "1 . alpn=\"h2\" key9=\"any\"",
 	},
 
 	{ 0 }
 };
-
 
 static size_t
 test_rdata_to_str(void) {

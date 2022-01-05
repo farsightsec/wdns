@@ -88,6 +88,9 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 	uint16_t val;
 	uint8_t oclen;
 
+	assert(key != spr_invalid);
+	assert(u != NULL);
+
 	switch (key) {
 	case spr_mandatory:
 		while ((ptr - src) < len) {
@@ -115,33 +118,6 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		}
 		break;
 
-	case spr_alpn:
-		/*
-		 * The wire format value for "alpn" consists of at least one
-		 * "alpn-id" prefixed by its length as a single octet, and
-		 * these length-value pairs are concatenated to form the
-		 * SvcParamValue. These pairs MUST exactly fill the
-		 * SvcParamValue; otherwise, the SvcParamValue is malformed.
-		 */
-		while ((ptr - src) < len) {
-			oclen = *ptr;
-			ptr += 1;	/* skip the length */
-
-			if ((ptr + oclen - src) > len) {
-				return (wdns_res_parse_error);
-			}
-
-			(void) rdata_to_str_string_unquoted(ptr, oclen, u);
-			ptr += oclen;
-
-			if ((ptr - src) < len) {
-				ubuf_add(u, ',');
-			} else {
-				ubuf_add(u, ' ');
-			}
-		}
-		break;
-
 	case spr_nd_alpn:
 		/*
 		 * For "no-default-alpn", the presentation and wire format
@@ -149,6 +125,9 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		 * an RR, "alpn" must also be specified in order for the RR to
 		 * be "self-consistent".
 		 */
+		if (src != NULL) {
+			return (wdns_res_parse_error);
+		}
 		ubuf_add(u, ' ');
 		break;
 
@@ -225,11 +204,73 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		}
 		break;
 
-	case spr_invalid:
+	/*
+	 * The wire format value for "alpn" consists of at least one * "alpn-id"
+	 * prefixed by its length as a single octet, and these length-value
+	 * pairs are concatenated to form the SvcParamValue. These MUST exactly
+	 * fill the SvcParamValue; otherwise, the SvcParamValue is malformed.
+	 *
+	 * Note that we always wrap such values around double quotes in
+	 * presentation format.
+	 */
+	case spr_alpn:
+		ubuf_add(u, '"');
+
+		while ((ptr - src) < len) {
+			uint8_t l;
+
+			oclen = *ptr;
+			ptr += 1;       /* skip the length */
+
+			if ((ptr + oclen - src) > len) {
+				return (wdns_res_parse_error);
+			}
+
+			l = oclen;
+
+			while (l--) {
+				/*
+				 * Presentation format is encoded as a
+				 * character string, which then needs to be
+				 * represented as a C character string. This
+				 * makes backslash escaping a bit tricky.
+				 *
+				 * Here's an example case:
+				 *  (a) wire format "f\oo,bar"
+				 *  (b) represented as "f\\oo\,bar"
+				 *  (c) presentation format "f\\\\oo\\,bar"
+				 *
+				 * Furthermore, these escape sequences are
+				 * expressed as C string literals below,
+				 * requiring another round of escaping for the
+				 * backslashes.
+				 */
+				uint8_t c = *ptr++;
+
+				if (c == '"') {
+					ubuf_add_cstr(u, "\\\"");
+				} else if (c == '\\') {
+					ubuf_add_cstr(u, "\\\\\\\\");
+				} else if (c == ',') {
+					ubuf_add_cstr(u, "\\\\,");
+				} else if (c >= ' ' && c <= '~') {
+					ubuf_append(u, &c, 1);
+				} else {
+					ubuf_add_fmt(u, "\\%.3d", c);
+				}
+			}
+
+			if ((ptr - src) < len) {
+				ubuf_add(u, ',');
+			} else {
+				ubuf_add(u, '"');
+			}
+		}
+		ubuf_add(u, ' ');
 		break;
 
 	default:
-		(void) rdata_to_str_string(ptr, len, u);
+		rdata_to_str_string(ptr, len, u);
 		break;
 	}
 
@@ -483,7 +524,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			/*
 			 * Wire format for the SvcParams portion of a
 			 * SVCB or HTTPS message, parsed per section
-			 * 2.2 of draft-ietf-dnsop-svcb-https.
+			 * 2.2 of draft-ietf-dnsop-svcb-https-08.
 			 */
 			uint16_t key, val_len;
 
@@ -500,6 +541,10 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 				if (_wdns_svcparamkey_to_str(key, key_str,
 				    sizeof(key_str)) == NULL) {
+					goto err;
+				}
+
+				if (key == spr_invalid) {
 					goto err;
 				}
 
@@ -527,7 +572,12 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 				 * key specified in 'key'.
 				 */
 				bytes_required(val_len);
-				svcparam_to_str(key, src, val_len, u);
+
+				res = svcparam_to_str(key, src, val_len, u);
+				if (res != wdns_res_success) {
+					goto err_res;
+				}
+
 				bytes_consumed(val_len);
 			}
 			break;
