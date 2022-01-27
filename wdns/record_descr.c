@@ -259,6 +259,25 @@ const record_descr record_descr_array[] = {
 			rdf_end,
 		}
 	},
+
+	[WDNS_TYPE_CAA] = {
+		class_in,
+		{
+			rdf_int8,	/* flags: an unsigned int [0..255] */
+			rdf_string,	/* tag: length byte plus a sequence of
+					   ASCII letters and numbers limited
+					   to [a..z], [A..Z] and [0..9]. Note
+					   that we don't enforce these range
+					   limitations. */
+			rdf_bytes_str,	/* value: either (1) a contiguous set
+					   of characters without interior
+					   spaces or (2) a quoted string per
+					   section 5.1 of rfc1035. It contains
+					   no length byte and is not limited
+					   to 255 chars */
+			rdf_end,
+		}
+	},
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);

@@ -429,6 +429,17 @@ static const struct test tdata[] = {
 		.expected_len = 35,
 		.expected_res = wdns_res_success,
 	},
+        { /* CAA record, rfc 8659 */
+                .rrtype = WDNS_TYPE_CAA,
+                .rrclass = WDNS_CLASS_IN,
+		.input = "0 \"issue\" \"digicert.com\"",
+                .expected = "\x00"				/* flag */
+                    "\x05\x69\x73\x73\x75\x65"			/* tag */
+                    "\x64\x69\x67\x69\x63\x65\x72\x74\x2e\x63"	/* value */
+		    "\x6f\x6d",
+		.expected_len = 19,
+		.expected_res = wdns_res_success,
+        },
 	{ 0 }
 };
 

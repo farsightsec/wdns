@@ -421,6 +421,17 @@ struct test tdata[] = {
 		.expected = "1 . alpn=\"h2\" key9=\"any\"",
 	},
 
+	{ /* CAA record, rfc 8659 */
+		.input = "\x00"					/* flag */
+		    "\x09\x69\x73\x73\x75\x65\x77\x69\x6c\x64"	/* tag */
+		    "\x6c\x65\x74\x73\x65\x6e\x63\x72\x79\x70"	/* value */
+		    "\x74\x2e\x6f\x72\x67",
+		.input_len = 26,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_CAA,
+		.expected = "0 \"issuewild\" \"letsencrypt.org\"",
+	},
+
 	{ 0 }
 };
 
