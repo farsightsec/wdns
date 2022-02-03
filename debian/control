@@ -8,7 +8,7 @@ Build-Depends:
  dpkg-dev (>= 1.16.0~),
  lcov,
  pkg-config,
- python,
+ python3,
 Standards-Version: 3.9.8
 
 Package: libwdns-dev
