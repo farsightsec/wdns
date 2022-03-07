@@ -32,7 +32,7 @@ t/test-str_to_name
 t/test-str_to_rcode
 t/test-str_to_rdata
 t/test-str_to_rrtype
-t/test-rdata_to_str
+t/test-rdata
 t/test-name_to_str
 t/*.log
 t/*.trs

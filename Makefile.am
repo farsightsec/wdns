@@ -234,10 +234,10 @@ check_PROGRAMS += t/test-str_to_rdata
 t_test_str_to_rdata_SOURCES = t/test-str_to_rdata.c t/test-common.c
 t_test_str_to_rdata_LDADD = wdns/libwdns.la
 
-TESTS += t/test-rdata_to_str
-check_PROGRAMS += t/test-rdata_to_str
-t_test_rdata_to_str_SOURCES = t/test-rdata_to_str.c t/test-common.c
-t_test_rdata_to_str_LDADD = wdns/libwdns.la
+TESTS += t/test-rdata
+check_PROGRAMS += t/test-rdata
+t_test_rdata_SOURCES = t/test-rdata.c t/test-common.c
+t_test_rdata_LDADD = wdns/libwdns.la
 
 TESTS += t/test-str_to_rrtype
 check_PROGRAMS += t/test-str_to_rrtype

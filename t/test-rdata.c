@@ -521,10 +521,79 @@ test_rdata_to_str(void) {
 	return failures;
 }
 
+static size_t
+test_parse_message(void)
+{
+	const uint8_t header[] = {
+		0, 0,		/* id */
+		0x80, 0,	/* QR bit, rcode 0 (NOERROR) */
+		0, 1,		/* QDCOUNT: 1 */
+		0, 1, 		/* ANCOUNT: 1 */
+		0, 0,		/* NSCOUNT: 0 */
+		0, 0,		/* ARCOUNT: 0 */
+	};
+	const uint8_t dname[] = "\x07""example\x03""com";
+
+	ubuf *u, *umsg;
+	struct test *cur;
+	size_t failures = 0;
+
+	u = ubuf_init(256);
+	umsg = ubuf_init(512);
+	ubuf_append(umsg, header, sizeof(header));
+
+	for(cur = tdata; cur->input != NULL; cur++) {
+
+		uint16_t rrtype, rrclass, rdlen;
+		uint32_t rrttl = htonl(3600);
+		wdns_message_t m;
+		wdns_res res;
+
+		ubuf_clip(umsg, sizeof(header));
+		ubuf_reset(u);
+
+		rrtype = htons(cur->rrtype);
+		rrclass = htons(cur->rrclass);
+		rdlen = htons(cur->input_len);
+
+		/* question section */
+		ubuf_append(umsg, dname, sizeof(dname));
+		ubuf_append(umsg, (uint8_t *)&rrtype, sizeof(rrtype));
+		ubuf_append(umsg, (uint8_t *)&rrclass, sizeof(rrclass));
+
+		/* answer section */
+		ubuf_append(umsg, dname, sizeof(dname));
+		ubuf_append(umsg, (uint8_t *)&rrtype, sizeof(rrtype));
+		ubuf_append(umsg, (uint8_t *)&rrclass, sizeof(rrclass));
+		ubuf_append(umsg, (uint8_t *)&rrttl, sizeof(rrttl));
+		ubuf_append(umsg, (uint8_t *)&rdlen, sizeof(rdlen));
+		ubuf_append(umsg, cur->input, cur->input_len);
+
+		res = wdns_parse_message(&m, ubuf_data(umsg), ubuf_size(umsg));
+
+		if (res == wdns_res_success) {
+			ubuf_add_fmt(u, "PASS %" PRIu64 ": input=", cur-tdata);
+		} else {
+			ubuf_add_fmt(u, "FAIL %" PRIu64 ": input=", cur-tdata);
+			failures++;
+		}
+		escape(u, cur->input, cur->input_len);
+		ubuf_add_fmt(u, " %s %s",
+				wdns_rrclass_to_str(cur->rrclass),
+				wdns_rrtype_to_str(cur->rrtype));
+		fprintf (stderr, "%s\n", ubuf_cstr(u));
+	}
+
+	ubuf_destroy(&u);
+	ubuf_destroy(&umsg);
+	return failures;
+}
+
 int main (void) {
 	int ret = 0;
 
 	ret |= check(test_rdata_to_str(), "test_rdata_to_str", NAME);
+	ret |= check(test_parse_message(), "test_parse_message", NAME);
 
 	if (ret)
 		return (EXIT_FAILURE);
