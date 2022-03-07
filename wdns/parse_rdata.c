@@ -222,14 +222,21 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 				}
 				break;
 
-			case rdf_ipv6prefix:
-				oclen = *src;
-				if (oclen > 16U) {
+			case rdf_ipv6prefix: {
+				uint8_t prefix_len;
+
+				prefix_len = *src;
+				if (prefix_len > 128) {
 					res = wdns_res_out_of_bounds;
 					goto parse_error;
 				}
+				oclen = (128-prefix_len)/8;
+				if (prefix_len % 8 != 0) {
+					oclen ++;
+				}
 				copy_bytes(oclen + 1);
 				break;
+			}
 
 			case rdf_type_bitmap: {
 				uint8_t bitmap_len;
