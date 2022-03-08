@@ -137,7 +137,7 @@ str_to_ubuf(const char *str, ubuf *u, const char **retp)
  * See svcparam_to_str() for the opposite functionality.
  */
 static wdns_res
-str_to_svcparam(ubuf *u, uint16_t key, char *val)
+str_to_svcparam(ubuf *u, uint16_t key, char *val, size_t len_val)
 {
 	char *tok, *endp = NULL;
 	size_t val_len_offset, tok_len;
@@ -271,16 +271,8 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 	 * in presentation format, as escaped spaces and commas are allowed.
 	 */
 	case spr_alpn: {
-		ubuf *v = ubuf_new();
-		size_t i, len, offset;
+		size_t i, offset;
 		uint8_t oclen;
-
-		if (rdata_from_str_string((const uint8_t *)val, v) <= 0) {
-			ubuf_destroy(&v);
-			return (wdns_res_parse_error);
-		}
-
-		len = ubuf_size(v);
 
 		/* append a 'length' byte to be updated later */
 		offset = ubuf_size(u);
@@ -291,20 +283,18 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 		 * Parse the resulting string for escaped commas and
 		 * backslashes.
 		 */
-		for (i = 0; i < len; i++) {
-			char c = (char)ubuf_data(v)[i];
+		for (i = 0; i < len_val; i++) {
+			char c = val[i];
 
 			if (c == '\\') {
 				/* shouldn't happen, but just to be safe.. */
-				if (++i >= len) {
-					ubuf_destroy(&v);
+				if (++i >= len_val) {
 					return (wdns_res_parse_error);
 				}
 
-				c = ubuf_data(v)[i];
+				c = val[i];
 
 				if (c != '\\' && c != ',') {
-					ubuf_destroy(&v);
 					return (wdns_res_parse_error);
 				}
 
@@ -331,22 +321,12 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 			val_len += oclen + sizeof (uint8_t);
 		}
 
-		ubuf_destroy(&v);
 		break;
 	}
-	default: {
-		ubuf *v = ubuf_new();
-
-		if (rdata_from_str_string((const uint8_t *)val, v) == 0) {
-			ubuf_destroy(&v);
-			return (wdns_res_parse_error);
-		}
-
-		val_len = ubuf_size(v);
-		ubuf_append(u, (uint8_t *)ubuf_data(v), val_len);
-		ubuf_destroy(&v);
+	default:
+		val_len = len_val;
+		ubuf_append(u, (uint8_t *)val, len_val);
 		break;
-		}
 	}
 
 	/*
@@ -967,7 +947,8 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				const char *key, *val, *end;
 				char *dup;
 				uint16_t k;
-				bool quotes;
+				size_t orig_size, len_dup;
+				uint8_t *orig_ptr;
 
 				/* find out what key we're parsing */
 				if (*start == ' ') {
@@ -1012,7 +993,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 					}
 
 					/* process spr_nd_alpn here */
-					res = str_to_svcparam(u, k, NULL);
+					res = str_to_svcparam(u, k, NULL, 0);
 					if (res != wdns_res_success) {
 						return (res);
 					}
@@ -1027,30 +1008,20 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 				/* now parse the value */
 				end = ++val;
+				orig_size = ubuf_size(u);
+				orig_ptr = ubuf_ptr(u);
 
-				if (*end == '"') {
-					quotes = true;
-					end++;
-				} else {
-					quotes = false;
+				end += rdata_from_str_string((uint8_t *)end, u);
+				if (end == val) {
+					return (wdns_res_parse_error);
 				}
 
-				/* values always end with a blank space */
-				while (end < eol) {
-					if (*end == '"' && quotes) {
-						/* end of double quotes */
-						end++;
-						break;
-					}
-					if (*end == ' ' && !quotes) {
-						/* end of param */
-						break;
-					}
-					end++;
-				}
+				len_dup = ubuf_size(u) - orig_size;
+				dup = calloc(len_dup+1, 1);
+				memcpy(dup, orig_ptr, len_dup);
+				ubuf_clip(u, orig_size);
 
-				dup = strndup(val, end - val);
-				res = str_to_svcparam(u, k, dup);
+				res = str_to_svcparam(u, k, dup, len_dup);
 				free(dup);
 
 				if (res != wdns_res_success) {
