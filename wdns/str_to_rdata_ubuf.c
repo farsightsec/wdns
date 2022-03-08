@@ -990,7 +990,8 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 				if (*val == ' ' || val == eol) {
 					if (k != spr_nd_alpn) {
-						return (wdns_res_success);
+						res = wdns_res_parse_error;
+						goto err;
 					}
 
 					/* process spr_nd_alpn here */
