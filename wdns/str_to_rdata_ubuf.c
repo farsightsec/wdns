@@ -984,7 +984,8 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				 *  - requires a value but has none.
 				 */
 				if (k == spr_invalid) {
-					return (wdns_res_parse_error);
+					res = wdns_res_parse_error;
+					goto err;
 				}
 
 				if (*val == ' ' || val == eol) {
@@ -995,7 +996,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 					/* process spr_nd_alpn here */
 					res = str_to_svcparam(u, k, NULL, 0);
 					if (res != wdns_res_success) {
-						return (res);
+						goto err;
 					}
 
 					start = val;
@@ -1003,7 +1004,8 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				}
 
 				if (*val != '=') {
-					return (wdns_res_parse_error);
+					res = wdns_res_parse_error;
+					goto err;
 				}
 
 				/* now parse the value */
@@ -1013,7 +1015,8 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 				end += rdata_from_str_string((uint8_t *)end, u);
 				if (end == val) {
-					return (wdns_res_parse_error);
+					res = wdns_res_parse_error;
+					goto err;
 				}
 
 				len_dup = ubuf_size(u) - orig_size;
@@ -1025,7 +1028,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				free(dup);
 
 				if (res != wdns_res_success) {
-					return (res);
+					goto err;
 				}
 
 				start = end;
