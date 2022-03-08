@@ -288,6 +288,18 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
+		.input = QUOTE(1 . alpn="h2\128\000\""),
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x01"				/* alpn */
+		    "\x00\x06"				/* length.. */
+		    "\x05h2\x80\x00\"",			/* ..value */
+		.expected_len = 13,
+		.expected_res = wdns_res_success,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
 		.input = "1 . alpn=\"h2,h3\"",
 		.expected = "\x00\x01"			/* priority */
 		    "\x00"				/* target */
