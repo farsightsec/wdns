@@ -300,6 +300,24 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
+		.input = QUOTE(1 . alpn="h2\\"),
+		.expected_res = wdns_res_parse_error,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = QUOTE(1 . alpn="h2\,"),
+		.expected_res = wdns_res_parse_error,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . alpn=\"h2",
+		.expected_res = wdns_res_parse_error,
+	},
+	{
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
 		.input = "1 . alpn=\"h2,h3\"",
 		.expected = "\x00\x01"			/* priority */
 		    "\x00"				/* target */
