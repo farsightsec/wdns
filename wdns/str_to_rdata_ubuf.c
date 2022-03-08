@@ -159,6 +159,7 @@ str_to_svcparam(ubuf *u, uint16_t key, char *val)
 		if (val != NULL) {
 			return (wdns_res_parse_error);
 		} else {
+			ubuf_append(u, (uint8_t *)&val_len, sizeof(val_len));
 			return (wdns_res_success);
 		}
 	}

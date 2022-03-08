@@ -308,8 +308,8 @@ static const struct test tdata[] = {
 		    "\x00\x06"				/* length.. */
 		    "\x02h2"				/* ..value */
 		    "\x02h3"				/* ..value */
-		    "\x00\x02",				/* no-default-alpn */
-		.expected_len = 15,
+		    "\x00\x02\x00\x00",			/* no-default-alpn */
+		.expected_len = 17,
 		.expected_res = wdns_res_success,
 	},
 	{
@@ -377,16 +377,17 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . mandatory=port alpn=\"h2,h3\" port=1111 ipv4hint=192.168.0.1,192.168.0.2 ipv6hint=2001:db8::1",
+		.input = "1 . mandatory=alpn,port alpn=\"h2,h3\" no-default-alpn port=1111 ipv4hint=192.168.0.1,192.168.0.2 ipv6hint=2001:db8::1",
 		.expected = "\x00\x01"			/* priority */
 		    "\x00"				/* target */
 		    "\x00\x00"				/* mandatory */
-		    "\x00\x02"				/* length.. */
-		    "\x00\x03"				/* ..val */
+		    "\x00\x04"				/* length.. */
+		    "\x00\x01\x00\x03"			/* ..val (alpn, port) */
 		    "\x00\x01"				/* alpn */
 		    "\x00\x06"				/* length.. */
 		    "\x02h2"				/* ..value */
 		    "\x02h3"				/* ..value */
+		    "\x00\x02\x00\x00"			/* no-default-alpn */
 		    "\x00\x03"				/* port */
 		    "\x00\x02"				/* length.. */
 		    "\x04W"				/* ..value */
@@ -398,7 +399,7 @@ static const struct test tdata[] = {
 		    "\x00\x10"				/* length.. */
 		    "\x20\x01\x0d\xb8\x00\x00\x00\x00"	/* ..value */
 		    "\x00\x00\x00\x00\x00\x00\x00\x01",
-		.expected_len = 57,
+		.expected_len = 63,
 		.expected_res = wdns_res_success,
 	},
 	{

@@ -125,7 +125,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		 * an RR, "alpn" must also be specified in order for the RR to
 		 * be "self-consistent".
 		 */
-		if (src != NULL) {
+		if (len != 0) {
 			return (wdns_res_parse_error);
 		}
 		ubuf_add(u, ' ');
