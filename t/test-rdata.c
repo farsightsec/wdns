@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -25,7 +26,7 @@
 #include <libmy/ubuf.h>
 #include <wdns.h>
 
-#define NAME "test-rdata_to_str"
+#define NAME "test-rdata"
 
 struct test {
 	const void *input;

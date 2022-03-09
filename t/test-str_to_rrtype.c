@@ -139,7 +139,7 @@ test_str_to_rrtype(void) {
 int main (void) {
 	int ret = 0;
 
-	ret |= check(test_str_to_rrtype(), "test_cname", NAME);
+	ret |= check(test_str_to_rrtype(), "test_str_to_rrtype", NAME);
 
 	if (ret)
 		return (EXIT_FAILURE);

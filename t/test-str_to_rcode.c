@@ -74,7 +74,7 @@ int main (void)
 {
 	int ret = 0;
 
-	ret |= check(test_str_to_rcode(), "test_rcode", NAME);
+	ret |= check(test_str_to_rcode(), "test_str_to_rcode", NAME);
 
 	if (ret)
 		return (EXIT_FAILURE);

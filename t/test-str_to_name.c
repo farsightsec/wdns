@@ -118,7 +118,7 @@ int main (void)
 {
 	int ret = 0;
 
-	ret |= check(test_str_to_name(), "test-str_to_name", NAME);
+	ret |= check(test_str_to_name(), "test_str_to_name", NAME);
 
 	if (ret)
 		return (EXIT_FAILURE);
