@@ -297,6 +297,30 @@ static const struct test tdata[] = {
 		.expected_len = 13,
 		.expected_res = wdns_res_success,
 	},
+	{ /* draft-ietf-dnsop-svcb-https-08 Appendix A.1 */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . alpn=\"part1,part2,part3\\\\,part4\\\\\\\\\"",
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x01"				/* alpn */
+		    "\x00\x19"				/* length.. */
+		    "\x05part1\x05part2\x0cpart3,part4\\\\",	/* ..value */
+		.expected_len = 32,
+		.expected_res = wdns_res_success,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08 Appendix A.1 */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . alpn=part1\\,\\p\\a\\r\\t2\\044part3\\092,part4\\092\\\\",
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target */
+		    "\x00\x01"				/* alpn */
+		    "\x00\x19"				/* length.. */
+		    "\x05part1\x05part2\x0cpart3,part4\\\\",	/* ..value */
+		.expected_len = 32,
+		.expected_res = wdns_res_success,
+	},
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
@@ -318,7 +342,29 @@ static const struct test tdata[] = {
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
-		.input = "1 . invalid_key=value",
+		.input = "1 . unknown=value",
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08 2.1
+	     alpha-lc      = %x61-7A   ;  a-z
+	     SvcParamKey   = 1*63(alpha-lc / DIGIT / "-")
+	     15.3.1
+	     The characters in the registered Name MUST be lower-case
+	     alphanumeric or "-" */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . under_score=value", /* underscore is invalid in SvcParamKey */
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08 2.1
+	     alpha-lc      = %x61-7A   ;  a-z
+	     SvcParamKey   = 1*63(alpha-lc / DIGIT / "-")
+	     15.3.1
+	     The characters in the registered Name MUST be lower-case
+	     alphanumeric or "-" */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . ALPN=\"h2,h3\"", /* Uppercase is invalid in SvcParamKey */
 		.expected_res = wdns_res_parse_error,
 	},
 	{
@@ -340,6 +386,32 @@ static const struct test tdata[] = {
 		.expected_len = 13,
 		.expected_res = wdns_res_success,
 	},
+	{ /* draft-ietf-dnsop-svcb-https-08 2.1
+	     SvcParams in presentation format MAY appear in any order, but keys
+	     MUST NOT be repeated. */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . alpn=\"h2,h3\" alpn=\"h2,h3\"",
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* Same as above test by use keyNUM for first use
+	     draft-ietf-dnsop-svcb-https-08 2.1
+	     SvcParams in presentation format MAY appear in any order, but keys
+	     MUST NOT be repeated. */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . key1=\"h2,h3\" alpn=\"h2,h3\"",
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* Same as above test by use keyNUM for second use
+	     draft-ietf-dnsop-svcb-https-08 2.1
+	     SvcParams in presentation format MAY appear in any order, but keys
+	     MUST NOT be repeated. */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . alpn=\"h2,h3\" key1=\"h2,h3\"",
+		.expected_res = wdns_res_parse_error,
+	},
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
@@ -354,6 +426,27 @@ static const struct test tdata[] = {
 		.expected_len = 17,
 		.expected_res = wdns_res_success,
 	},
+	{ /* draft-ietf-dnsop-svcb-https-08 7.1.1
+	     For "no-default-alpn", the presentation and wire format
+	     values MUST be empty. */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . alpn=\"h2,h3\" no-default-alpn=1",
+		.expected = "",
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08 7.1.1
+	     When "no-default-alpn" is specified in an RR, "alpn" must
+	     also be specified in order for the RR to be "self-consistent" */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . no-default-alpn",
+		.expected = "",
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
 	{
 		.rrtype = WDNS_TYPE_HTTPS,
 		.rrclass = WDNS_CLASS_IN,
@@ -462,6 +555,117 @@ static const struct test tdata[] = {
 		.expected_len = 10,
 		.expected_res = wdns_res_success,
 	},
+	{ /* draft-ietf-dnsop-svcb-https-08  2.1
+	     The SvcParamValue is parsed using the character-string decoding
+	     algorithm (Appendix A)  */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . key10=222\"",		/* Missing start quote */
+		.expected = "",
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08  2.1
+	     The SvcParamValue is parsed using the character-string decoding
+	     algorithm (Appendix A)  */
+		.rrtype = WDNS_TYPE_HTTPS,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . key10=\"222",		/* Missing end quote */
+		.expected = "",
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+// TODO: how to test for no rdata, as this also has success for A and TXT
+//	{
+//		.rrtype = WDNS_TYPE_SVCB,
+//		.rrclass = WDNS_CLASS_IN,
+//		.input = "",		/* Missing all RDATA */
+//		.expected = "",
+//		.expected_len = 0,
+//		.expected_res = wdns_res_parse_error,
+//	},
+	{
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "JUNK",		/* Bogus RDATA */
+		.expected = "",
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08 2.1
+	     SvcPriority is a number in the range 0-65535 */
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "JUNK .",		/* Bogus SvcPriority */
+		.expected = "",
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08 2.1
+	     SvcPriority is a number in the range 0-65535 */
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "-1 .",		/* Invalid SvcPriority range */
+		.expected = "",
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08 2.1
+	     SvcPriority is a number in the range 0-65535 */
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "65536 .",		/* Invalid SvcPriority range */
+		.expected = "",
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08 2.1
+	     SvcPriority is a number in the range 0-65535 */
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "65535 .",		/* Valid SvcPriority range */
+		.expected = "\xff\xff\x00",
+		.expected_len = 3,
+		.expected_res = wdns_res_success,
+	},
+	{ /* draft-ietf-dnsop-svcb-https-08 2.5.1 */
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "0 .",		/* AliasMode "." means not available */
+		.expected = "\x00\x00\x00",
+		.expected_len = 3,
+		.expected_res = wdns_res_success,
+	},
+	{ /* Test that SvcParam may exist so just pass it through.
+	     draft-ietf-dnsop-svcb-https-08 2.4.2
+	     In AliasMode, records SHOULD NOT include any SvcParams, and
+	     recipients MUST ignore any SvcParams that are present. */
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "0 . key1=abc",
+		.expected = "\x00\x00"			/* priority = AliasMode */
+		    "\x00"				/* target . */
+		    "\x00\x01"				/* SvcParamKey 1 is alpn */
+		    "\x00\x04"				/* length.. */
+		    "\x03"				/* alpn length.. */
+		    "abc",				/* ..value */
+		.expected_len = 11,
+		.expected_res = wdns_res_success,
+	},
+	{ /* same as above but with quotes around alpn (key1) value */
+		.rrtype = WDNS_TYPE_SVCB,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "1 . key1=\"abc\"",
+		.expected = "\x00\x01"			/* priority */
+		    "\x00"				/* target . */
+		    "\x00\x01"				/* SvcParamKey 1 is alpn */
+		    "\x00\x04"				/* length.. */
+		    "\x03"				/* alpn length.. */
+		    "abc",				/* ..value */
+		.expected_len = 11,
+		.expected_res = wdns_res_success,
+	},
+
 	/* draft-ietf-dnsop-svcb-https-08 */
 	{ /* appendix D, figure 9 */
 		.rrtype = WDNS_TYPE_SVCB,
