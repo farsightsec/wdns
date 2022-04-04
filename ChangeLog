@@ -1,3 +1,28 @@
+wdns (0.11.0-1)
+
+  * Improve support for CAA records. (CAA was previously rendered as a
+    "generic" rdata type.)
+
+  * Bug fix for NSEC/NSEC3/CSYNC: do not output empty rrtype bitmaps
+    per RFC6840 section 6.4.
+
+  * Fix parsing of A6 records that ommit and address portion. Correct
+    parsing of A6 records with prefix length 0. Correct handling of
+    A6 address bytes. The address bytes of an A6 record are an address
+    suffix relative to the prefix represented by the domain name, and
+    so must be copied to and from the lower order bytes of the internal
+    address representation. These A6 code updates were for the purposes
+    of clearing "round trip" test errors in the existing code base.
+    (A6 is deprecated and was moved to historic status.)
+
+  * Fix bug in IPv6 prefix length processing in _wdns_str_to_rdata_ubuf().
+
+  * Add support for SVCB and HTTPS resource record types. This is based
+    on an Internet-Draft but is widely used in the real world.
+    https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-svcb-https-08
+
+ -- Farsight Security, Inc. <software@farsightsecurity.com>  Mon, 04 Apr 2022 12:13:28 -0400
+
 wdns (0.10.0)
 
   * Handle corner case of NSEC3 hash field with length zero.
