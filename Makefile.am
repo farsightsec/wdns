@@ -53,9 +53,9 @@ fi
 ##
 #
 
-LIBWDNS_CURRENT=3
+LIBWDNS_CURRENT=4
 LIBWDNS_REVISION=0
-LIBWDNS_AGE=2
+LIBWDNS_AGE=3
 
 include_HEADERS = wdns/wdns.h
 lib_LTLIBRARIES = wdns/libwdns.la
