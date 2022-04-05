@@ -1,4 +1,4 @@
-wdns (0.11.0-1) debian=fsi; urgency=medium
+wdns (0.11.0-1) debian-fsi; urgency=medium
 
   * Improve support for CAA records. (CAA was previously rendered as a
     "generic" rdata type.)
