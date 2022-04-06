@@ -2,7 +2,7 @@ Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
 Files: *
 Copyright: 2022 DomainTools LLC
-   2009-2019 by Farsight Security, Inc.
+   2009-2021 by Farsight Security, Inc.
 License: Apache-2.0
  Licensed under the Apache License, Version 2.0 (the "License"); you
  may not use this file except in compliance with the License. You may
@@ -16,7 +16,7 @@ License: Apache-2.0
  implied. See the License for the specific language governing
  permissions and limitations under the License.
  .
- On Debian systems, the full text of the Apache Licens, Version 2.0 can be
+ On Debian systems, the full text of the Apache License, Version 2.0 can be
  found in the file `/usr/share/common-licenses/Apache-2.0'.
 
 Files: libmy/b32_encode.c libmy/b32_encode.h libmy/b32_decode.c libmy/b32_decode.h
