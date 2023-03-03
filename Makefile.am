@@ -111,6 +111,7 @@ wdns_libwdns_la_SOURCES = \
 	wdns/downcase_name.c \
 	wdns/downcase_rdata.c \
 	wdns/downcase_rrset.c \
+	wdns/edns_options.c \
 	wdns/file_load_names.c \
 	wdns/insert_rr_rrset_array.c \
 	wdns/is_subdomain.c \

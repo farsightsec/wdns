@@ -57,9 +57,22 @@ wdns_message_to_str(wdns_message_t *m)
 		     m->sections[3].n_rrs
 	);
 
+	if (m->edns.present) {
+		char *edns_flags = m->edns.flags & 0x8000 ? " do" : "";
+		ubuf_add_cstr(u, "\n;; OPT PSEUDOSECTION:");
+		/*
+		 * RFC 6891 Section 6.1.4 and RFC 3225. Display "do" flag
+		 * if the "DNSSEC OK" (D0) bit is set.
+		 */
+		ubuf_add_fmt(u, "\n; EDNS: version: %u, flags:%s; udp: %u", m->edns.version,
+			edns_flags, m->edns.size);
+		if (m->edns.options != NULL) {
+			_wdns_rdata_to_ubuf(u, m->edns.options->data,
+				m->edns.options->len, WDNS_TYPE_OPT, class_un);
+		}
+	}
 	ubuf_add_cstr(u, "\n;; QUESTION SECTION:\n");
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_QUESTION], WDNS_MSG_SEC_QUESTION);
-
 	ubuf_add_cstr(u, "\n;; ANSWER SECTION:\n");
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_ANSWER], WDNS_MSG_SEC_ANSWER);
 

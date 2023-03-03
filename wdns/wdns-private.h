@@ -131,3 +131,9 @@ _wdns_str_to_svcparamkey(char *str);
 
 char *
 _wdns_svcparamkey_to_str(uint16_t key, char *buf, size_t len);
+
+void
+_wdns_ednsoptcode_to_ubuf(ubuf *, uint16_t option_code);
+
+wdns_res
+_wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uint16_t src_bytes);

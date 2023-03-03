@@ -180,6 +180,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 			case rdf_bytes:
 			case rdf_bytes_b64:
 			case rdf_bytes_str:
+			case rdf_edns_opt_rdata:
 				copy_bytes(src_bytes);
 				break;
 
