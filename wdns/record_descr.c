@@ -279,6 +279,15 @@ const record_descr record_descr_array[] = {
 			rdf_end,
 		}
 	},
+
+	[WDNS_TYPE_OPT] = {
+		class_un,
+		{
+			rdf_edns_opt_rdata,
+			rdf_end,
+		}
+	},
+
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);

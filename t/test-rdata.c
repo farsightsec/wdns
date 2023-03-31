@@ -35,6 +35,7 @@ struct test {
 	uint16_t rrtype;
 	uint16_t rrclass;
 	const char *expected;
+	bool skip_round_trip;
 };
 
 struct test tdata[] = {
@@ -434,8 +435,191 @@ struct test tdata[] = {
 		.expected = "0 \"issuewild\" \"letsencrypt.org\"",
 	},
 
+
+	/* EDNS OPT records, RFC 6891, 7871, and 8914*/
+	{ /* IPv4 Client-Subnet */
+		.input = "\x00\x08"	/* option code */
+		    "\x00\x07"		/* option length */
+		    "\x00\x01"		/* iana addr family */
+		    "\x18"		/* source prefix-length */
+		    "\x16"		/* scope prefix-length */
+		    "\xc7\x1e\xe4",	/* address */
+		.input_len = 11,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; CLIENT-SUBNET: 199.30.228.0/24/22",
+		.skip_round_trip = true,
+	},
+
+	{ /* IPv6 Client-Subnet */
+		.input = "\x00\x08"				/* option code */
+		    "\x00\x0b"					/* option length */
+		    "\x00\x02"					/* iana addr family */
+		    "\x38"					/* source prefix-length */
+		    "\x30"					/* scope prefix-length */
+		    "\x26\x20\x01\x1c\xf0\x08\x00",		/* address */
+		.input_len = 15,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; CLIENT-SUBNET: 2620:11c:f008::/56/48",
+		.skip_round_trip = true,
+	},
+
+	{ /* Extended DNS Error, DNSKEY Missing */
+		.input = "\x00\x0f"				/* option code */
+		    "\x00\x35"					/* option length */
+		    "\x00\x09"					/* info code */
+		    /* extra text */
+		    "\x6e\x6f\x20\x53\x45\x50\x20\x6d\x61\x74\x63\x68\x69\x6e\x67\x20\x74\x68\x65\x20\x44\x53\x20\x66\x6f\x75\x6e\x64\x20\x66\x6f\x72\x20\x64\x6e\x73\x73\x65\x63\x2d\x66\x61\x69\x6c\x65\x64\x2e\x6f\x72\x67\x2e",
+		.input_len = 57,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; EDE: 9 (DNSKEY Missing): (no SEP matching the DS found for dnssec-failed.org.)",
+		.skip_round_trip = true,
+	},
+
+	{ /* Extended DNS Error, Reserved for Private Use (49152)*/
+		.input = "\x00\x0f"				/* option code */
+		    "\x00\x31"					/* option length */
+		    "\xc0\x00"					/* info code */
+		    /* extra text */
+		    "\x54\x68\x65\x73\x65\x20\x63\x68\x61\x72\x73\x20\x61\x72\x65\x20\x70\x72\x69\x6e\x74\x61\x62\x6c\x65\x2e\x20\x54\x68\x65\x73\x65\x20\x61\x72\x65\x20\x6e\x6f\x74\x3a\x00\x02\x0d\x08\x03\x04",
+		.input_len = 53,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; EDE: 49152: (These chars are printable. These are not:......)",
+		.skip_round_trip = true,
+	},
+
+	{ /* OPT=6 and OPT=7 handled in default manner */
+		.input = "\x00\x06"	/* option code */
+		"\x00\x03"		/* option length */
+		"\x01\x02\x04"		/* option data */
+		"\x00\x07"		/* option code */
+		"\x00\x01"		/* option length */
+		"\x01",			/* option data */
+		.input_len = 12,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; OPT=6: 01 02 04 (\"...\")\n; OPT=7: 01 (\".\")",
+		.skip_round_trip = true,
+	},
+
+	{ /* Record with no option data */
+		.input = "\x00\x05"	/* option code */
+		"\x00\x03",		/* option length */
+					/* missing option data */
+		.input_len = 4,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; OPT=5: ### PARSE ERROR ###",
+		.skip_round_trip = true,
+	},
+
+	{ /* IPv4 Client-Subnet but without scope bytes */
+		.input = "\x00\x08"	/* option code */
+		    "\x00\x07"		/* option length */
+		    "\x00\x01"		/* iana addr family */
+		    "\x18"		/* source prefix-length */
+					/* missing scope prefix-length */
+		    "\xc7\x1e\xe4",	/* address */
+		.input_len = 10,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; CLIENT-SUBNET: ### PARSE ERROR ###",
+		.skip_round_trip = true,
+	},
+
+	{ /* IPv4 Client-Subnet but without address bytes*/
+		.input = "\x00\x08"	/* option code */
+		    "\x00\x07"		/* option length */
+		    "\x00\x01"		/* iana addr family */
+		    "\x18"		/* source prefix-length */
+		    "\x16",		/* scope prefix-length */
+					/* missing address */
+		.input_len = 8,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; CLIENT-SUBNET: ### PARSE ERROR ###",
+		.skip_round_trip = true,
+	},
+
+	{ /* IPv6 Client-Subnet but with wrong addr_family */
+		.input = "\x00\x08"				/* option code */
+		    "\x00\x0b"					/* option length */
+		    "\x00\01"					/* wrong (IPv4) iana addr family */
+		    "\x38"					/* source prefix-length */
+		    "\x30"					/* scope prefix-length */
+		    "\x26\x20\x01\x1c\xf0\x08\x00",		/* address */
+		.input_len = 15,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; CLIENT-SUBNET:  ### PARSE ERROR #12 ###",
+		.skip_round_trip = true,
+	},
+
+	{ /* IPv6 Client-Subnet but with invalid addr family */
+		.input = "\x00\x08"				/* option code */
+		    "\x00\x0b"					/* option length */
+		    "\x00\x03"					/* invalid (3) iana addr family */
+		    "\x38"					/* source prefix-length */
+		    "\x30"					/* scope prefix-length */
+		    "\x26\x20\x01\x1c\xf0\x08\x00",		/* address */
+		.input_len = 15,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; CLIENT-SUBNET:  ### PARSE ERROR #12 ###",
+		.skip_round_trip = true,
+	},
+
+	{ /* Extended DNS Error but without enough octets for info code */
+		.input = "\x00\x0f"				/* option code */
+		    "\x00\x01"					/* option length */
+		    "\x00",					/* invalid single octet info code */
+		.input_len = 5,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "\n; EDE:  ### PARSE ERROR #12 ###",
+		.skip_round_trip = true,
+	},
+
 	{ 0 }
 };
+
+static size_t
+_test_str_to_rdata(const char *rdata_str, const struct test *cur, const ubuf **up) {
+	uint8_t *rdata = NULL;
+	size_t rdlen = 0;
+	wdns_res res;
+	size_t failure = 0;
+	ubuf *u = (ubuf *)*up;
+
+	res = wdns_str_to_rdata(rdata_str, cur->rrtype, cur->rrclass, &rdata,
+		&rdlen);
+
+	if (res != wdns_res_success) {
+	        ubuf_add_fmt(u, "\nFAIL %" PRIu64
+		    ": round trip parsing failed (%s), "
+		    "rrtype=%s input=",
+		    cur - tdata, wdns_res_to_str(res),
+		    wdns_rrtype_to_str(cur->rrtype), rdata_str);
+
+		escape(u, (const uint8_t*)rdata_str,
+		    strlen(rdata_str));
+	        failure++;
+	} else {
+		if (rdlen != cur->input_len ||
+		    memcmp(rdata, cur->input, cur->input_len)) {
+		        ubuf_add_fmt(u, "\nFAIL %" PRIu64
+			    " (round trip): parsed=",
+			    cur - tdata);
+		        escape(u, rdata, rdlen);
+		        failure++;
+		}
+	}
+	free(rdata);
+	return failure;
+}
 
 static size_t
 test_rdata_to_str(void) {
@@ -467,10 +651,6 @@ test_rdata_to_str(void) {
 
 			failures++;
 		} else {
-			uint8_t *rdata = NULL;
-			size_t rdlen = 0;
-			wdns_res res;
-
 			ubuf_add_fmt(u, "PASS %" PRIu64 ": input=", cur-tdata);
 			escape(u, cur->input, cur->input_len);
 			ubuf_add_fmt(u, " %s %s",
@@ -480,36 +660,18 @@ test_rdata_to_str(void) {
 			ubuf_add_cstr(u, " value=");
 			escape(u, (const uint8_t*)actual, strlen(actual));
 
-			/*
-			 * Send the result of the first test, which processed
-			 * an rdata input into a string, through a 'round trip'
-			 * test back from string to rdata and compare the
-			 * end result with the initial rdata.
-			 */
-			res = wdns_str_to_rdata(actual, cur->rrtype,
-			    cur->rrclass, &rdata, &rdlen);
-
-			if (res != wdns_res_success) {
-			        ubuf_add_fmt(u, "\nFAIL %" PRIu64
-				    ": round trip parsing failed (%s), "
-				    "rrtype=%s input=",
-				    cur - tdata, wdns_res_to_str(res),
-				    wdns_rrtype_to_str(cur->rrtype), actual);
-
-				escape(u, (const uint8_t*)actual,
-				    strlen(actual));
-			        failures++;
-			} else {
-				if (rdlen != cur->input_len ||
-				    memcmp(rdata, cur->input, cur->input_len)) {
-				        ubuf_add_fmt(u, "\nFAIL %" PRIu64
-					    " (round trip): parsed=",
-					    cur - tdata);
-				        escape(u, rdata, rdlen);
-				        failures++;
-				}
+			if (!cur->skip_round_trip) {
+				/*
+				 * Send the result of the first test, which processed
+				 * an rdata input into a string, through a 'round trip'
+				 * test back from string to rdata and compare the
+				 * end result with the initial rdata.
+				 */
+				failures += _test_str_to_rdata(
+					(const char*)actual,
+					(const struct test *)cur,
+					(const ubuf **)&u);
 			}
-			free(rdata);
 		}
 
 		fprintf (stderr, "%s\n", ubuf_cstr(u));
@@ -584,6 +746,7 @@ test_parse_message(void)
 				wdns_rrclass_to_str(cur->rrclass),
 				wdns_rrtype_to_str(cur->rrtype));
 		fprintf (stderr, "%s\n", ubuf_cstr(u));
+		wdns_clear_message(&m);
 	}
 
 	ubuf_destroy(&u);

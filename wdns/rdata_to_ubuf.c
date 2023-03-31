@@ -648,6 +648,40 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 				bytes_consumed(bitmap_len);
 			}
 			break;
+		}
+
+		case rdf_edns_opt_rdata: {
+			uint16_t option_code, option_len;
+
+			while (src_bytes > 0) {
+				/*
+				 * A 2 octet field containing the option code in
+				 * network byte order. See RFC 6891 Section 6.1.2.
+				 */
+				bytes_required(2);
+				memcpy(&option_code, src, sizeof(option_code));
+				option_code = ntohs(option_code);
+				_wdns_ednsoptcode_to_ubuf(u, option_code);
+				bytes_consumed(2);
+
+				/*
+				 * A 2 octet field containing the length of the
+				 * option data in network byte order.
+				 */
+				bytes_required(2);
+				memcpy(&option_len, src, sizeof(option_len));
+				option_len = ntohs(option_len);
+				bytes_consumed(2);
+
+				bytes_required(option_len);
+				res = _wdns_ednsoptdata_to_ubuf(u, option_code,
+					src, option_len);
+				if (res != wdns_res_success) {
+					goto err_res;
+				}
+				bytes_consumed(option_len);
+			}
+			break;
 		} /* end case */
 
 		}
