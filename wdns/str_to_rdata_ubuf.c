@@ -948,8 +948,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				const char *key, *val, *end;
 				char *dup;
 				uint16_t k;
-				size_t orig_size, len_dup;
-				uint8_t *orig_ptr;
+				size_t orig_size, len_dup, orig_offset;
 
 				/* find out what key we're parsing */
 				if (*start == ' ') {
@@ -1013,7 +1012,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				/* now parse the value */
 				end = ++val;
 				orig_size = ubuf_size(u);
-				orig_ptr = ubuf_ptr(u);
+				orig_offset = (size_t)(ubuf_ptr(u) - ubuf_data(u));
 
 				end += rdata_from_str_string((uint8_t *)end, u);
 				if (end == val) {
@@ -1023,7 +1022,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 				len_dup = ubuf_size(u) - orig_size;
 				dup = calloc(len_dup+1, 1);
-				memcpy(dup, orig_ptr, len_dup);
+				memcpy(dup, ubuf_data(u) + orig_offset, len_dup);
 				ubuf_clip(u, orig_size);
 
 				res = str_to_svcparam(u, k, dup, len_dup);
