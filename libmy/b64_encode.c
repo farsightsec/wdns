@@ -7,8 +7,6 @@ For details, see http://sourceforge.net/projects/libb64
 
 #include "b64_encode.h"
 
-const int CHARS_PER_LINE = 56;
-
 void base64_init_encodestate(base64_encodestate* state_in)
 {
 	state_in->step = step_A;
