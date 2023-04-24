@@ -192,7 +192,6 @@ base32_decode(void *dst, size_t size, const char *data, size_t len)
 			} while(0);
 
 			for (bi = 0; bi < out && q != end; bi++) {
-				if (bi * 8 + 1> si * 5) break;
 				*q++ = b[bi];
 			}
 			si = 0;
