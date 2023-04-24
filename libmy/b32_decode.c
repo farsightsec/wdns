@@ -146,38 +146,56 @@ base32_decode(void *dst, size_t size, const char *data, size_t len)
 			if ((unsigned char) -1 == c) {
 				return -1;
 			}
+			s[si++] = c;
 		}
 
-		s[si++] = c;
 
 		if (G_N_ELEMENTS(s) == si || pad > 0 || i == len) {
 			char b[5];
-			size_t bi;
+			size_t bi, out;
 
 			memset(&s[si], 0, G_N_ELEMENTS(s) - si);
-			si = 0;
 
-			b[0] =
-				((s[0] << 3) & 0xf8) |
-				((s[1] >> 2) & 0x07);
-			b[1] =
-				((s[1] & 0x03) << 6) |
-				((s[2] & 0x1f) << 1) |
-				((s[3] >> 4) & 1);
-			b[2] =
-				((s[3] & 0x0f) << 4) |
-				((s[4] >> 1) & 0x0f);
-			b[3] =
-				((s[4] & 1) << 7) |
-				((s[5] & 0x1f) << 2) |
-				((s[6] >> 3) & 0x03);
-			b[4] =
-				((s[6] & 0x07) << 5) |
-				(s[7] & 0x1f);
+			out = 0;
+			do {
+				/*
+				 * Only output a byte if all of its bits are
+				 * covered by some non-pad encoding character.
+				 */
+				if (si < 2) break;
+				b[out++] =
+					((s[0] << 3) & 0xf8) |
+					((s[1] >> 2) & 0x07);
 
-			for (bi = 0; bi < G_N_ELEMENTS(b) && q != end; bi++) {
+				if (si < 4) break;
+				b[out++] =
+					((s[1] & 0x03) << 6) |
+					((s[2] & 0x1f) << 1) |
+					((s[3] >> 4) & 1);
+
+				if (si < 5) break;
+				b[out++] =
+					((s[3] & 0x0f) << 4) |
+					((s[4] >> 1) & 0x0f);
+
+				if (si < 7) break;
+				b[out++] =
+					((s[4] & 1) << 7) |
+					((s[5] & 0x1f) << 2) |
+					((s[6] >> 3) & 0x03);
+
+				if (si < 8) break;
+				b[out++] =
+					((s[6] & 0x07) << 5) |
+					(s[7] & 0x1f);
+
+			} while(0);
+
+			for (bi = 0; bi < out && q != end; bi++) {
+				if (bi * 8 + 1> si * 5) break;
 				*q++ = b[bi];
 			}
+			si = 0;
 		}
 
 		if (end == q) {
