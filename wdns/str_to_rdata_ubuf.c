@@ -1069,7 +1069,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				my_rrtype = wdns_str_to_rrtype(s_rrtype);
 				free(s_rrtype);
 
-				if (my_rrtype == 0 || (rrtype >= 128 && rrtype < 256) || rrtype == 65535) {
+				if (my_rrtype == 0 && strcasecmp(s_rrtype, "TYPE0") != 0) {
 					u16buf_destroy(&rrtypes);
 					res = wdns_res_parse_error;
 					goto err;
