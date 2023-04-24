@@ -92,7 +92,7 @@ base32_encode(char *dst, size_t size, const void *data, size_t len)
 			k = 5;
 			break;
 		case 2:
-			k = 3;
+			k = 4;
 			break;
 		case 1:
 			k = 2;
