@@ -609,7 +609,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 					res = wdns_res_parse_error;
 					goto err;
 				}
-				uint8_t oclen = (uint8_t)(end-str)/2;
+				uint8_t oclen = (uint16_t)(end-str)/2;
 				ubuf_append(u, &oclen, 1);
 
 				while (oclen > 0) {
