@@ -1042,7 +1042,8 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			const char *end;
 			char *s_rrtype;
 			u16buf *rrtypes;
-			uint16_t my_rrtype, last_rrtype;
+			uint16_t my_rrtype;
+			uint32_t last_rrtype;		/* last_rrtype has to be bigger than my_rrtype to cover all uint16_t range */
 			size_t n;
 			uint8_t window_block, bitmap_len;
 			uint8_t bitmap[32];
@@ -1067,13 +1068,14 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				}
 
 				my_rrtype = wdns_str_to_rrtype(s_rrtype);
-				free(s_rrtype);
 
-				if (my_rrtype == 0 || (rrtype >= 128 && rrtype < 256) || rrtype == 65535) {
+				if (my_rrtype == 0 && strcasecmp(s_rrtype, "TYPE0") != 0) {
+					free(s_rrtype);
 					u16buf_destroy(&rrtypes);
 					res = wdns_res_parse_error;
 					goto err;
 				}
+				free(s_rrtype);
 
 				u16buf_add(rrtypes, my_rrtype);
 				str = end;
@@ -1083,14 +1085,14 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			memset(bitmap, 0, sizeof(bitmap));
 			window_block = 0;
 			bitmap_len = 0;
-			last_rrtype = 0;
+			last_rrtype = 0x10000;
 
 			for (n = 0; n < u16buf_size(rrtypes); n++) {
 				my_rrtype = u16buf_value(rrtypes, n);
-				if (my_rrtype == last_rrtype) {
+				if ((uint32_t) my_rrtype == last_rrtype) {
 					continue;
 				}
-				last_rrtype = my_rrtype;
+				last_rrtype = (uint32_t) my_rrtype;
 
 				uint8_t cur_window = my_rrtype / 256;
 
