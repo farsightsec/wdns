@@ -151,6 +151,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		 * ECHConfigList [ECH], including the redundant length prefix.
 		 */
 		bytes_to_ubuf_base64(ptr, len, u);
+		ubuf_add_cstr(u," ");
 		break;
 
 	/*
