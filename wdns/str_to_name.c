@@ -44,7 +44,7 @@ _wdns_str_to_name(const char *str, wdns_name_t *name, bool downcase)
 	}
 
 	name->len = 0;
-	name->data = my_malloc(WDNS_MAXLEN_NAME);
+	name->data = my_malloc(WDNS_MAXLEN_NAME + 1);
 
 	data = name->data;
 	label_len = 0;
