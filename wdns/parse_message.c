@@ -49,7 +49,13 @@ wdns_parse_message(wdns_message_t *m, const uint8_t *pkt, size_t len)
 				return (res);
 			}
 
-			if (rr.rrtype == WDNS_TYPE_OPT) {
+			/*
+			 * An uncommon occurrence is the presence of multiple
+			 * OPT records. In this case, we apply the first one to
+			 * the DNS header and treat all subsequent ones as
+			 * ordinary resource records.
+			 */
+			if (rr.rrtype == WDNS_TYPE_OPT && !m->edns.present) {
 				res = _wdns_parse_edns(m, &rr);
 				if (res != wdns_res_success)
 					goto err;
