@@ -120,8 +120,12 @@ _wdns_str_to_name(const char *str, wdns_name_t *name, bool downcase)
 			if (label_len == 0)
 				goto out;
 			oclen = data++;
-			if (slen > 1)
-				name->len++;
+			name->len++;
+			if (slen == 1) {
+				/* trailing '.', end of name */
+				*oclen = 0;
+				break;
+			}
 			label_len = 0;
 		} else if (c != '\0') {
 			*data++ = c;
