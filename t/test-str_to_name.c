@@ -40,7 +40,23 @@ struct test {
 
 struct test tdata[] = {
 	{ "fsi.io", (fp)wdns_str_to_name, (const uint8_t*)"\x03""fsi\x02io\x00", 8, wdns_res_success},
+	{ "fsi.io.", (fp)wdns_str_to_name, (const uint8_t*)"\x03""fsi\x02io\x00", 8, wdns_res_success},
 	{ "FsI.io", (fp)wdns_str_to_name_case, (const uint8_t*)"\x03""FsI\x02io\x00", 8, wdns_res_success},
+	{ "x63xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx."
+	  "x63xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx."
+	  "x63xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx."
+	  "x61xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.",
+	  (fp)wdns_str_to_name,
+	  (const uint8_t *)"\x3Fx63xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+			   "\x3Fx63xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+			   "\x3Fx63xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+			   "\x3Dx61xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\x00",
+	  255, wdns_res_success },
+	{ "x63xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx."
+	  "x63xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx."
+	  "x63xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx."
+	  "x62xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.",
+	  (fp)wdns_str_to_name, (const uint8_t *)"", 0, wdns_res_name_overflow },
 	{ 0 }
 };
 
@@ -74,6 +90,10 @@ test_str_to_name(void)
 				escape(u, name.data, name.len);
 			}
 			failures++;
+		} else if (res != wdns_res_success) {
+			ubuf_add_fmt(u, "PASS %" PRIu64 ": input=", cur-tdata);
+			escape(u, (uint8_t*)cur->input, strlen(cur->input));
+			ubuf_add_fmt(u, " res=%s", wdns_res_to_str(res));
 		} else if (name.len != cur->expected_len || memcmp(name.data, cur->expected, name.len)) {
 			ubuf_add_fmt(u, "FAIL %" PRIu64 ": input=", cur-tdata);
 			escape(u, (uint8_t*)cur->input, strlen(cur->input));
