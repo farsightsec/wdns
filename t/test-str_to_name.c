@@ -39,6 +39,8 @@ struct test {
 };
 
 struct test tdata[] = {
+	{ "", (fp)wdns_str_to_name, (const uint8_t *)"\x00", 1, wdns_res_success},
+	{ ".", (fp)wdns_str_to_name, (const uint8_t *)"\x00", 1, wdns_res_success},
 	{ "fsi.io", (fp)wdns_str_to_name, (const uint8_t*)"\x03""fsi\x02io\x00", 8, wdns_res_success},
 	{ "fsi.io.", (fp)wdns_str_to_name, (const uint8_t*)"\x03""fsi\x02io\x00", 8, wdns_res_success},
 	{ "FsI.io", (fp)wdns_str_to_name_case, (const uint8_t*)"\x03""FsI\x02io\x00", 8, wdns_res_success},

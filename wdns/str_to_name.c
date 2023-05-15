@@ -36,7 +36,7 @@ _wdns_str_to_name(const char *str, wdns_name_t *name, bool downcase)
 	p = str;
 	slen = strlen(str);
 
-	if (slen == 1 && *p == '.') {
+	if (slen == 0 || (slen == 1 && *p == '.')) {
 		name->len = 1;
 		name->data = my_malloc(1);
 		name->data[0] = '\0';
