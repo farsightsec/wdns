@@ -166,7 +166,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 				return (wdns_res_parse_error);
 			}
 
-			if (inet_ntop(AF_INET, ptr, pres,
+			if (fast_inet4_ntop(ptr, pres,
 			    sizeof(pres)) == NULL) {
 				return (wdns_res_parse_error);
 			}
@@ -190,7 +190,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 				return (wdns_res_parse_error);
 			}
 
-			if (inet_ntop(AF_INET6, ptr, pres,
+			if (fast_inet6_ntop(ptr, pres,
 			    sizeof(pres)) == NULL) {
 				return (wdns_res_parse_error);
 			}
@@ -386,7 +386,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			if (oclen > 0) {
 				memset(addr, 0, sizeof(addr));
 				memcpy(addr + sizeof(addr) - oclen, src, oclen);
-				inet_ntop(AF_INET6, addr, pres, sizeof(pres));
+				fast_inet6_ntop(addr, pres, sizeof(pres));
 				ubuf_add_cstr(u, pres);
 				ubuf_add_cstr(u, " ");
 			}
@@ -470,7 +470,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_ipv4: {
 			char pres[WDNS_PRESLEN_TYPE_A];
 			bytes_required(4);
-			inet_ntop(AF_INET, src, pres, sizeof(pres));
+			fast_inet4_ntop(src, pres, sizeof(pres));
 			ubuf_add_cstr(u, pres);
 			ubuf_add_cstr(u, " ");
 			bytes_consumed(4);
@@ -480,7 +480,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_ipv6: {
 			char pres[WDNS_PRESLEN_TYPE_AAAA];
 			bytes_required(16);
-			inet_ntop(AF_INET6, src, pres, sizeof(pres));
+			fast_inet6_ntop(src, pres, sizeof(pres));
 			ubuf_add_cstr(u, pres);
 			ubuf_add_cstr(u, " ");
 			bytes_consumed(16);

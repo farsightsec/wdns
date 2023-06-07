@@ -43,6 +43,8 @@
 #include "libmy/my_alloc.h"
 #include "libmy/ubuf.h"
 
+#include "libmy/fast_inet_ntop.h"
+
 #define load_net16(buf, out) do { \
 	uint16_t _my_16; \
 	memcpy(&_my_16, buf, sizeof(uint16_t)); \

@@ -98,7 +98,7 @@ ip_to_ubuf(ubuf *u, uint16_t addr_family, const uint8_t *src, uint16_t src_bytes
 	}
 
 	memcpy(addr, src, src_bytes);
-	inet_ntop((addr_family == ip ? AF_INET : AF_INET6), addr, pres, sizeof(pres));
+	fast_inet_ntop((addr_family == ip ? AF_INET : AF_INET6), addr, pres, sizeof(pres));
 	ubuf_add_cstr(u, pres);
 	return (wdns_res_success);
 }
