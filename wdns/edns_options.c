@@ -109,13 +109,13 @@ ip_to_ubuf(ubuf *u, uint16_t addr_family, const uint8_t *src, uint16_t src_bytes
 void
 _wdns_ednsoptcode_to_ubuf(ubuf *u, uint16_t option_code)
 {
-	ubuf_add_cstr(u, "\n; ");
+	ubuf_add_cstr_lit(u, "\n; ");
 	switch (option_code) {
 		case edns_client_subnet:
-			ubuf_add_cstr(u, "CLIENT-SUBNET:");
+			ubuf_add_cstr_lit(u, "CLIENT-SUBNET:");
 			break;
 		case extended_dns_error:
-			ubuf_add_cstr(u, "EDE:");
+			ubuf_add_cstr_lit(u, "EDE:");
 			break;
 		default:
 			ubuf_add_fmt(u, "OPT=%u:", option_code);
@@ -147,7 +147,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 	} \
 } while(0)
 
-	ubuf_add_cstr(u, " ");
+	ubuf_add(u, ' ');
 	switch (option_code) {
 		case edns_client_subnet: {
 			wdns_res res;
@@ -189,6 +189,8 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			break;
 		}
 		case extended_dns_error: {
+			char tmp[10];
+			size_t len;
 			uint16_t info_code;
 
 			/*
@@ -200,7 +202,8 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			memcpy(&info_code, src, sizeof(info_code));
 			info_code = ntohs(info_code);
 			bytes_consumed(sizeof(info_code));
-			ubuf_add_fmt(u, "%u", info_code);
+			len = my_uint64_to_str(info_code, tmp);
+			ubuf_append_cstr(u, tmp, len);
 
 			/*
 			 * Display the purpose string of info-codes that
@@ -215,9 +218,9 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			 * in parenthesis with printable octets printed and
 			 * non-printable octets represented as dots.
 			 */
-			ubuf_add_cstr(u, ": (");
+			ubuf_add_cstr_lit(u, ": (");
 			print_printable(u, src, src_bytes);
-			ubuf_add_cstr(u, ")");
+			ubuf_add_cstr_lit(u, ")");
 			break;
 		}
 		default:
@@ -225,17 +228,21 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			 * Default dig behavior of printing each octet's hex
 			 * value separated by spaces.
 			 */
-			for (uint16_t i = 0; i < src_bytes; i++)
-				ubuf_add_fmt(u, "%02x ", src[i]);
+			for (uint16_t i = 0; i < src_bytes; i++) {
+				char tmp[3];
+				ubuf_append_cstr(u, my_uint8_to_hex_str_padded(src[i], tmp), 2);
+				ubuf_add(u, ' ');
+			}
+
 			/*
 			 * Followed by the same sequence repeated and enclosed
 			 * in parenthesis and quotes except now printable
 			 * octets are printed and non-printable octets are
 			 * represented as dots.
 			 */
-			ubuf_add_cstr(u, "(\"");
+			ubuf_add_cstr_lit(u, "(\"");
 			print_printable(u, src, src_bytes);
-			ubuf_add_cstr(u, "\")");
+			ubuf_add_cstr_lit(u, "\")");
 			break;
 	}
 	return (wdns_res_success);

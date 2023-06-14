@@ -99,13 +99,13 @@ spooldir_init(const char *path)
 
 	s->dname_active = ubuf_init(UBUFSZ);
 	ubuf_add_cstr(s->dname_active, dname);
-	ubuf_add_cstr(s->dname_active, "/active");
+	ubuf_add_cstr_lit(s->dname_active, "/active");
 	res = path_mkdir(ubuf_cstr(s->dname_active), 0755);
 	assert(res);
 
 	s->dname_incoming = ubuf_init(UBUFSZ);
 	ubuf_add_cstr(s->dname_incoming, dname);
-	ubuf_add_cstr(s->dname_incoming, "/incoming");
+	ubuf_add_cstr_lit(s->dname_incoming, "/incoming");
 	res = path_mkdir(ubuf_cstr(s->dname_incoming), 0755);
 	assert(res);
 
