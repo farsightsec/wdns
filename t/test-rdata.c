@@ -39,6 +39,14 @@ struct test {
 };
 
 struct test tdata[] = {
+	/* rrtype bitmap test for rrtypes > 255 */
+	{
+		.input = "\x01\x01\x00\x00\x00\x01\x00\x00\x01\x42",
+		.input_len = 10,
+		.rrtype = WDNS_TYPE_NSEC3,
+		.rrclass = WDNS_CLASS_IN,
+		.expected = "1 1 0 - 00 A SOA",
+	},
 	{ "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef", 17, WDNS_TYPE_A6, WDNS_CLASS_IN, "0 2000::dead:beef" },
 	{ "\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef\x03""fsi\x02io\x00", 24, WDNS_TYPE_A6, WDNS_CLASS_IN, "8 ::222.173.190.239 fsi.io." },
 	{ "\x80\x03""fsi\x02io\x00", 9, WDNS_TYPE_A6, WDNS_CLASS_IN, "128 fsi.io." },
