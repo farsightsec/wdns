@@ -14,53 +14,36 @@
  * limitations under the License.
  */
 
-static const char *hexchars = "0123456789abcdef";
-static const char *HEXCHARS = "0123456789ABCDEF";
-
-
 static inline const char *
-_my_uint8_to_hex_str_padded(uint8_t num, const char * src, char *dst) {
-	dst[0] = src[(num >> 4) & 0xf];
-	dst[1] = src[num & 0xf];
+_my_byte_to_hex_str(uint8_t byte, bool is_upper, char *dst)
+{
+	static const char *__hexchars = "0123456789abcdef";
+	static const char *__HEXCHARS = "0123456789ABCDEF";
+	const char *table = (is_upper ? __HEXCHARS : __hexchars);
+
+	dst[0] = table[(byte >> 4) & 0xf];
+	dst[1] = table[byte & 0xf];
 	dst[2] = '\0';
 	return dst;
 }
+
 const char *
-my_uint8_to_hex_str_padded(uint8_t num, char *dst)
+my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst)
 {
-	return _my_uint8_to_hex_str_padded(num, hexchars, dst);
+	size_t n;
+
+	for (n = 0; n < len; n++)
+		_my_byte_to_hex_str(src[n], is_upper, &dst[n * 2]);
+
+	return dst;
 }
 
 const char *
-my_uint8_to_hex_STR_padded(uint8_t num, char *dst)
+my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst)
 {
-	return _my_uint8_to_hex_str_padded(num, HEXCHARS, dst);
-}
+	uint16_t nval = htons(num);
 
-const char *
-my_uint16_to_hex_str(uint16_t num, char *dst)
-{
-	uint16_t ndx = 0;
-	char *ptr = dst;
-
-	if (num >= 0x1000) {
-		ndx = 3;
-	} else if (num >= 0x0100) {
-		ndx = 2;
-	} else if (num >= 0x0010) {
-		ndx = 1;
-	}
-
-	do {
-		uint32_t digit = num & 0xf;
-		dst[ndx] = hexchars[digit];
-		--ndx;
-		ptr++;
-		num >>= 4;
-	} while (num != 0);
-
-
-	return ptr;
+	return my_bytes_to_hex_str((const uint8_t *) &nval, sizeof(nval), is_upper, dst);
 }
 
 const char *

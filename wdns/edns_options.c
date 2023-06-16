@@ -230,7 +230,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			 */
 			for (uint16_t i = 0; i < src_bytes; i++) {
 				char tmp[3];
-				ubuf_append_cstr(u, my_uint8_to_hex_str_padded(src[i], tmp), 2);
+				ubuf_append_cstr(u, my_bytes_to_hex_str(&src[i], 1, false, tmp), 2);
 				ubuf_add(u, ' ');
 			}
 

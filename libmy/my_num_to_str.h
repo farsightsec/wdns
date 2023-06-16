@@ -3,22 +3,13 @@
 
 
 /**
- * Formats num to hexadecimal null terminated, front padded with 0, lowercase string:
- * 	0x1f -> '1f\0'
+ * Formats bytes in src to hexadecimal null terminated, front padded with 0 string:
+ * 	0x1f1e1d -> '1f1e1d\0'
  * 	0xf -> '0f\0'
  *
  * \return Pointer to dst.
  */
-const char *my_uint8_to_hex_str_padded(uint8_t num, char *dst);
-
-/**
- * Formats num to hexadecimal null terminated, front padded with 0, uppercase string:
- * 	0x1f -> '1F\0'
- * 	0xf -> '0F\0'
- *
- * \return Pointer to dst.
- */
-const char *my_uint8_to_hex_STR_padded(uint8_t num, char *dst);
+const char * my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst);
 
 /**
  * Formats num to hexadecimal string.
@@ -26,7 +17,7 @@ const char *my_uint8_to_hex_STR_padded(uint8_t num, char *dst);
  *
  * \return Pointer to place in dst after inserted symbols.
  */
-const char *my_uint16_to_hex_str(uint16_t num, char *dst);
+const char * my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst);
 
 /**
  * Formats num as numerical string front padded with 0.
