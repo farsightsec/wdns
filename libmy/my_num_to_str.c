@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+#include <arpa/inet.h>
+
+#include "libmy/my_num_to_str.h"
+
+
 static inline const char *
 _my_byte_to_hex_str(uint8_t byte, bool is_upper, char *dst)
 {

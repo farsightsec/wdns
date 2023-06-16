@@ -1,6 +1,9 @@
 #ifndef MY_NUM_TO_STR_H
 #define MY_NUM_TO_STR_H
 
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 /**
  * Formats bytes in src to hexadecimal null terminated, front padded with 0 string:
