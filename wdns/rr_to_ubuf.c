@@ -30,7 +30,7 @@ _wdns_rr_to_ubuf(ubuf *u, wdns_rr_t *rr, unsigned sec)
 	ubuf_add_cstr(u, name);
 
 	if (sec != WDNS_MSG_SEC_QUESTION) {
-		char tmp[11];
+		char tmp[sizeof("4294967295")];
 		size_t len;
 
 		ubuf_add(u, ' ');
