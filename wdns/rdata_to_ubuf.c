@@ -325,8 +325,10 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		ubuf_append_cstr(u, tmp, len);
 		ubuf_add(u, ' ');
 
-		for (unsigned i = 0; i < rdlen; i++)
+		for (unsigned i = 0; i < rdlen; i++) {
 			ubuf_append_cstr(u, my_bytes_to_hex_str(&rdata[i], 1, false, tmp), 2);
+			ubuf_add(u, ' ');
+		}
 
 		return;
 
@@ -413,7 +415,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			len = oclen = *src++;
 			bytes_required(1 + oclen);
 			if (oclen == 0)
-				ubuf_append_cstr_lit(u, "-");
+				ubuf_add(u, '-');
 			while (len > 0) {
 				char tmp[3];
 				ubuf_append_cstr(u, my_bytes_to_hex_str(src, 1, false, tmp), 2);

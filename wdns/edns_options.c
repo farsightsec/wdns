@@ -220,7 +220,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			 */
 			ubuf_append_cstr_lit(u, ": (");
 			print_printable(u, src, src_bytes);
-			ubuf_append_cstr_lit(u, ")");
+			ubuf_add(u, ')');
 			break;
 		}
 		default:
