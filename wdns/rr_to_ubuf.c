@@ -25,7 +25,7 @@ _wdns_rr_to_ubuf(ubuf *u, wdns_rr_t *rr, unsigned sec)
 	dns_type = wdns_rrtype_to_str(rr->rrtype);
 
 	if (sec == WDNS_MSG_SEC_QUESTION)
-		ubuf_add_cstr_lit(u, ";");
+		ubuf_append_cstr_lit(u, ";");
 
 	ubuf_add_cstr(u, name);
 
@@ -53,5 +53,5 @@ _wdns_rr_to_ubuf(ubuf *u, wdns_rr_t *rr, unsigned sec)
 		ubuf_add(u, ' ');
 		_wdns_rdata_to_ubuf(u, rr->rdata->data, rr->rdata->len, rr->rrtype, rr->rrclass);
 	}
-	ubuf_add_cstr_lit(u, "\n");
+	ubuf_append_cstr_lit(u, "\n");
 }

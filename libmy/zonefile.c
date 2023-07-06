@@ -74,7 +74,7 @@ zonefile_init_fname(const char *fname)
 	    fname[len_fname - 1] == 'z')
 	{
 		ubuf *u = ubuf_new();
-		ubuf_add_cstr_lit(u, "zcat ");
+		ubuf_append_cstr_lit(u, "zcat ");
 		ubuf_add_cstr(u, fname);
 		z->fp = popen(ubuf_cstr(u), "r");
 		z->is_pipe = true;
