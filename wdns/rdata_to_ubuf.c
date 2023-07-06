@@ -27,9 +27,9 @@ rdata_to_str_string_unquoted(const uint8_t *src, size_t len, ubuf *u)
 
 		c = *src++;
 		if (c == '"') {
-			ubuf_add_cstr_lit(u, "\\\"");
+			ubuf_append_cstr_lit(u, "\\\"");
 		} else if (c == '\\') {
-			ubuf_add_cstr_lit(u, "\\\\");
+			ubuf_append_cstr_lit(u, "\\\\");
 		} else if (c >= ' ' && c <= '~') {
 			ubuf_append(u, &c, 1);
 		} else {
@@ -257,11 +257,11 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 				uint8_t c = *ptr++;
 
 				if (c == '"') {
-					ubuf_add_cstr_lit(u, "\\\"");
+					ubuf_append_cstr_lit(u, "\\\"");
 				} else if (c == '\\') {
-					ubuf_add_cstr_lit(u, "\\\\\\\\");
+					ubuf_append_cstr_lit(u, "\\\\\\\\");
 				} else if (c == ',') {
-					ubuf_add_cstr_lit(u, "\\\\,");
+					ubuf_append_cstr_lit(u, "\\\\,");
 				} else if (c >= ' ' && c <= '~') {
 					ubuf_append(u, &c, 1);
 				} else {
@@ -320,7 +320,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		char tmp[10];
 		/* generic encoding */
 
-		ubuf_add_cstr_lit(u, "\\# ");
+		ubuf_append_cstr_lit(u, "\\# ");
 		len = my_uint64_to_str(rdlen, tmp);
 		ubuf_append_cstr(u, tmp, len);
 		ubuf_add(u, ' ');
@@ -413,7 +413,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			len = oclen = *src++;
 			bytes_required(1 + oclen);
 			if (oclen == 0)
-				ubuf_add_cstr_lit(u, "-");
+				ubuf_append_cstr_lit(u, "-");
 			while (len > 0) {
 				char tmp[3];
 				ubuf_append_cstr(u, my_bytes_to_hex_str(src, 1, false, tmp), 2);
@@ -438,7 +438,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			 * sequences.
 			 */
 			if (oclen == 0) {
-				ubuf_add_cstr_lit(u, "0 ");
+				ubuf_append_cstr_lit(u, "0 ");
 				src_bytes --;
 				break;
 			}

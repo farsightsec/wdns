@@ -109,13 +109,13 @@ ip_to_ubuf(ubuf *u, uint16_t addr_family, const uint8_t *src, uint16_t src_bytes
 void
 _wdns_ednsoptcode_to_ubuf(ubuf *u, uint16_t option_code)
 {
-	ubuf_add_cstr_lit(u, "\n; ");
+	ubuf_append_cstr_lit(u, "\n; ");
 	switch (option_code) {
 		case edns_client_subnet:
-			ubuf_add_cstr_lit(u, "CLIENT-SUBNET:");
+			ubuf_append_cstr_lit(u, "CLIENT-SUBNET:");
 			break;
 		case extended_dns_error:
-			ubuf_add_cstr_lit(u, "EDE:");
+			ubuf_append_cstr_lit(u, "EDE:");
 			break;
 		default:
 			ubuf_add_fmt(u, "OPT=%u:", option_code);
@@ -218,9 +218,9 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			 * in parenthesis with printable octets printed and
 			 * non-printable octets represented as dots.
 			 */
-			ubuf_add_cstr_lit(u, ": (");
+			ubuf_append_cstr_lit(u, ": (");
 			print_printable(u, src, src_bytes);
-			ubuf_add_cstr_lit(u, ")");
+			ubuf_append_cstr_lit(u, ")");
 			break;
 		}
 		default:
@@ -240,9 +240,9 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			 * octets are printed and non-printable octets are
 			 * represented as dots.
 			 */
-			ubuf_add_cstr_lit(u, "(\"");
+			ubuf_append_cstr_lit(u, "(\"");
 			print_printable(u, src, src_bytes);
-			ubuf_add_cstr_lit(u, "\")");
+			ubuf_append_cstr_lit(u, "\")");
 			break;
 	}
 	return (wdns_res_success);

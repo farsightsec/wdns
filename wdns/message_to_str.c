@@ -25,7 +25,7 @@ wdns_message_to_str(wdns_message_t *m)
 
 	u = ubuf_new();
 
-	ubuf_add_cstr_lit(u, ";; ->>HEADER<<- ");
+	ubuf_append_cstr_lit(u, ";; ->>HEADER<<- ");
 
 	opcode = wdns_opcode_to_str(WDNS_FLAGS_OPCODE(*m));
 	if (opcode != NULL)
@@ -59,7 +59,7 @@ wdns_message_to_str(wdns_message_t *m)
 
 	if (m->edns.present) {
 		char *edns_flags = m->edns.flags & 0x8000 ? " do" : "";
-		ubuf_add_cstr_lit(u, "\n;; OPT PSEUDOSECTION:");
+		ubuf_append_cstr_lit(u, "\n;; OPT PSEUDOSECTION:");
 		/*
 		 * RFC 6891 Section 6.1.4 and RFC 3225. Display "do" flag
 		 * if the "DNSSEC OK" (D0) bit is set.
@@ -71,15 +71,15 @@ wdns_message_to_str(wdns_message_t *m)
 				m->edns.options->len, WDNS_TYPE_OPT, class_un);
 		}
 	}
-	ubuf_add_cstr_lit(u, "\n;; QUESTION SECTION:\n");
+	ubuf_append_cstr_lit(u, "\n;; QUESTION SECTION:\n");
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_QUESTION], WDNS_MSG_SEC_QUESTION);
-	ubuf_add_cstr_lit(u, "\n;; ANSWER SECTION:\n");
+	ubuf_append_cstr_lit(u, "\n;; ANSWER SECTION:\n");
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_ANSWER], WDNS_MSG_SEC_ANSWER);
 
-	ubuf_add_cstr_lit(u, "\n;; AUTHORITY SECTION:\n");
+	ubuf_append_cstr_lit(u, "\n;; AUTHORITY SECTION:\n");
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_AUTHORITY], WDNS_MSG_SEC_AUTHORITY);
 
-	ubuf_add_cstr_lit(u, "\n;; ADDITIONAL SECTION:\n");
+	ubuf_append_cstr_lit(u, "\n;; ADDITIONAL SECTION:\n");
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_ADDITIONAL], WDNS_MSG_SEC_ADDITIONAL);
 
 	ubuf_cterm(u);

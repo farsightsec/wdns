@@ -28,7 +28,7 @@
 
 VECTOR_GENERATE(ubuf, uint8_t)
 
-#define ubuf_add_cstr_lit(u, s) ubuf_append(u, (const uint8_t*) s, sizeof(s) - 1)
+#define ubuf_append_cstr_lit(u, s) ubuf_append(u, (const uint8_t*) s, sizeof(s) - 1)
 #define ubuf_append_cstr(u, s, l) ubuf_append(u, (const uint8_t*) s, l)
 
 static inline ubuf *
