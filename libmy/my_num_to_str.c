@@ -52,15 +52,15 @@ my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst)
 }
 
 const char *
-my_uint64_to_str_padded(uint64_t num, int size, char *dst)
+my_uint64_to_str_padded(uint64_t num, uint32_t ndigits, char *dst)
 {
-	int ndx = size - 1;
+	int ndx = ndigits - 1;
 
-	while (size > 0) {
+	while (ndigits > 0) {
 		int digit = num % 10;
 		dst[ndx] = '0' + digit;
 		--ndx;
-		--size;
+		--ndigits;
 		num /= 10;
 	}
 
@@ -68,7 +68,7 @@ my_uint64_to_str_padded(uint64_t num, int size, char *dst)
 }
 
 size_t
-my_uint64_to_str(uint64_t num, char *buffer)
+my_uint64_to_str(uint64_t num, char *dst)
 {
 	uint64_t tmp = num;
 	int ndx, left, ndigits = 0;
@@ -83,13 +83,13 @@ my_uint64_to_str(uint64_t num, char *buffer)
 
 	while (left > 0) {
 		int digit = num % 10;
-		buffer[ndx] = '0' + digit;
+		dst[ndx] = '0' + digit;
 		--ndx;
 		--left;
 		num = num / 10;
 	}
 
-	buffer[ndigits] = '\0';
+	dst[ndigits] = '\0';
 
 	return ndigits;
 }

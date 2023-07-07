@@ -417,7 +417,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			if (oclen == 0)
 				ubuf_add(u, '-');
 			while (len > 0) {
-				char tmp[3];
+				char tmp[sizeof("FF")];
 				ubuf_append_cstr(u, my_bytes_to_hex_str(src, 1, false, tmp), 2);
 				src++;
 				len--;
@@ -468,7 +468,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		}
 
 		case rdf_int16: {
-			char tmp[10];
+			char tmp[sizeof("65535")];
 			size_t tmp_len;
 			uint16_t val;
 			bytes_required(2);
@@ -482,7 +482,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		}
 
 		case rdf_int32: {
-			char tmp[15];
+			char tmp[sizeof("4294967295")];
 			size_t tmp_len;
 			uint32_t val;
 			bytes_required(4);
@@ -518,7 +518,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_eui48: {
 			bytes_required(6);
 			for (size_t i = 0; i < 6; i++) {
-				char tmp[3];
+				char tmp[sizeof("FF")];
 				if (i != 0) {
 					ubuf_add(u, '-');
 				}
@@ -531,7 +531,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_eui64: {
 			bytes_required(8);
 			for (size_t i = 0; i < 8; i++) {
-				char tmp[3];
+				char tmp[sizeof("FF")];
 				if (i != 0) {
 					ubuf_add(u, '-');
 				}
