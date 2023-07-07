@@ -1,3 +1,23 @@
+wdns (0.12.0-1) debian-fsi; urgency=medium
+
+  * Fix off-by-one error in empty hostname lengths.
+
+  * Fix parsing of maximum length names with trailing ".".
+
+  * Remove rrtype constraint from bitmap parsing.
+
+  * Handle rrtype 0 ("TYPE0").
+
+  * Fix range errors in salt length and type bitmap parsing.
+
+  * Fix use of potentially-invalid ubuf_ptr in HTTPS svcparam parsing.
+
+  * Correct base32 encoding.
+
+  * Add support for EDNS OPT records.
+
+ -- Farsight Security, Inc. <software@farsightsecurity.com>  Thu, 06 Jul 2023 20:54:45 +0000
+
 wdns (0.11.0-1) debian-fsi; urgency=medium
 
   * Improve support for CAA records. (CAA was previously rendered as a
