@@ -6,13 +6,13 @@
 #include <stddef.h>
 
 /*
- * Format bytes as a null-terminated hex string, with each byte represented as two characters.
+ * Format bytes as a NUL-terminated hex string, with each byte represented as two characters.
  * Returns a pointer to the newly formatted string.
  */
 const char *my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst);
 
 /*
- * Format num as hex string, but without a nul terminating byte.
+ * Format num as NUL-terminated hex string.
  * Returns a pointer to the newly formatted string.
  */
 const char *my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst);

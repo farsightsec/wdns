@@ -135,7 +135,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		break;
 
 	case spr_port: {
-		char tmp[10];
+		char tmp[sizeof("65535")];
 		size_t tmp_len;
 		/*
 		 * The wire format of the SvcParamValue is the corresponding 2
@@ -317,7 +317,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 	if (rrtype >= record_descr_len ||
 	    (descr != NULL && descr->types[0] == rdf_unknown))
 	{
-		char tmp[10];
+		char tmp[sizeof("65535")];
 		/* generic encoding */
 
 		ubuf_append_cstr_lit(u, "\\# ");
@@ -360,7 +360,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_bytes:
 			len = src_bytes;
 			while (len > 0) {
-				char tmp[3];
+				char tmp[sizeof("FF")];
 				ubuf_append_cstr(u, my_bytes_to_hex_str(src, 1, true, tmp), 2);
 				src++;
 				len--;
@@ -455,7 +455,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		}
 
 		case rdf_int8: {
-			char tmp[10];
+			char tmp[sizeof("65535")];
 			size_t tmp_len;
 			uint8_t val;
 			bytes_required(1);
