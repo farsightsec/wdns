@@ -33,7 +33,7 @@ rdata_to_str_string_unquoted(const uint8_t *src, size_t len, ubuf *u)
 		} else if (c >= ' ' && c <= '~') {
 			ubuf_append(u, &c, 1);
 		} else {
-			char tmp[4];
+			char tmp[sizeof("255")];
 			ubuf_add(u, '\\');
 			ubuf_append_cstr(u, my_uint64_to_str_padded(c, 3, tmp), 3);
 		}
