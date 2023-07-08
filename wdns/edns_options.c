@@ -189,7 +189,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			break;
 		}
 		case extended_dns_error: {
-			char tmp[10];
+			char tmp[sizeof("65535")];
 			size_t len;
 			uint16_t info_code;
 
@@ -229,7 +229,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			 * value separated by spaces.
 			 */
 			for (uint16_t i = 0; i < src_bytes; i++) {
-				char tmp[3];
+				char tmp[sizeof("FF")];
 				ubuf_append_cstr(u, my_bytes_to_hex_str(&src[i], 1, false, tmp), 2);
 				ubuf_add(u, ' ');
 			}
