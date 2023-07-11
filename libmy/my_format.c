@@ -36,7 +36,8 @@ size_t
 my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst, size_t dst_size)
 {
 	size_t n;
-	len = ((len * 2) > (dst_size - 1) ? (dst_size - 1) : len);
+	if ((len *2) > (dst_size - 1)
+		len = (dst_size - 1) / 2;
 
 	for (n = 0; n < len; n++)
 		_my_byte_to_hex_str(src[n], is_upper, &dst[n * 2]);
