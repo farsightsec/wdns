@@ -190,7 +190,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 		}
 		case extended_dns_error: {
 			char tmp[sizeof("65535")];
-			const char * info_code_str;
+			const char *info_code_str;
 			size_t len;
 			uint16_t info_code;
 
