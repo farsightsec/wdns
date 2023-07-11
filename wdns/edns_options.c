@@ -203,7 +203,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			memcpy(&info_code, src, sizeof(info_code));
 			info_code = ntohs(info_code);
 			bytes_consumed(sizeof(info_code));
-			len = my_uint64_to_str(info_code, tmp, sizeof("65535"), &info_code_str);
+			len = my_uint64_to_str(info_code, tmp, sizeof(tmp), &info_code_str);
 			ubuf_append_cstr(u, info_code_str, len);
 
 			/*
@@ -216,7 +216,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 
 			/*
 			 * Display the remaining octets enclosed without quotes
-			 * in parenthesis with printable octets printed and
+			 * in parentheses with printable octets printed and
 			 * non-printable octets represented as dots.
 			 */
 			ubuf_append_cstr_lit(u, ": (");
@@ -232,7 +232,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			for (uint16_t i = 0; i < src_bytes; i++) {
 				char tmp[sizeof("FF")];
 				size_t tmp_len;
-				tmp_len = my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof("FF"));
+				tmp_len = my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof(tmp));
 				ubuf_append_cstr(u, tmp, tmp_len);
 				ubuf_add(u, ' ');
 			}

@@ -35,7 +35,7 @@ _wdns_rr_to_ubuf(ubuf *u, wdns_rr_t *rr, unsigned sec)
 		size_t len;
 
 		ubuf_add(u, ' ');
-		len = my_uint64_to_str(rr->rrttl, tmp, sizeof("4294967295"), &rrttl_str);
+		len = my_uint64_to_str(rr->rrttl, tmp, sizeof(tmp), &rrttl_str);
 		ubuf_append_cstr(u, rrttl_str, len);
 	}
 
