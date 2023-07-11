@@ -40,7 +40,7 @@
 #include "libmy/b64_decode.h"
 #include "libmy/b64_encode.h"
 
-#include "libmy/my_num_to_str.h"
+#include "libmy/my_format.h"
 
 #include "libmy/my_alloc.h"
 #include "libmy/ubuf.h"

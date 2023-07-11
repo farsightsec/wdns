@@ -16,7 +16,7 @@
 
 #include <arpa/inet.h>
 
-#include "libmy/my_num_to_str.h"
+#include "libmy/my_format.h"
 
 
 static inline const char *
@@ -28,68 +28,50 @@ _my_byte_to_hex_str(uint8_t byte, bool is_upper, char *dst)
 
 	dst[0] = table[(byte >> 4) & 0xf];
 	dst[1] = table[byte & 0xf];
-	dst[2] = '\0';
-	return dst;
-}
-
-const char *
-my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst)
-{
-	size_t n;
-
-	for (n = 0; n < len; n++)
-		_my_byte_to_hex_str(src[n], is_upper, &dst[n * 2]);
-
-	return dst;
-}
-
-const char *
-my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst)
-{
-	uint16_t nval = htons(num);
-
-	return my_bytes_to_hex_str((const uint8_t *) &nval, sizeof(nval), is_upper, dst);
-}
-
-const char *
-my_uint64_to_str_padded(uint64_t num, uint32_t ndigits, char *dst)
-{
-	int ndx = ndigits - 1;
-
-	while (ndigits > 0) {
-		int digit = num % 10;
-		dst[ndx] = '0' + digit;
-		--ndx;
-		--ndigits;
-		num /= 10;
-	}
 
 	return dst;
 }
 
 size_t
-my_uint64_to_str(uint64_t num, char *dst)
+my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst, size_t dst_size)
 {
-	uint64_t tmp = num;
-	int ndx, left, ndigits = 0;
+	size_t n;
+	len = (len > dst_size ? dst_size : len);
 
-	do {
-		ndigits++;
-		tmp /= 10;
-	} while (tmp != 0);
+	for (n = 0; n < len; n++)
+		_my_byte_to_hex_str(src[n], is_upper, &dst[n * 2]);
 
-	left = ndigits;
-	ndx = left - 1;
-
-	while (left > 0) {
-		int digit = num % 10;
-		dst[ndx] = '0' + digit;
-		--ndx;
-		--left;
-		num = num / 10;
+	if (len != dst_size) {
+		dst[n * 2] = '\x00';
 	}
 
-	dst[ndigits] = '\0';
+	return len * 2;
+}
+
+size_t
+my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst, size_t dst_size)
+{
+	uint16_t nval = htons(num);
+
+	return my_bytes_to_hex_str((const uint8_t *) &nval, sizeof(nval), is_upper, dst, dst_size);
+}
+
+size_t
+my_uint64_to_str(uint64_t num, char *dst, size_t dst_size,const char **start)
+{
+	size_t ndigits = 0;
+	char * ptr = &dst[dst_size - 1];
+	*ptr-- = '\0';
+
+	while (ptr >= dst) {
+		*ptr = '0' + num % 10;
+		ndigits ++;
+		num /= 10;
+		if (num == 0 || ptr == dst) break;
+		ptr--;
+	}
+
+	if (start != NULL) *start = ptr;
 
 	return ndigits;
 }

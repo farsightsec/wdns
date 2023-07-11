@@ -33,9 +33,10 @@ rdata_to_str_string_unquoted(const uint8_t *src, size_t len, ubuf *u)
 		} else if (c >= ' ' && c <= '~') {
 			ubuf_append(u, &c, 1);
 		} else {
-			char tmp[sizeof("255")];
+			char tmp[sizeof("255")]="000";
 			ubuf_add(u, '\\');
-			ubuf_append_cstr(u, my_uint64_to_str_padded(c, 3, tmp), 3);
+			my_uint64_to_str(c, tmp, sizeof("255"), NULL);
+			ubuf_append_cstr(u, tmp, sizeof("255") - 1);
 		}
 		n_bytes += 1;
 	}
@@ -136,6 +137,7 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 
 	case spr_port: {
 		char tmp[sizeof("65535")];
+		const char * val_str;
 		size_t tmp_len;
 		/*
 		 * The wire format of the SvcParamValue is the corresponding 2
@@ -146,8 +148,8 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 		}
 		(void) memcpy(&val, ptr, sizeof(val));
 		val = ntohs(val);
-		tmp_len = my_uint64_to_str(val, tmp);
-		ubuf_append_cstr(u, tmp, tmp_len);
+		tmp_len = my_uint64_to_str(val, tmp, sizeof("65535"), &val_str);
+		ubuf_append_cstr(u, val_str, tmp_len);
 		ubuf_add(u, ' ');
 	}
 		break;
@@ -265,9 +267,10 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 				} else if (c >= ' ' && c <= '~') {
 					ubuf_append(u, &c, 1);
 				} else {
-					char tmp[4];
+					char tmp[sizeof("255")]="000";
 					ubuf_add(u, '\\');
-					ubuf_append_cstr(u, my_uint64_to_str_padded(c, 3, tmp), 3);
+					my_uint64_to_str(c, tmp, sizeof("255"), NULL);
+					ubuf_append_cstr(u, tmp, sizeof("255") - 1);
 				}
 			}
 
@@ -318,15 +321,18 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 	    (descr != NULL && descr->types[0] == rdf_unknown))
 	{
 		char tmp[sizeof("65535")];
+		const char * rdlen_str;
 		/* generic encoding */
 
 		ubuf_append_cstr_lit(u, "\\# ");
-		len = my_uint64_to_str(rdlen, tmp);
-		ubuf_append_cstr(u, tmp, len);
+		len = my_uint64_to_str(rdlen, tmp, sizeof("65535"), &rdlen_str);
+		ubuf_append_cstr(u, rdlen_str, len);
 		ubuf_add(u, ' ');
 
 		for (unsigned i = 0; i < rdlen; i++) {
-			ubuf_append_cstr(u, my_bytes_to_hex_str(&rdata[i], 1, false, tmp), 2);
+			size_t tmp_len;
+			tmp_len = my_bytes_to_hex_str(&rdata[i], 1, false, tmp, sizeof("FF"));
+			ubuf_append_cstr(u, tmp, tmp_len);
 			ubuf_add(u, ' ');
 		}
 
@@ -361,7 +367,9 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			len = src_bytes;
 			while (len > 0) {
 				char tmp[sizeof("FF")];
-				ubuf_append_cstr(u, my_bytes_to_hex_str(src, 1, true, tmp), 2);
+				size_t tmp_len;
+				tmp_len = my_bytes_to_hex_str(src, 1, true, tmp, sizeof("FF"));
+				ubuf_append_cstr(u, tmp, tmp_len);
 				src++;
 				len--;
 			}
@@ -418,7 +426,9 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 				ubuf_add(u, '-');
 			while (len > 0) {
 				char tmp[sizeof("FF")];
-				ubuf_append_cstr(u, my_bytes_to_hex_str(src, 1, false, tmp), 2);
+				size_t tmp_len;
+				tmp_len = my_bytes_to_hex_str(src, 1, false, tmp, sizeof("FF"));
+				ubuf_append_cstr(u, tmp, tmp_len);
 				src++;
 				len--;
 			}
@@ -456,12 +466,13 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 		case rdf_int8: {
 			char tmp[sizeof("65535")];
+			const char * val_str;
 			size_t tmp_len;
 			uint8_t val;
 			bytes_required(1);
 			memcpy(&val, src, sizeof(val));
-			tmp_len = my_uint64_to_str(val, tmp);
-			ubuf_append_cstr(u, tmp, tmp_len);
+			tmp_len = my_uint64_to_str(val, tmp, sizeof("65535"), &val_str);
+			ubuf_append_cstr(u, val_str, tmp_len);
 			ubuf_add(u, ' ');
 			bytes_consumed(1);
 			break;
@@ -469,13 +480,14 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 		case rdf_int16: {
 			char tmp[sizeof("65535")];
+			const char * val_str;
 			size_t tmp_len;
 			uint16_t val;
 			bytes_required(2);
 			memcpy(&val, src, sizeof(val));
 			val = ntohs(val);
-			tmp_len = my_uint64_to_str(val, tmp);
-			ubuf_append_cstr(u, tmp, tmp_len);
+			tmp_len = my_uint64_to_str(val, tmp, sizeof("65535"), &val_str);
+			ubuf_append_cstr(u, val_str, tmp_len);
 			ubuf_add(u, ' ');
 			bytes_consumed(2);
 			break;
@@ -483,13 +495,14 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 		case rdf_int32: {
 			char tmp[sizeof("4294967295")];
+			const char * val_str;
 			size_t tmp_len;
 			uint32_t val;
 			bytes_required(4);
 			memcpy(&val, src, sizeof(val));
 			val = ntohl(val);
-			tmp_len = my_uint64_to_str(val, tmp);
-			ubuf_append_cstr(u, tmp, tmp_len);
+			tmp_len = my_uint64_to_str(val, tmp, sizeof("4294967295"), &val_str);
+			ubuf_append_cstr(u, val_str, tmp_len);
 			ubuf_add(u, ' ');
 			bytes_consumed(4);
 			break;
@@ -519,10 +532,12 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(6);
 			for (size_t i = 0; i < 6; i++) {
 				char tmp[sizeof("FF")];
+				size_t tmp_len;
 				if (i != 0) {
 					ubuf_add(u, '-');
 				}
-				ubuf_append_cstr(u, my_bytes_to_hex_str(&src[i], 1, false, tmp), 2);
+				tmp_len = my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof("FF"));
+				ubuf_append_cstr(u, tmp, tmp_len);
 			}
 			bytes_consumed(6);
 			break;
@@ -532,10 +547,12 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(8);
 			for (size_t i = 0; i < 8; i++) {
 				char tmp[sizeof("FF")];
+				size_t tmp_len;
 				if (i != 0) {
 					ubuf_add(u, '-');
 				}
-				ubuf_append_cstr(u, my_bytes_to_hex_str(&src[i], 1, false, tmp), 2);
+				tmp_len = my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof("FF"));
+				ubuf_append_cstr(u, tmp, tmp_len);
 			}
 			bytes_consumed(8);
 			break;

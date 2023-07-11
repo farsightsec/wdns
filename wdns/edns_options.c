@@ -190,6 +190,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 		}
 		case extended_dns_error: {
 			char tmp[sizeof("65535")];
+			const char * info_code_str;
 			size_t len;
 			uint16_t info_code;
 
@@ -202,8 +203,8 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			memcpy(&info_code, src, sizeof(info_code));
 			info_code = ntohs(info_code);
 			bytes_consumed(sizeof(info_code));
-			len = my_uint64_to_str(info_code, tmp);
-			ubuf_append_cstr(u, tmp, len);
+			len = my_uint64_to_str(info_code, tmp, sizeof("65535"), &info_code_str);
+			ubuf_append_cstr(u, info_code_str, len);
 
 			/*
 			 * Display the purpose string of info-codes that
@@ -230,13 +231,15 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			 */
 			for (uint16_t i = 0; i < src_bytes; i++) {
 				char tmp[sizeof("FF")];
-				ubuf_append_cstr(u, my_bytes_to_hex_str(&src[i], 1, false, tmp), 2);
+				size_t tmp_len;
+				tmp_len = my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof("FF"));
+				ubuf_append_cstr(u, tmp, tmp_len);
 				ubuf_add(u, ' ');
 			}
 
 			/*
 			 * Followed by the same sequence repeated and enclosed
-			 * in parenthesis and quotes except now printable
+			 * in parentheses and quotes except now printable
 			 * octets are printed and non-printable octets are
 			 * represented as dots.
 			 */

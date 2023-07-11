@@ -31,11 +31,12 @@ _wdns_rr_to_ubuf(ubuf *u, wdns_rr_t *rr, unsigned sec)
 
 	if (sec != WDNS_MSG_SEC_QUESTION) {
 		char tmp[sizeof("4294967295")];
+		const char * rrttl_str;
 		size_t len;
 
 		ubuf_add(u, ' ');
-		len = my_uint64_to_str(rr->rrttl, tmp);
-		ubuf_append_cstr(u, tmp, len);
+		len = my_uint64_to_str(rr->rrttl, tmp, sizeof("4294967295"), &rrttl_str);
+		ubuf_append_cstr(u, rrttl_str, len);
 	}
 
 
