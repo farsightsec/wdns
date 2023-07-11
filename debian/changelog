@@ -1,5 +1,7 @@
 wdns (0.12.0-1) debian-fsi; urgency=medium
 
+  * Use fast_inet_ntop instead of inet_ntop.
+
   * Fix off-by-one error in empty hostname lengths.
 
   * Fix parsing of maximum length names with trailing ".".
