@@ -21,9 +21,11 @@ size_t my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst, size_t dst_s
 
 /*
  * Format num as a numerical NUL-terminated string of up to dst_size bytes.
- * If start is non-NULL, it will receive a pointer to the start of the string.
+ * If start is non-NULL, it will receive a pointer to the first digit in
+ * the formatted string. The formatted string will end at the end of the
+ * dst buffer, which the caller may fill with padding characters if needed.
  *
- * Returns the size of the formatted string.
+ * Returns the number of digits in the formatted string.
  */
 size_t my_uint64_to_str(uint64_t num, char *dst, size_t dst_size, const char **start);
 
