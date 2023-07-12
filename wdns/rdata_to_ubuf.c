@@ -330,9 +330,8 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		ubuf_add(u, ' ');
 
 		for (unsigned i = 0; i < rdlen; i++) {
-			size_t tmp_len;
-			tmp_len = my_bytes_to_hex_str(&rdata[i], 1, false, tmp, sizeof(tmp));
-			ubuf_append_cstr(u, tmp, tmp_len);
+			my_bytes_to_hex_str(&rdata[i], 1, false, tmp, sizeof(tmp));
+			ubuf_append_cstr(u, tmp, 2);
 			ubuf_add(u, ' ');
 		}
 
@@ -367,9 +366,8 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			len = src_bytes;
 			while (len > 0) {
 				char tmp[sizeof("FF")];
-				size_t tmp_len;
-				tmp_len = my_bytes_to_hex_str(src, 1, true, tmp, sizeof(tmp));
-				ubuf_append_cstr(u, tmp, tmp_len);
+				my_bytes_to_hex_str(src, 1, true, tmp, sizeof(tmp));
+				ubuf_append_cstr(u, tmp, 2);
 				src++;
 				len--;
 			}
@@ -426,9 +424,8 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 				ubuf_add(u, '-');
 			while (len > 0) {
 				char tmp[sizeof("ff")];
-				size_t tmp_len;
-				tmp_len = my_bytes_to_hex_str(src, 1, false, tmp, sizeof(tmp));
-				ubuf_append_cstr(u, tmp, tmp_len);
+				my_bytes_to_hex_str(src, 1, false, tmp, sizeof(tmp));
+				ubuf_append_cstr(u, tmp, 2);
 				src++;
 				len--;
 			}
@@ -532,12 +529,11 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(6);
 			for (size_t i = 0; i < 6; i++) {
 				char tmp[sizeof("ff")];
-				size_t tmp_len;
 				if (i != 0) {
 					ubuf_add(u, '-');
 				}
-				tmp_len = my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof(tmp));
-				ubuf_append_cstr(u, tmp, tmp_len);
+				my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof(tmp));
+				ubuf_append_cstr(u, tmp, 2);
 			}
 			bytes_consumed(6);
 			break;
@@ -547,12 +543,11 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			bytes_required(8);
 			for (size_t i = 0; i < 8; i++) {
 				char tmp[sizeof("ff")];
-				size_t tmp_len;
 				if (i != 0) {
 					ubuf_add(u, '-');
 				}
-				tmp_len = my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof(tmp));
-				ubuf_append_cstr(u, tmp, tmp_len);
+				my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof(tmp));
+				ubuf_append_cstr(u, tmp, 2);
 			}
 			bytes_consumed(8);
 			break;

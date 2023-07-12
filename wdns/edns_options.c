@@ -231,9 +231,8 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			 */
 			for (uint16_t i = 0; i < src_bytes; i++) {
 				char tmp[sizeof("ff")];
-				size_t tmp_len;
-				tmp_len = my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof(tmp));
-				ubuf_append_cstr(u, tmp, tmp_len);
+				my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof(tmp));
+				ubuf_append_cstr(u, tmp, 2);
 				ubuf_add(u, ' ');
 			}
 
