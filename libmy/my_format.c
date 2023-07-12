@@ -36,6 +36,7 @@ size_t
 my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst, size_t dst_size)
 {
 	size_t n;
+
 	if ((len * 2) > (dst_size - 1))
 		len = (dst_size - 1) / 2;
 
@@ -56,21 +57,26 @@ my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst, size_t dst_size)
 }
 
 size_t
-my_uint64_to_str(uint64_t num, char *dst, size_t dst_size,const char **start)
+my_uint64_to_str(uint64_t num, char *dst, size_t dst_size, const char **start)
 {
 	size_t ndigits = 0;
-	char * ptr = &dst[dst_size - 1];
+	char *ptr = &dst[dst_size - 1];
+
 	*ptr-- = '\0';
 
 	while (ptr >= dst) {
 		*ptr = '0' + num % 10;
-		ndigits ++;
+		ndigits++;
 		num /= 10;
-		if (num == 0 || ptr == dst) break;
+
+		if (num == 0 || ptr == dst)
+			break;
+
 		ptr--;
 	}
 
-	if (start != NULL) *start = ptr;
+	if (start != NULL)
+		*start = ptr;
 
 	return ndigits;
 }

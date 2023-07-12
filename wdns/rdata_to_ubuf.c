@@ -33,7 +33,8 @@ rdata_to_str_string_unquoted(const uint8_t *src, size_t len, ubuf *u)
 		} else if (c >= ' ' && c <= '~') {
 			ubuf_append(u, &c, 1);
 		} else {
-			char tmp[]="\\000";
+			char tmp[] = "\\000";
+			/* Val prints backwards, so always starts with "\\0" */
 			my_uint64_to_str(c, tmp, sizeof(tmp), NULL);
 			ubuf_append_cstr_lit(u, tmp);
 		}
@@ -266,7 +267,8 @@ svcparam_to_str(uint16_t key, const uint8_t *src, uint16_t len, ubuf *u)
 				} else if (c >= ' ' && c <= '~') {
 					ubuf_append(u, &c, 1);
 				} else {
-					char tmp[]="\\000";
+					char tmp[] = "\\000";
+					/* Val prints backwards; always starts with "\\0" */
 					my_uint64_to_str(c, tmp, sizeof(tmp), NULL);
 					ubuf_append_cstr_lit(u, tmp);
 				}
@@ -423,7 +425,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 			if (oclen == 0)
 				ubuf_add(u, '-');
 			while (len > 0) {
-				char tmp[sizeof("FF")];
+				char tmp[sizeof("ff")];
 				size_t tmp_len;
 				tmp_len = my_bytes_to_hex_str(src, 1, false, tmp, sizeof(tmp));
 				ubuf_append_cstr(u, tmp, tmp_len);
@@ -529,7 +531,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_eui48: {
 			bytes_required(6);
 			for (size_t i = 0; i < 6; i++) {
-				char tmp[sizeof("FF")];
+				char tmp[sizeof("ff")];
 				size_t tmp_len;
 				if (i != 0) {
 					ubuf_add(u, '-');
@@ -544,7 +546,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		case rdf_eui64: {
 			bytes_required(8);
 			for (size_t i = 0; i < 8; i++) {
-				char tmp[sizeof("FF")];
+				char tmp[sizeof("ff")];
 				size_t tmp_len;
 				if (i != 0) {
 					ubuf_add(u, '-');

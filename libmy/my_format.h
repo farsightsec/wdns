@@ -6,26 +6,25 @@
 #include <stddef.h>
 
 /*
- * Format bytes as a NUL-terminated hex string into dst, with each byte represented as two characters.
- * for up to dst_size bytes
+ * Format bytes as a NUL-terminated hex string, with each byte represented as two characters.
  *
- * Returns a size of formatted string or dst_size (whichever is less).
+ * Returns the size of the formatted string, up to a maximum of dst_size bytes.
  */
 size_t my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst, size_t dst_size);
 
 /*
- * Format uint16_t num as NUL-terminated hex string for up to dst_size.
+ * Format num as a NUL-terminated hex string of up to dst_size bytes.
  *
- * Returns a size of formatted string or dst_size (whichever is less).
+ * Returns the size of the formatted string.
  */
 size_t my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst, size_t dst_size);
 
 /*
- * Format num as numerical NUL-terminated string up to dst_size, using dst as buffer.
- * Places pointer to the start of formatted string into *start
- * Returns a size of formatted string.
+ * Format num as a numerical NUL-terminated string of up to dst_size bytes.
+ * If start is non-NULL, it will receive a pointer to the start of the string.
+ *
+ * Returns the size of the formatted string.
  */
 size_t my_uint64_to_str(uint64_t num, char *dst, size_t dst_size, const char **start);
-
 
 #endif /* MY_NUM_TO_STR_H */
