@@ -102,6 +102,8 @@ wdns_libwdns_la_SOURCES = \
 	libmy/b64_decode.h \
 	libmy/b64_encode.c \
 	libmy/b64_encode.h \
+	libmy/my_format.c \
+	libmy/my_format.h \
 	libmy/fast_inet_ntop.c \
 	libmy/fast_inet_ntop.h \
 	wdns/clear.c \
