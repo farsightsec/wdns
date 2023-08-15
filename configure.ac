@@ -1,7 +1,7 @@
 AC_PREREQ(2.64)
 
 m4_define(wdns_major_version, 0)
-m4_define(wdns_minor_version, 11)
+m4_define(wdns_minor_version, 12)
 m4_define(wdns_patchlevel_version, 0)
 m4_define(wdns_version,
           wdns_major_version.wdns_minor_version.wdns_patchlevel_version)
