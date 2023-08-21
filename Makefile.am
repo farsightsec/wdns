@@ -35,11 +35,11 @@ fi
 
 report-coverage:
 	@if [ $(USE_LCOV) = yes ] ; then \
-		$(LCOV) --capture --directory . --output-file all.coverage ; \
+		$(LCOV) --capture --directory . --output-file all.coverage --rc lcov_branch_coverage=1 ; \
 		$(LCOV) --remove all.coverage \
 			$(abs_top_srcdir)/t/\* \
 			/usr/include/\* \
-			--output report.coverage ; \
+			--output report.coverage --rc lcov_branch_coverage=1 ; \
 		$(GENHTML) --legend -o $(abs_top_builddir)/coverage-html report.coverage ; \
 		echo "Generated Code Coverage report in HTML at $(abs_top_builddir)/coverage-html" ; \
 	else \
