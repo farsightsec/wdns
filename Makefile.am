@@ -248,3 +248,7 @@ TESTS += t/test-str_to_rrtype
 check_PROGRAMS += t/test-str_to_rrtype
 t_test_str_to_rrtype_SOURCES = t/test-str_to_rrtype.c t/test-common.c
 t_test_str_to_rrtype_LDADD = wdns/libwdns.la
+
+TESTS += t/test-fast_inet_ntop
+check_PROGRAMS += t/test-fast_inet_ntop
+t_test_fast_inet_ntop_SOURCES = t/test-fast_inet_ntop.c t/test-common.c
