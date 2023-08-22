@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 %:
-	dh $@ --with autoreconf
+	dh $@
 
 override_dh_strip:
 	dh_strip -p libwdns1 --dbg-package=libwdns1-dbg
