@@ -23,6 +23,7 @@
 #include "libmy/fast_inet_ntop.h"
 #include "libmy/fast_inet_ntop.c"
 
+#include <errno.h>
 #include <arpa/inet.h>
 
 #define NAME "test-fast_inet_ntop"
@@ -31,6 +32,7 @@ static size_t
 test_fast_inet_ntop(void) {
 	char buf[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")];
 	char rbuf[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")];
+	const char *result;
 	size_t failures = 0;
 	size_t i;
 	unsigned char abuf[16];
@@ -78,6 +80,35 @@ test_fast_inet_ntop(void) {
 			fprintf(stderr, "FAIL: fast_inet_ntop %s != inet_ntop %s\n", buf, rbuf);
 			failures++;
 		}
+	}
+
+	/* error result tests */
+
+        errno = 0;
+	result = fast_inet_ntop(0, "0", buf, sizeof(buf));
+	if (result == NULL && errno == EAFNOSUPPORT) {
+		fprintf(stderr, "PASS: fast_inet_ntop unknown address family results in EAFNOSUPPORT\n");
+	} else {
+		fprintf(stderr, "FAIL: fast_inet_ntop unknown address family results in EAFNOSUPPORT\n");
+		failures++;
+	}
+
+        errno = 0;
+	result = fast_inet_ntop(AF_INET, "0", buf, 1);
+	if (result == NULL && errno == ENOSPC) {
+		fprintf(stderr, "PASS: fast_inet_ntop too small destination space for IPv4 presentation results in ENOSPC\n");
+	} else {
+		fprintf(stderr, "FAIL: fast_inet_ntop too small destination space for IPv4 presentation results in ENOSPC\n");
+		failures++;
+	}
+
+        errno = 0;
+	result = fast_inet_ntop(AF_INET6, "0", buf, 5);
+	if (result == NULL && errno == ENOSPC) {
+		fprintf(stderr, "PASS: fast_inet_ntop too small destination space for IPv6 presentation results in ENOSPC\n");
+	} else {
+		fprintf(stderr, "FAIL: fast_inet_ntop too small destination space for IPv6 presentation results in ENOSPC\n");
+		failures++;
 	}
 
 	return(failures);
