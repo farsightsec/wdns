@@ -84,10 +84,8 @@ test_fast_inet_ntop(void) {
 
 	/* error result tests */
 
-	inet_pton(AF_INET, "0.0.0.0", abuf);
-
 	errno = 0;
-	result = fast_inet_ntop(2147483647, abuf, buf, sizeof(buf));
+	result = fast_inet_ntop(0, "0", buf, sizeof(buf));
 	if (result == NULL && errno == EAFNOSUPPORT) {
 		fprintf(stderr, "PASS: fast_inet_ntop unknown address family results in EAFNOSUPPORT\n");
 	} else {
@@ -96,11 +94,20 @@ test_fast_inet_ntop(void) {
 	}
 
 	errno = 0;
-	result = fast_inet_ntop(AF_APPLETALK, abuf, buf, sizeof(buf));
-	if (result == NULL && errno == EAFNOSUPPORT) {
-		fprintf(stderr, "PASS: fast_inet_ntop unsupported address family results in EAFNOSUPPORT\n");
+	result = fast_inet_ntop(AF_INET, "0", buf, 1);
+	if (result == NULL && errno == ENOSPC) {
+		fprintf(stderr, "PASS: fast_inet_ntop too small destination space for IPv4 presentation results in ENOSPC\n");
 	} else {
-		fprintf(stderr, "FAIL: fast_inet_ntop unsupported address family results in EAFNOSUPPORT\n");
+		fprintf(stderr, "FAIL: fast_inet_ntop too small destination space for IPv4 presentation results in ENOSPC\n");
+		failures++;
+	}
+
+	errno = 0;
+	result = fast_inet_ntop(AF_INET6, "0", buf, 5);
+	if (result == NULL && errno == ENOSPC) {
+		fprintf(stderr, "PASS: fast_inet_ntop too small destination space for IPv6 presentation results in ENOSPC\n");
+	} else {
+		fprintf(stderr, "FAIL: fast_inet_ntop too small destination space for IPv6 presentation results in ENOSPC\n");
 		failures++;
 	}
 
