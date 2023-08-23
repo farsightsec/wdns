@@ -64,7 +64,12 @@ static char numstr[100][2] = {
 const char *
 fast_inet4_ntop(const void *restrict src, char *restrict dst, socklen_t size)
 {
-	if (size < INET_ADDRSTRLEN || src == NULL || dst == NULL)
+	if (size < INET_ADDRSTRLEN) {
+		errno = ENOSPC;
+		return NULL;
+	};
+
+	if (src == NULL || dst == NULL)
 		return NULL;
 
 	char *sptr = dst;
@@ -116,7 +121,12 @@ fast_inet6_ntop(const void *restrict src, char *restrict dst, socklen_t size)
 	int i;
 	const uint8_t *psrc = (const uint8_t *) src;
 
-	if (size < INET6_ADDRSTRLEN || src == NULL || dst == NULL)
+	if (size < INET6_ADDRSTRLEN) {
+		errno = ENOSPC;
+		return NULL;
+	};
+
+	if (src == NULL || dst == NULL)
 		return NULL;
 
 	/*
@@ -200,6 +210,7 @@ const char *fast_inet_ntop(int af, const void *restrict src, char *restrict dst,
 		case AF_INET6:
 			return fast_inet6_ntop(src, dst, size);
 		default:
+			errno = EAFNOSUPPORT;
 			break;
 	}
 
