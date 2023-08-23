@@ -200,6 +200,7 @@ const char *fast_inet_ntop(int af, const void *restrict src, char *restrict dst,
 		case AF_INET6:
 			return fast_inet6_ntop(src, dst, size);
 		default:
+			errno = EAFNOSUPPORT;
 			break;
 	}
 

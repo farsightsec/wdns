@@ -23,6 +23,7 @@
 #include "libmy/fast_inet_ntop.h"
 #include "libmy/fast_inet_ntop.c"
 
+#include <errno.h>
 #include <arpa/inet.h>
 
 #define NAME "test-fast_inet_ntop"
@@ -31,6 +32,7 @@ static size_t
 test_fast_inet_ntop(void) {
 	char buf[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")];
 	char rbuf[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")];
+	const char *result;
 	size_t failures = 0;
 	size_t i;
 	unsigned char abuf[16];
@@ -78,6 +80,28 @@ test_fast_inet_ntop(void) {
 			fprintf(stderr, "FAIL: fast_inet_ntop %s != inet_ntop %s\n", buf, rbuf);
 			failures++;
 		}
+	}
+
+	/* error result tests */
+
+	inet_pton(AF_INET, "0.0.0.0", abuf);
+
+	errno = 0;
+	result = fast_inet_ntop(2147483647, abuf, buf, sizeof(buf));
+	if (result == NULL && errno == EAFNOSUPPORT) {
+		fprintf(stderr, "PASS: fast_inet_ntop unknown address family results in EAFNOSUPPORT\n");
+	} else {
+		fprintf(stderr, "FAIL: fast_inet_ntop unknown address family results in EAFNOSUPPORT\n");
+		failures++;
+	}
+
+	errno = 0;
+	result = fast_inet_ntop(AF_APPLETALK, abuf, buf, sizeof(buf));
+	if (result == NULL && errno == EAFNOSUPPORT) {
+		fprintf(stderr, "PASS: fast_inet_ntop unsupported address family results in EAFNOSUPPORT\n");
+	} else {
+		fprintf(stderr, "FAIL: fast_inet_ntop unsupported address family results in EAFNOSUPPORT\n");
+		failures++;
 	}
 
 	return(failures);
