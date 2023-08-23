@@ -9,9 +9,16 @@ wdns (0.12.0)
 
   * Fix out of bounds memory write in wdns_str_to_name.
 
- -- Farsight Security, Inc. <software@farsightsecurity.com>  Tue, 15 Aug 2023 22:22:40 +0000
+  * Performance improvements for various text outputs including numerical
+    and hex outputs by using optimized non-sprintf(3) formatting.
 
-wdns (0.11.0-1)
+  * Avoid performance hit of sprintf(3) when converting IPv4 and IPv6
+    binary addresses into presentation formats by using a modified
+    version of inet_ntop(3).
+
+ -- Farsight Security, Inc. <software@farsightsecurity.com>  Wed, 23 Aug 2023 13:40:51 +0000
+
+wdns (0.11.0)
 
   * Improve support for CAA records. (CAA was previously rendered as a
     "generic" rdata type.)
