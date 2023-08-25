@@ -447,7 +447,7 @@ struct test tdata[] = {
 		.input_len = 11,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; CLIENT-SUBNET: 199.30.228.0/24/22",
+		.expected = "CLIENT-SUBNET: 199.30.228.0/24/22",
 		.skip_round_trip = true,
 	},
 
@@ -461,7 +461,7 @@ struct test tdata[] = {
 		.input_len = 15,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; CLIENT-SUBNET: 2620:11c:f008::/56/48",
+		.expected = "CLIENT-SUBNET: 2620:11c:f008::/56/48",
 		.skip_round_trip = true,
 	},
 
@@ -474,7 +474,7 @@ struct test tdata[] = {
 		.input_len = 57,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; EDE: 9 (DNSKEY Missing): (no SEP matching the DS found for dnssec-failed.org.)",
+		.expected = "EDE: 9 (DNSKEY Missing): (no SEP matching the DS found for dnssec-failed.org.)",
 		.skip_round_trip = true,
 	},
 
@@ -487,7 +487,7 @@ struct test tdata[] = {
 		.input_len = 53,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; EDE: 49152: (These chars are printable. These are not:......)",
+		.expected = "EDE: 49152: (These chars are printable. These are not:......)",
 		.skip_round_trip = true,
 	},
 
@@ -501,7 +501,7 @@ struct test tdata[] = {
 		.input_len = 12,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; OPT=6: 01 02 04 (\"...\")\n; OPT=7: 01 (\".\")",
+		.expected = "OPT=6: 01 02 04 (\"...\")\nOPT=7: 01 (\".\")",
 		.skip_round_trip = true,
 	},
 
@@ -512,7 +512,7 @@ struct test tdata[] = {
 		.input_len = 4,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; OPT=5: ### PARSE ERROR ###",
+		.expected = "OPT=5: ### PARSE ERROR ###",
 		.skip_round_trip = true,
 	},
 
@@ -526,7 +526,7 @@ struct test tdata[] = {
 		.input_len = 10,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; CLIENT-SUBNET: ### PARSE ERROR ###",
+		.expected = "CLIENT-SUBNET: ### PARSE ERROR ###",
 		.skip_round_trip = true,
 	},
 
@@ -540,7 +540,7 @@ struct test tdata[] = {
 		.input_len = 8,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; CLIENT-SUBNET: ### PARSE ERROR ###",
+		.expected = "CLIENT-SUBNET: ### PARSE ERROR ###",
 		.skip_round_trip = true,
 	},
 
@@ -554,7 +554,7 @@ struct test tdata[] = {
 		.input_len = 15,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; CLIENT-SUBNET:  ### PARSE ERROR #12 ###",
+		.expected = "CLIENT-SUBNET:  ### PARSE ERROR #12 ###",
 		.skip_round_trip = true,
 	},
 
@@ -568,7 +568,7 @@ struct test tdata[] = {
 		.input_len = 15,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; CLIENT-SUBNET:  ### PARSE ERROR #12 ###",
+		.expected = "CLIENT-SUBNET:  ### PARSE ERROR #12 ###",
 		.skip_round_trip = true,
 	},
 
@@ -579,7 +579,7 @@ struct test tdata[] = {
 		.input_len = 5,
 		.rrclass = WDNS_CLASS_IN,
 		.rrtype = WDNS_TYPE_OPT,
-		.expected = "\n; EDE:  ### PARSE ERROR #12 ###",
+		.expected = "EDE:  ### PARSE ERROR #12 ###",
 		.skip_round_trip = true,
 	},
 

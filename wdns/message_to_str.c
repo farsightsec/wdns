@@ -67,8 +67,20 @@ wdns_message_to_str(wdns_message_t *m)
 		ubuf_add_fmt(u, "\n; EDNS: version: %u, flags:%s; udp: %u", m->edns.version,
 			edns_flags, m->edns.size);
 		if (m->edns.options != NULL) {
-			_wdns_rdata_to_ubuf(u, m->edns.options->data,
+			ubuf *ueopts;
+			char *eopts, *ptr, *opt;
+
+			ueopts = ubuf_new();
+			_wdns_rdata_to_ubuf(ueopts, m->edns.options->data,
 				m->edns.options->len, WDNS_TYPE_OPT, class_un);
+			eopts = ubuf_cstr(ueopts);
+			opt = strtok_r(eopts, "\n", &ptr);
+			while (opt != NULL) {
+				ubuf_append_cstr_lit(u, "\n; ");
+				ubuf_append_cstr(u, opt, strlen(opt));
+				opt = strtok_r(NULL, "\n", &ptr);
+			}
+			ubuf_destroy(&ueopts);
 		}
 	}
 	ubuf_append_cstr_lit(u, "\n;; QUESTION SECTION:\n");

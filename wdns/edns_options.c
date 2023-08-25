@@ -109,7 +109,6 @@ ip_to_ubuf(ubuf *u, uint16_t addr_family, const uint8_t *src, uint16_t src_bytes
 void
 _wdns_ednsoptcode_to_ubuf(ubuf *u, uint16_t option_code)
 {
-	ubuf_append_cstr_lit(u, "\n; ");
 	switch (option_code) {
 		case edns_client_subnet:
 			ubuf_append_cstr_lit(u, "CLIENT-SUBNET:");
