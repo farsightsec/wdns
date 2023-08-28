@@ -723,6 +723,9 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 					goto err_res;
 				}
 				bytes_consumed(option_len);
+				if (src_bytes > 0) {
+					ubuf_add(u, '\n');
+				}
 			}
 			break;
 		} /* end case */
