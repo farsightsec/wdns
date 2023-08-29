@@ -583,6 +583,46 @@ struct test tdata[] = {
 		.skip_round_trip = true,
 	},
 
+	{ /* IPv4 Client-Subnet but with 0 source and 0 scope */
+		.input = "\x00\x08"	/* option code */
+		    "\x00\x04"		/* option length */
+		    "\x00\x01"		/* iana addr family */
+		    "\x00"		/* source prefix-length */
+		    "\x00",		/* scope prefix-length */
+		.input_len = 8,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "CLIENT-SUBNET: 0.0.0.0/0/0",
+		.skip_round_trip = true,
+	},
+
+	{ /* IPv6 Client-Subnet but with 0 source and 0 scope */
+		.input = "\x00\x08"	/* option code */
+		    "\x00\x04"		/* option length */
+		    "\x00\x02"		/* iana addr family */
+		    "\x00"		/* source prefix-length */
+		    "\x00",		/* scope prefix-length */
+		.input_len = 8,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "CLIENT-SUBNET: ::/0/0",
+		.skip_round_trip = true,
+	},
+
+	{ /* IPv4 Client-Subnet with truncated address; no final 00 byte */
+		.input = "\x00\x08"	/* option code */
+		    "\x00\x07"		/* option length */
+		    "\x00\x01"		/* iana addr family */
+		    "\x18"		/* source prefix-length */
+		    "\x00"		/* scope prefix-length */
+		    "\xc6\x33\x64",	/* address */
+		.input_len = 11,
+		.rrclass = WDNS_CLASS_IN,
+		.rrtype = WDNS_TYPE_OPT,
+		.expected = "CLIENT-SUBNET: 198.51.100.0/24/0",
+		.skip_round_trip = true,
+	},
+
 	{ 0 }
 };
 

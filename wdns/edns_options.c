@@ -87,9 +87,7 @@ ip_to_ubuf(ubuf *u, uint16_t addr_family, const uint8_t *src, uint16_t src_bytes
 	char pres[WDNS_PRESLEN_TYPE_AAAA];
 	uint8_t addr[16] = {0};
 
-	if (src_bytes == 0) {
-		return (wdns_res_parse_error);
-	} else if (addr_family != ip && addr_family != ip6) {
+	if (addr_family != ip && addr_family != ip6) {
 		return (wdns_res_parse_error);
 	} else if (addr_family == ip && src_bytes > 4) {
 		return (wdns_res_parse_error);
