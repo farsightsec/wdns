@@ -1,5 +1,5 @@
 Name:           wdns
-Version:        0.11.0
+Version:        0.12.0
 Release:        1%{?dist}
 Summary:        low-level DNS library
 
