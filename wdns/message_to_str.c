@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2023 DomainTools LLC
  * Copyright (c) 2010, 2012, 2019 by Farsight Security, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +26,7 @@ wdns_message_to_str(wdns_message_t *m)
 
 	u = ubuf_new();
 
-	ubuf_add_cstr(u, ";; ->>HEADER<<- ");
+	ubuf_append_cstr_lit(u, ";; ->>HEADER<<- ");
 
 	opcode = wdns_opcode_to_str(WDNS_FLAGS_OPCODE(*m));
 	if (opcode != NULL)
@@ -57,16 +58,41 @@ wdns_message_to_str(wdns_message_t *m)
 		     m->sections[3].n_rrs
 	);
 
-	ubuf_add_cstr(u, "\n;; QUESTION SECTION:\n");
-	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_QUESTION], WDNS_MSG_SEC_QUESTION);
+	if (m->edns.present) {
+		char *edns_flags = m->edns.flags & 0x8000 ? " do" : "";
+		ubuf_append_cstr_lit(u, "\n;; OPT PSEUDOSECTION:");
+		/*
+		 * RFC 6891 Section 6.1.4 and RFC 3225. Display "do" flag
+		 * if the "DNSSEC OK" (D0) bit is set.
+		 */
+		ubuf_add_fmt(u, "\n; EDNS: version: %u, flags:%s; udp: %u", m->edns.version,
+			edns_flags, m->edns.size);
+		if (m->edns.options != NULL) {
+			ubuf *ueopts;
+			char *eopts, *ptr, *opt;
 
-	ubuf_add_cstr(u, "\n;; ANSWER SECTION:\n");
+			ueopts = ubuf_new();
+			_wdns_rdata_to_ubuf(ueopts, m->edns.options->data,
+				m->edns.options->len, WDNS_TYPE_OPT, class_un);
+			eopts = ubuf_cstr(ueopts);
+			opt = strtok_r(eopts, "\n", &ptr);
+			while (opt != NULL) {
+				ubuf_append_cstr_lit(u, "\n; ");
+				ubuf_append_cstr(u, opt, strlen(opt));
+				opt = strtok_r(NULL, "\n", &ptr);
+			}
+			ubuf_destroy(&ueopts);
+		}
+	}
+	ubuf_append_cstr_lit(u, "\n;; QUESTION SECTION:\n");
+	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_QUESTION], WDNS_MSG_SEC_QUESTION);
+	ubuf_append_cstr_lit(u, "\n;; ANSWER SECTION:\n");
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_ANSWER], WDNS_MSG_SEC_ANSWER);
 
-	ubuf_add_cstr(u, "\n;; AUTHORITY SECTION:\n");
+	ubuf_append_cstr_lit(u, "\n;; AUTHORITY SECTION:\n");
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_AUTHORITY], WDNS_MSG_SEC_AUTHORITY);
 
-	ubuf_add_cstr(u, "\n;; ADDITIONAL SECTION:\n");
+	ubuf_append_cstr_lit(u, "\n;; ADDITIONAL SECTION:\n");
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_ADDITIONAL], WDNS_MSG_SEC_ADDITIONAL);
 
 	ubuf_cterm(u);

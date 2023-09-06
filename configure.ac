@@ -1,7 +1,7 @@
 AC_PREREQ(2.64)
 
 m4_define(wdns_major_version, 0)
-m4_define(wdns_minor_version, 11)
+m4_define(wdns_minor_version, 12)
 m4_define(wdns_patchlevel_version, 0)
 m4_define(wdns_version,
           wdns_major_version.wdns_minor_version.wdns_patchlevel_version)
@@ -14,7 +14,7 @@ AC_INIT([wdns],
 AC_CONFIG_SRCDIR([wdns/wdns.h.in])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign 1.11 -Wall -Wno-portability silent-rules subdir-objects])
-AC_PROG_CC_STDC
+AC_PROG_CC
 AC_USE_SYSTEM_EXTENSIONS
 AC_SYS_LARGEFILE
 AC_CONFIG_MACRO_DIR([m4])

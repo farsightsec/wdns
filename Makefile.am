@@ -54,7 +54,7 @@ fi
 #
 
 LIBWDNS_CURRENT=4
-LIBWDNS_REVISION=0
+LIBWDNS_REVISION=1
 LIBWDNS_AGE=3
 
 include_HEADERS = wdns/wdns.h
@@ -102,6 +102,10 @@ wdns_libwdns_la_SOURCES = \
 	libmy/b64_decode.h \
 	libmy/b64_encode.c \
 	libmy/b64_encode.h \
+	libmy/my_format.c \
+	libmy/my_format.h \
+	libmy/fast_inet_ntop.c \
+	libmy/fast_inet_ntop.h \
 	wdns/clear.c \
 	wdns/compare_rr_rrset.c \
 	wdns/copy_uname.c \
@@ -111,6 +115,7 @@ wdns_libwdns_la_SOURCES = \
 	wdns/downcase_name.c \
 	wdns/downcase_rdata.c \
 	wdns/downcase_rrset.c \
+	wdns/edns_options.c \
 	wdns/file_load_names.c \
 	wdns/insert_rr_rrset_array.c \
 	wdns/is_subdomain.c \
@@ -243,3 +248,7 @@ TESTS += t/test-str_to_rrtype
 check_PROGRAMS += t/test-str_to_rrtype
 t_test_str_to_rrtype_SOURCES = t/test-str_to_rrtype.c t/test-common.c
 t_test_str_to_rrtype_LDADD = wdns/libwdns.la
+
+TESTS += t/test-fast_inet_ntop
+check_PROGRAMS += t/test-fast_inet_ntop
+t_test_fast_inet_ntop_SOURCES = t/test-fast_inet_ntop.c t/test-common.c

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 DomainTools LLC
+ * Copyright (c) 2022-2023 DomainTools LLC
  * Copyright (c) 2009-2012, 2014, 2016, 2021 by Farsight Security, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -180,6 +180,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 			case rdf_bytes:
 			case rdf_bytes_b64:
 			case rdf_bytes_str:
+			case rdf_edns_opt_rdata:
 				copy_bytes(src_bytes);
 				break;
 

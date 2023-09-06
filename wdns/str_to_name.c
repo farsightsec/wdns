@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2023 DomainTools LLC
  * Copyright (c) 2009-2010, 2012, 2014-2015, 2019 by Farsight Security, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,31 +26,24 @@ is_digit(char c)
 static wdns_res
 _wdns_str_to_name(const char *str, wdns_name_t *name, bool downcase)
 {
-	const char *p;
-	size_t label_len;
+	const char *p = str;
+	size_t label_len = 0;
 	ssize_t slen;
 	uint8_t c, *oclen, *data;
-	wdns_res res;
+	wdns_res res = wdns_res_parse_error;
 
-	res = wdns_res_parse_error;
-
-	p = str;
 	slen = strlen(str);
+	name->len = 1;	/* at least 1 in any possible case */
 
-	if (slen == 1 && *p == '.') {
-		name->len = 1;
+	if (slen == 0 || (slen == 1 && *p == '.')) {
 		name->data = my_malloc(1);
 		name->data[0] = '\0';
 		return (wdns_res_success);
 	}
 
-	name->len = 0;
 	name->data = my_malloc(WDNS_MAXLEN_NAME);
-
 	data = name->data;
-	label_len = 0;
 	oclen = data++;
-	name->len++;
 
 	for (;;) {
 		c = *p++;
@@ -120,8 +114,12 @@ _wdns_str_to_name(const char *str, wdns_name_t *name, bool downcase)
 			if (label_len == 0)
 				goto out;
 			oclen = data++;
-			if (slen > 1)
-				name->len++;
+			name->len++;
+			if (slen == 1) {
+				/* trailing '.', end of name */
+				*oclen = 0;
+				break;
+			}
 			label_len = 0;
 		} else if (c != '\0') {
 			*data++ = c;

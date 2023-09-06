@@ -1,3 +1,18 @@
+wdns (0.12.0)
+
+  * Add EDNS output to wdns_message_to_str().
+
+  * Fix memory leak triggered by multiple OPT records in messages.
+
+  * Fixes multiple bugs in base32 encoding, NSEC bitmap parsing, and HTTPS
+    svcparam parsing.
+
+  * Fix out of bounds memory write in wdns_str_to_name.
+
+  * Fix handling of no address for client subnets.
+
+ -- Farsight Security, Inc. <software@farsightsecurity.com>  Tue, 15 Aug 2023 22:22:40 +0000
+
 wdns (0.11.0-1)
 
   * Improve support for CAA records. (CAA was previously rendered as a

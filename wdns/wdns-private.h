@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2023 DomainTools LLC
  * Copyright (c) 2012-2015, 2021 by Farsight Security, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,8 +41,12 @@
 #include "libmy/b64_decode.h"
 #include "libmy/b64_encode.h"
 
+#include "libmy/my_format.h"
+
 #include "libmy/my_alloc.h"
 #include "libmy/ubuf.h"
+
+#include "libmy/fast_inet_ntop.h"
 
 #define load_net16(buf, out) do { \
 	uint16_t _my_16; \
@@ -131,3 +136,9 @@ _wdns_str_to_svcparamkey(char *str);
 
 char *
 _wdns_svcparamkey_to_str(uint16_t key, char *buf, size_t len);
+
+void
+_wdns_ednsoptcode_to_ubuf(ubuf *, uint16_t option_code);
+
+wdns_res
+_wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uint16_t src_bytes);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 DomainTools LLC
+ * Copyright (c) 2022-2023 DomainTools LLC
  * Copyright (c) 2009-2012, 2015-2016, 2021 by Farsight Security, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -279,6 +279,15 @@ const record_descr record_descr_array[] = {
 			rdf_end,
 		}
 	},
+
+	[WDNS_TYPE_OPT] = {
+		class_un,
+		{
+			rdf_edns_opt_rdata,
+			rdf_end,
+		}
+	},
+
 };
 
 const size_t record_descr_len = sizeof(record_descr_array) / sizeof(record_descr);

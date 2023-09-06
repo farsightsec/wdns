@@ -8,6 +8,8 @@
 .deps/
 .dirstamp
 .libs/
+.gdb_history
+configure~
 /aclocal.m4
 /autom4te.cache
 /build-aux

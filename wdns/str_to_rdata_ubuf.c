@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 DomainTools LLC
+ * Copyright (c) 2022-2023 DomainTools LLC
  * Copyright (c) 2015-2018, 2021 by Farsight Security, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -609,7 +609,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 					res = wdns_res_parse_error;
 					goto err;
 				}
-				uint8_t oclen = (uint8_t)(end-str)/2;
+				uint8_t oclen = (uint16_t)(end-str)/2;
 				ubuf_append(u, &oclen, 1);
 
 				while (oclen > 0) {
@@ -948,8 +948,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				const char *key, *val, *end;
 				char *dup;
 				uint16_t k;
-				size_t orig_size, len_dup;
-				uint8_t *orig_ptr;
+				size_t orig_size, len_dup, orig_offset;
 
 				/* find out what key we're parsing */
 				if (*start == ' ') {
@@ -1013,7 +1012,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				/* now parse the value */
 				end = ++val;
 				orig_size = ubuf_size(u);
-				orig_ptr = ubuf_ptr(u);
+				orig_offset = (size_t)(ubuf_ptr(u) - ubuf_data(u));
 
 				end += rdata_from_str_string((uint8_t *)end, u);
 				if (end == val) {
@@ -1023,7 +1022,7 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 				len_dup = ubuf_size(u) - orig_size;
 				dup = calloc(len_dup+1, 1);
-				memcpy(dup, orig_ptr, len_dup);
+				memcpy(dup, ubuf_data(u) + orig_offset, len_dup);
 				ubuf_clip(u, orig_size);
 
 				res = str_to_svcparam(u, k, dup, len_dup);
@@ -1043,7 +1042,8 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			const char *end;
 			char *s_rrtype;
 			u16buf *rrtypes;
-			uint16_t my_rrtype, last_rrtype;
+			uint16_t my_rrtype;
+			uint32_t last_rrtype;		/* last_rrtype has to be bigger than my_rrtype to cover all uint16_t range */
 			size_t n;
 			uint8_t window_block, bitmap_len;
 			uint8_t bitmap[32];
@@ -1068,13 +1068,14 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 				}
 
 				my_rrtype = wdns_str_to_rrtype(s_rrtype);
-				free(s_rrtype);
 
-				if (my_rrtype == 0 || (rrtype >= 128 && rrtype < 256) || rrtype == 65535) {
+				if (my_rrtype == 0 && strcasecmp(s_rrtype, "TYPE0") != 0) {
+					free(s_rrtype);
 					u16buf_destroy(&rrtypes);
 					res = wdns_res_parse_error;
 					goto err;
 				}
+				free(s_rrtype);
 
 				u16buf_add(rrtypes, my_rrtype);
 				str = end;
@@ -1084,14 +1085,14 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			memset(bitmap, 0, sizeof(bitmap));
 			window_block = 0;
 			bitmap_len = 0;
-			last_rrtype = 0;
+			last_rrtype = 0x10000;
 
 			for (n = 0; n < u16buf_size(rrtypes); n++) {
 				my_rrtype = u16buf_value(rrtypes, n);
-				if (my_rrtype == last_rrtype) {
+				if ((uint32_t) my_rrtype == last_rrtype) {
 					continue;
 				}
-				last_rrtype = my_rrtype;
+				last_rrtype = (uint32_t) my_rrtype;
 
 				uint8_t cur_window = my_rrtype / 256;
 
