@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/bin/sh
 
 # Copyright (c) 2009, 2011, 2012, 2015 by Farsight Security, Inc.
+# Copyright (c) 2023 by DomainTools LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if [ $# -ne 1 ] ; then
+  echo "ERROR: Single argument expected"
+  exit 1
+fi
 
-import sys
+header_fname="$1"
 
-header_fname = sys.argv[1]
-output_fname = sys.argv[2]
+## Build array of the variables of interest, WDNS_TYPE_
+## #define WDNS_TYPE_A	1
 
-w = open(output_fname, 'w')
+defines=$(grep WDNS_TYPE_ "$header_fname" | awk '{print $2}')
 
-w.write('''/*
+## Sort based on name
+sorted=$(echo "$defines" | tr ' ' '\n' | sort)
+
+cat <<EOF
+/*
  * Copyright (c) Farsight Security, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,45 +46,37 @@ w.write('''/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-''')
 
-w.write('''
 const char *
 wdns_rrtype_to_str(uint16_t rrtype)
 {
-    switch (rrtype) {
-''')
+   switch (rrtype) {
+EOF
 
-for line in open(header_fname):
-    if 'WDNS_TYPE_' in line:
-        wdns_type = line.split()[1]
-        rrtype = wdns_type.replace('WDNS_TYPE_','',1).replace('_', '-')
-        w.write('\tcase %s: return ("%s");\n' % (wdns_type, rrtype))
+for d in $defines ; do
+	n=$(echo "$d" | sed -e 's/WDNS_[A-Z]*_//' -e 's/_/-/g')
+	echo "   case $d: return (\"$n\");"
+done
 
-w.write('''    }
+cat <<EOF
+   }
 
-    return (NULL);
+   return (NULL);
 }
-''')
 
-w.write('''
 static struct u16str {
     uint16_t u16;
     const char *str;
 } rrtypes[] = {
-''')
+EOF
 
-rrtypes = []
-for line in open(header_fname):
-    if 'WDNS_TYPE_' in line:
-        wdns_type = line.split()[1]
-        rrtype = wdns_type.replace('WDNS_TYPE_','',1).replace('_', '-')
-        rrtypes.append((wdns_type, rrtype))
-rrtypes.sort()
-for wdns_type, rrtype in rrtypes:
-    w.write('\t{ %s, "%s" },\n' % (wdns_type, rrtype))
+for l in $sorted ; do
+	n=$(echo "$l" | sed -e 's/WDNS_[A-Z]*_//' -e 's/_/-/g')
+	echo "   { $l, \"$n\" },"
+done
 
-w.write('''};
+cat <<EOF
+};
 
 #define num_rrtypes (sizeof(rrtypes) / sizeof(struct u16str))
 
@@ -120,6 +121,4 @@ wdns_str_to_rrtype(const char *str) {
     }
     return (0);
 }
-''')
-
-w.close()
+EOF

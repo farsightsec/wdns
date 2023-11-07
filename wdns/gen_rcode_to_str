@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/bin/sh
 
 # Copyright (c) 2015 by Farsight Security, Inc.
+# Copyright (c) 2023 by DomainTools LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +15,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
+if [ $# -ne 1 ] ; then
+  echo "ERROR: Single argument expected"
+  exit 1
+fi
 
-header_fname = sys.argv[1]
-output_fname = sys.argv[2]
+header_fname="$1"
 
-w = open(output_fname, 'w')
+## Build array of the variables of interest, WDNS_R_
+## #define WDNS_R_NOERROR 0
 
-w.write('''/*
+defines=$(grep WDNS_R_ "$header_fname" | awk '{print $2}')
+
+## Sort based on name
+sorted=$(echo "$defines" | tr ' ' '\n' | sort)
+
+cat <<EOF
+/*
  * Copyright (c) Farsight Security, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,45 +46,37 @@ w.write('''/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-''')
 
-w.write('''
 const char *
 wdns_rcode_to_str(uint16_t rcode)
 {
-    switch (rcode) {
-''')
+   switch (rcode) {
+EOF
 
-for line in open(header_fname):
-    if 'WDNS_R_' in line:
-        wdns_type = line.split()[1]
-        rcode = wdns_type.replace('WDNS_R_','',1).replace('_', '-')
-        w.write('\tcase %s: return ("%s");\n' % (wdns_type, rcode))
+for d in $defines ; do
+	n=$(echo "$d" | sed -e 's/WDNS_[A-Z]*_//' -e 's/_/-/g')
+	echo "   case $d: return (\"$n\");"
+done
 
-w.write('''    }
+cat <<EOF
+   }
 
-    return (NULL);
+   return (NULL);
 }
-''')
 
-w.write('''
 static struct u16str {
     uint16_t u16;
     const char *str;
 } rcodes[] = {
-''')
+EOF
 
-rcodes = []
-for line in open(header_fname):
-    if 'WDNS_R_' in line:
-        wdns_type = line.split()[1]
-        rcode = wdns_type.replace('WDNS_R_','',1).replace('_', '-')
-        rcodes.append((wdns_type, rcode))
-rcodes.sort()
-for wdns_type, rcode in rcodes:
-    w.write('\t{ %s, "%s" },\n' % (wdns_type, rcode))
+for l in $sorted ; do
+	n=$(echo "$l" | sed -e 's/WDNS_[A-Z]*_//' -e 's/_/-/g')
+	echo "   { $l, \"$n\" },"
+done
 
-w.write('''};
+cat <<EOF
+};
 
 #define num_rcodes (sizeof(rcodes) / sizeof(struct u16str))
 
@@ -96,6 +98,4 @@ wdns_str_to_rcode(const char *str, uint16_t *out) {
     }
     return (wdns_res_failure);
 }
-''')
-
-w.close()
+EOF
