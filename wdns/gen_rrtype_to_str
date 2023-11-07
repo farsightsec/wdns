@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Copyright (c) 2009, 2011, 2012, 2015 by Farsight Security, Inc.
 # Copyright (c) 2023 by DomainTools LLC
+# Copyright (c) 2009, 2011, 2012, 2015 by Farsight Security, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ header_fname="$1"
 defines=$(grep WDNS_TYPE_ "$header_fname" | awk '{print $2}')
 
 ## Sort based on name
-sorted=$(echo "$defines" | tr ' ' '\n' | sort)
+sorted=$(echo "$defines" | sort)
 
 cat <<EOF
 /*
