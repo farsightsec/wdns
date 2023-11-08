@@ -70,9 +70,6 @@ AM_CONDITIONAL([LIBPCAP], [test "$have_libpcap" = "true"])
 
 gl_LD_VERSION_SCRIPT
 
-AM_PATH_PYTHON(,, [:])
-AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
-
 AC_ARG_WITH(coverage,
 [ --with-coverage[=PROGRAM] enable gtest and coverage target using the specified lcov], lcov="$withval", lcov="no")
 
