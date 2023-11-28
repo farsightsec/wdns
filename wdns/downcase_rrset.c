@@ -18,9 +18,10 @@ wdns_res
 wdns_downcase_rrset(wdns_rrset_t *rrset)
 {
 	wdns_res res;
+	int i;
 
 	wdns_downcase_name(&rrset->name);
-	for (int i = 0; i < rrset->n_rdatas; i++) {
+	for (i = 0; i < rrset->n_rdatas; i++) {
 		if (rrset->rdatas[i] != NULL) {
 			res = wdns_downcase_rdata(rrset->rdatas[i],
 						  rrset->rrtype, rrset->rrclass);

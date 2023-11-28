@@ -36,7 +36,7 @@ wdns_deserialize_rrset(wdns_rrset_t *rrset, const uint8_t *buf, size_t sz)
 	bytes_read += len; \
 } while(0)
 
-	size_t bytes_read = 0;
+	size_t i, bytes_read = 0;
 
 	memset(rrset, 0, sizeof(*rrset));
 
@@ -61,7 +61,7 @@ wdns_deserialize_rrset(wdns_rrset_t *rrset, const uint8_t *buf, size_t sz)
 
 	/* rdatas */
 	rrset->rdatas = my_calloc(1, sizeof(void *) * rrset->n_rdatas);
-	for (size_t i = 0; i < rrset->n_rdatas; i++) {
+	for (i = 0; i < rrset->n_rdatas; i++) {
 		uint16_t rdlen;
 
 		copy_bytes(&rdlen, 2);

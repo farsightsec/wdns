@@ -31,8 +31,7 @@ wdns_compare_rr_rrset(const wdns_rr_t *rr, const wdns_rrset_t *rrset)
 {
 	if (rr->name.len == rrset->name.len &&
 	    rr->rrtype == rrset->rrtype &&
-	    rr->rrclass == rrset->rrclass)
-	{
+	    rr->rrclass == rrset->rrclass) {
 		wdns_name_t name_rr;
 		wdns_name_t name_rrset;
 

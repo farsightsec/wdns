@@ -94,9 +94,8 @@ _wdns_str_to_name(const char *str, wdns_name_t *name, bool downcase)
 			if (!is_digit(d[0]) || !is_digit(d[1]) || !is_digit(d[2]))
 				goto out;
 			val = strtol(d, &endptr, 10);
-			if (endptr != NULL && *endptr == '\0'
-			    && val >= 0 && val <= 255)
-			{
+			if (endptr != NULL && *endptr == '\0' &&
+			    val >= 0 && val <= 255) {
 				uint8_t uval;
 
 				uval = (uint8_t) val;

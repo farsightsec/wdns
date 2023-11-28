@@ -37,12 +37,12 @@ testfunc(void)
 {
 	wdns_rrset_array_t *a;
 	wdns_rrset_t *rrset;
-	size_t sz;
+	size_t n, sz, sec;
 	uint8_t *buf;
 
-	for (size_t sec = WDNS_MSG_SEC_ANSWER; sec < WDNS_MSG_SEC_MAX; sec++) {
+	for (sec = WDNS_MSG_SEC_ANSWER; sec < WDNS_MSG_SEC_MAX; sec++) {
 		a = &m.sections[sec];
-		for (size_t n = 0; n < a->n_rrsets; n++) {
+		for (n = 0; n < a->n_rrsets; n++) {
 			rrset = &a->rrsets[n];
 			wdns_serialize_rrset(rrset, NULL, &sz);
 			buf = alloca(sz);

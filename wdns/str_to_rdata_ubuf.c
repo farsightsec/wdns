@@ -352,14 +352,14 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			uint16_t rrtype, uint16_t rrclass) {
 	wdns_res res;
 	const record_descr *descr = NULL;
+	const uint8_t *t;
 	size_t u_orig_size = ubuf_size(u);
 
 	if (rrtype < record_descr_len)
 		descr = &record_descr_array[rrtype];
 
 	if (rrtype >= record_descr_len ||
-	    (descr != NULL && descr->types[0] == rdf_unknown))
-	{
+	   (descr != NULL && descr->types[0] == rdf_unknown)) {
 		/* generic encoding */
 
 		if (strncmp(str, "\\#", 2)) {
@@ -419,12 +419,11 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 		return (wdns_res_success);
 	} else if (descr != NULL && !(descr->record_class == class_un ||
-				      descr->record_class == rrclass))
-	{
+				      descr->record_class == rrclass)) {
 		return (wdns_res_success);
 	}
 
-	for (const uint8_t *t = &descr->types[0]; *t != rdf_end; t++) {
+	for (t = &descr->types[0]; *t != rdf_end; t++) {
 		if (str == NULL) {
 			break;
 		}
@@ -807,17 +806,16 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 		case rdf_eui48: {
 			uint8_t a[6] = {0};
-			int ret;
+			int i, ret;
 
 			if (strlen(str) != strlen("01-02-03-04-05-06")) {
 				res = wdns_res_parse_error;
 				goto err;
 			}
-			for (int i = 0; i < 6; i++) {
+			for (i = 0; i < 6; i++) {
 				if (!isxdigit(str[3*i]) ||
 				    !isxdigit(str[3*i + 1]) ||
-				    (i < 5 && str[3*i + 2] != '-'))
-				{
+				    (i < 5 && str[3*i + 2] != '-')) {
 					res = wdns_res_parse_error;
 					goto err;
 				}
@@ -835,17 +833,16 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 
 		case rdf_eui64: {
 			uint8_t a[8] = {0};
-			int ret;
+			int i, ret;
 
 			if (strlen(str) != strlen("01-02-03-04-05-06-07-08")) {
 				res = wdns_res_parse_error;
 				goto err;
 			}
-			for (int i = 0; i < 8; i++) {
+			for (i = 0; i < 8; i++) {
 				if (!isxdigit(str[3*i]) ||
 				    !isxdigit(str[3*i + 1]) ||
-				    (i < 7 && str[3*i + 2] != '-'))
-					{
+				    (i < 7 && str[3*i + 2] != '-')) {
 						res = wdns_res_parse_error;
 						goto err;
 					}

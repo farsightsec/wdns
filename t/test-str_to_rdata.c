@@ -705,12 +705,13 @@ static const struct test tdata[] = {
 
 static size_t
 test_str_to_rdata(void) {
+	const struct test *cur;
 	ubuf *u;
 	size_t failures = 0;
 
 	u = ubuf_init(256);
 
-	for (const struct test *cur = tdata; cur->input != NULL; cur++) {
+	for (cur = tdata; cur->input != NULL; cur++) {
 		uint8_t *actual = NULL;
 		size_t actual_len = 0;
 		wdns_res res;

@@ -308,8 +308,8 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 	char domain_name[WDNS_PRESLEN_NAME];
 	const record_descr *descr = NULL;
-	const uint8_t *src;
-	size_t len;
+	const uint8_t *src, *t;
+	size_t len, i;
 	ssize_t src_bytes;
 	uint8_t oclen;
 	wdns_res res;
@@ -318,8 +318,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		descr = &record_descr_array[rrtype];
 
 	if (rrtype >= record_descr_len ||
-	    (descr != NULL && descr->types[0] == rdf_unknown))
-	{
+	   (descr != NULL && descr->types[0] == rdf_unknown)) {
 		char tmp[sizeof("65535")];
 		const char *rdlen_str;
 		/* generic encoding */
@@ -329,7 +328,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		ubuf_append_cstr(u, rdlen_str, len);
 		ubuf_add(u, ' ');
 
-		for (unsigned i = 0; i < rdlen; i++) {
+		for (i = 0; i < rdlen; i++) {
 			my_bytes_to_hex_str(&rdata[i], 1, false, tmp, sizeof(tmp));
 			ubuf_append_cstr(u, tmp, 2);
 			ubuf_add(u, ' ');
@@ -338,15 +337,14 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 		return;
 
 	} else if (descr != NULL && !(descr->record_class == class_un ||
-				      descr->record_class == rrclass))
-	{
+				      descr->record_class == rrclass)) {
 		return;
 	}
 
 	src = rdata;
 	src_bytes = (ssize_t) rdlen;
 
-	for (const uint8_t *t = &descr->types[0]; *t != rdf_end; t++) {
+	for (t = &descr->types[0]; *t != rdf_end; t++) {
 		if (src_bytes == 0)
 			break;
 
@@ -527,7 +525,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 		case rdf_eui48: {
 			bytes_required(6);
-			for (size_t i = 0; i < 6; i++) {
+			for (i = 0; i < 6; i++) {
 				char tmp[sizeof("ff")];
 				if (i != 0) {
 					ubuf_add(u, '-');
@@ -541,7 +539,7 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 		case rdf_eui64: {
 			bytes_required(8);
-			for (size_t i = 0; i < 8; i++) {
+			for (i = 0; i < 8; i++) {
 				char tmp[sizeof("ff")];
 				if (i != 0) {
 					ubuf_add(u, '-');
@@ -666,14 +664,17 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 
 			bytes_required(2);
 			while (src_bytes >= 2) {
+
 				window_block = *src;
 				bitmap_len = *(src + 1);
 				bytes_consumed(2);
 				bytes_required(bitmap_len);
 				lo = 0;
-				for (int i = 0; i < bitmap_len; i++) {
+				for (i = 0; i < bitmap_len; i++) {
+					int j;
+
 					a = src[i];
-					for (int j = 1; j <= 8; j++) {
+					for (j = 1; j <= 8; j++) {
 						b = a & (1 << (8 - j));
 						if (b != 0) {
 							my_rrtype = (window_block << 8) | lo;

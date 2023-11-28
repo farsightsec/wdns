@@ -22,6 +22,7 @@ wdns_parse_message(wdns_message_t *m, const uint8_t *pkt, size_t len)
 	const uint8_t *pkt_end = pkt + len;
 	size_t rrlen;
 	uint16_t sec_counts[WDNS_MSG_SEC_MAX];
+	unsigned n, sec;
 	wdns_rr_t rr;
 	wdns_res res;
 
@@ -39,8 +40,8 @@ wdns_parse_message(wdns_message_t *m, const uint8_t *pkt, size_t len)
 
 	m->rcode = m->flags & 0xf;
 
-	for (unsigned sec = 0; sec < WDNS_MSG_SEC_MAX; sec++) {
-		for (unsigned n = 0; n < sec_counts[sec]; n++) {
+	for (sec = 0; sec < WDNS_MSG_SEC_MAX; sec++) {
+		for (n = 0; n < sec_counts[sec]; n++) {
 			if (p == pkt_end)
 				return (wdns_res_success);
 

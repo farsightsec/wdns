@@ -17,14 +17,14 @@
 void
 _wdns_rrset_to_ubuf(ubuf *u, wdns_rrset_t *rrset, unsigned sec)
 {
-	unsigned n_rdatas;
+	unsigned i, n_rdatas;
 
 	if (sec == WDNS_MSG_SEC_QUESTION)
 		n_rdatas = 1;
 	else
 		n_rdatas = rrset->n_rdatas;
 
-	for (unsigned i = 0; i < n_rdatas; i++) {
+	for (i = 0; i < n_rdatas; i++) {
 		wdns_rr_t rr;
 		rr.rrttl = rrset->rrttl;
 		rr.rrtype = rrset->rrtype;

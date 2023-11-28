@@ -27,6 +27,8 @@
 wdns_res
 wdns_serialize_rrset(const wdns_rrset_t *rrset, uint8_t *buf, size_t *sz)
 {
+	size_t i;
+
 	if (sz) {
 		*sz = 1;			/* length of name */
 		*sz += rrset->name.len;		/* name */
@@ -35,7 +37,7 @@ wdns_serialize_rrset(const wdns_rrset_t *rrset, uint8_t *buf, size_t *sz)
 		*sz += 4;			/* ttl */
 		*sz += 2;			/* number of rdatas */
 
-		for (size_t i = 0; i < rrset->n_rdatas; i++) {
+		for (i = 0; i < rrset->n_rdatas; i++) {
 			/* rdata length */
 			*sz += 2;
 
@@ -69,7 +71,7 @@ wdns_serialize_rrset(const wdns_rrset_t *rrset, uint8_t *buf, size_t *sz)
 		memcpy(buf, &rrset->n_rdatas, 2);
 		buf += 2;
 
-		for (size_t i = 0; i < rrset->n_rdatas; i++) {
+		for (i = 0; i < rrset->n_rdatas; i++) {
 			uint16_t rdlen = rrset->rdatas[i]->len;
 
 			/* rdata length */

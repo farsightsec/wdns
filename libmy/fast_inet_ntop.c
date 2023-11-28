@@ -62,14 +62,16 @@ static char numstr[100][2] = {
 };
 
 const char *
-fast_inet4_ntop(const void *restrict src, char *restrict dst, socklen_t size)
+fast_inet4_ntop(const void *src, char *dst, socklen_t size)
 {
+	size_t i;
+
 	if (size < INET_ADDRSTRLEN || src == NULL || dst == NULL)
 		return NULL;
 
 	char *sptr = dst;
 	const uint8_t *ipp = (const uint8_t *) src;
-	for (size_t i = 0; i < 4; i++) {
+	for (i = 0; i < 4; i++) {
 		uint8_t ipb = ipp[i];
 		const char *p;
 
@@ -99,7 +101,7 @@ fast_inet4_ntop(const void *restrict src, char *restrict dst, socklen_t size)
 
 /* Modified from Paul Vixie's inet_ntop() under ISC license to avoid the performance hit of using sprintf() */
 const char *
-fast_inet6_ntop(const void *restrict src, char *restrict dst, socklen_t size)
+fast_inet6_ntop(const void *src, char *dst, socklen_t size)
 {
 	/*
 	 * Note that int32_t and int16_t need only be "at least" large enough
@@ -192,7 +194,7 @@ fast_inet6_ntop(const void *restrict src, char *restrict dst, socklen_t size)
 	return dst;
 }
 
-const char *fast_inet_ntop(int af, const void *restrict src, char *restrict dst, socklen_t size)
+const char *fast_inet_ntop(int af, const void *src, char *dst, socklen_t size)
 {
 	switch(af) {
 		case AF_INET:

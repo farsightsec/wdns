@@ -114,8 +114,7 @@ wdns_is_subdomain(wdns_name_t *n0, wdns_name_t *n1, bool *is_subdomain)
 	n1_idx = n1_nlabels - 1;
 	do {
 		if (!compare_label(n0->data + n0_offsets[n0_idx],
-				   n1->data + n1_offsets[n1_idx]))
-		{
+				   n1->data + n1_offsets[n1_idx])) {
 			return (wdns_res_success);
 		}
 		n0_idx--;

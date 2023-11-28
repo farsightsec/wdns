@@ -138,8 +138,9 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 } while(0)
 
 #define print_printable(u, src, src_bytes) do { \
-	for (uint16_t i = 0; i < src_bytes; i++) { \
-		char c = isprint(src[i]) ? src[i] : '.'; \
+	uint16_t _i; \
+	for (_i = 0; _i < src_bytes; _i++) { \
+		char c = isprint(src[_i]) ? src[_i] : '.'; \
 		ubuf_add_fmt(u, "%c", c); \
 	} \
 } while(0)
@@ -221,12 +222,14 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			ubuf_add(u, ')');
 			break;
 		}
-		default:
+		default: {
+			uint16_t i;
+
 			/*
 			 * Default dig behavior of printing each octet's hex
 			 * value separated by spaces.
 			 */
-			for (uint16_t i = 0; i < src_bytes; i++) {
+			for (i = 0; i < src_bytes; i++) {
 				char tmp[sizeof("ff")];
 				my_bytes_to_hex_str(&src[i], 1, false, tmp, sizeof(tmp));
 				ubuf_append_cstr(u, tmp, 2);
@@ -243,6 +246,7 @@ _wdns_ednsoptdata_to_ubuf(ubuf *u, uint16_t option_code, const uint8_t *src, uin
 			print_printable(u, src, src_bytes);
 			ubuf_append_cstr_lit(u, "\")");
 			break;
+		}
 	}
 	return (wdns_res_success);
 

@@ -32,6 +32,7 @@ _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec)
 	wdns_rdata_t *rdata;
 	wdns_rr_t *new_rr;
 	wdns_rrset_t *rrset;
+	unsigned i;
 
 	/* add to RR array */
 	a->n_rrs += 1;
@@ -56,7 +57,7 @@ _wdns_insert_rr_rrset_array(wdns_rrset_array_t *a, wdns_rr_t *rr, unsigned sec)
 	}
 
 	/* iterate over RRset array backwards */
-	for (unsigned i = a->n_rrsets; i > 0; i--) {
+	for (i = a->n_rrsets; i > 0; i--) {
 		if (sec == WDNS_MSG_SEC_QUESTION)
 			break;
 
