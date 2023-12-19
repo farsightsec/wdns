@@ -14,8 +14,7 @@ AC_INIT([wdns],
 AC_CONFIG_SRCDIR([wdns/wdns.h.in])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign 1.11 -Wall -Wno-portability silent-rules subdir-objects])
-CC=${CC-"gcc -std=c99 -D_GNU_SOURCE"}
-AC_PROG_CC
+AC_PROG_CC_C99
 AC_USE_SYSTEM_EXTENSIONS
 AC_SYS_LARGEFILE
 AC_CONFIG_MACRO_DIR([m4])
