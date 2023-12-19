@@ -33,7 +33,7 @@ This package contains the static library and header file for libwdns.
 %build
 %set_build_flags
 %if %{rhel} == 7
-  CFLAGS="$CFLAGS -std=c99"
+  CFLAGS="$CFLAGS -std=c99 -D_GNU_SOURCE"
 %endif
 [ -x configure ] || autoreconf -fvi
 %configure
