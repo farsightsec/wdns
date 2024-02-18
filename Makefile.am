@@ -79,6 +79,7 @@ wdns/rrtype_to_str.c: wdns/wdns.h wdns/gen_rrtype_to_str
 wdns_libwdns_la_CPPFLAGS = \
 	-include $(top_builddir)/wdns/wdns-private.h
 wdns_libwdns_la_LDFLAGS = $(AM_LDFLAGS) \
+	-no-undefined \
 	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE)
 if HAVE_LD_VERSION_SCRIPT
 wdns_libwdns_la_LDFLAGS += \
