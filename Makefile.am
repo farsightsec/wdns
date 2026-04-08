@@ -252,3 +252,8 @@ t_test_str_to_rrtype_LDADD = wdns/libwdns.la
 TESTS += t/test-fast_inet_ntop
 check_PROGRAMS += t/test-fast_inet_ntop
 t_test_fast_inet_ntop_SOURCES = t/test-fast_inet_ntop.c t/test-common.c
+
+TESTS += t/test-parse-message
+check_PROGRAMS += t/test-parse-message
+t_test_parse_message_SOURCES = t/test-parse-message.c t/test-common.c
+t_test_parse_message_LDADD = wdns/libwdns.la

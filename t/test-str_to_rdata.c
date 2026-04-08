@@ -700,6 +700,173 @@ static const struct test tdata[] = {
 		.expected_len = 19,
 		.expected_res = wdns_res_success,
         },
+
+	/*
+	 * INCOMPLETE RECORD TESTS
+	 * These test cases verify that incomplete DNS records are properly rejected.
+	 * They should fail (return parse_error), not succeed with partial data.
+	 */
+
+	/*
+	 * SOA record with all required fields (valid)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SOA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "ns.example.com. admin.example.com. 2024 3600 1800 604800 3600",
+		.expected =
+			"\x02" "ns" "\x07" "example" "\x03" "com" "\x00"
+			"\x05" "admin" "\x07" "example" "\x03" "com" "\x00"
+			"\x00\x00\x07\xe8"  /* serial 2024 */
+			"\x00\x00\x0e" "\x10"  /* refresh 3600 */
+			"\x00\x00\x07\x08"  /* retry 1800 */
+			"\x00\x09\x3a\x80"  /* expire 604800 */
+			"\x00\x00\x0e" "\x10", /* minimum 3600 */
+		.expected_len = 35 + 20,
+		.expected_res = wdns_res_success,
+	},
+
+	/*
+	 * SOA record with only mname and rname (missing serial, refresh, retry, expire, minimum)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SOA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "ns.example.com. admin.example.com.",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * SOA record with only mname, rname, and serial (missing refresh, retry, expire, minimum)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SOA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "ns.example.com. admin.example.com. 2024",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * MX record with preference and exchange (valid)
+	 */
+	{
+		.rrtype = WDNS_TYPE_MX,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10 mail.example.com.",
+		.expected =
+			"\x00\x0a"  /* preference 10 */
+			"\x04" "mail" "\x07" "example" "\x03" "com" "\x00",
+		.expected_len = 20,
+		.expected_res = wdns_res_success,
+	},
+
+	/*
+	 * MX record with only preference (missing exchange/target)
+	 */
+	{
+		.rrtype = WDNS_TYPE_MX,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * MX record with no preference or exchange
+	 */
+	{
+		.rrtype = WDNS_TYPE_MX,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * SRV record with all fields (valid)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SRV,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10 20 80 srv.example.com.",
+		.expected =
+			"\x00\x0a"  /* priority 10 */
+			"\x00\x14"  /* weight 20 */
+			"\x00\x50"  /* port 80 */
+			"\x03" "srv" "\x07" "example" "\x03" "com" "\x00",
+		.expected_len = 23,
+		.expected_res = wdns_res_success,
+	},
+
+	/*
+	 * SRV record with only priority and weight (missing port and target)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SRV,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10 20",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * SRV record with only priority (missing weight, port, target)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SRV,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * CAA record with flags, tag, and value (valid)
+	 */
+	{
+		.rrtype = WDNS_TYPE_CAA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "0 \"issue\" \"letsencrypt.org\"",
+		.expected =
+			"\x00"  /* flags */
+			"\x05" "issue"  /* tag length + tag */
+			"letsencrypt.org",  /* value (length implicit) */
+		.expected_len = 22,
+		.expected_res = wdns_res_success,
+	},
+
+	/*
+	 * CAA record with only flags (missing tag and value)
+	 */
+	{
+		.rrtype = WDNS_TYPE_CAA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "0",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * CAA record with flags and tag (missing value)
+	 */
+	{
+		.rrtype = WDNS_TYPE_CAA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "0 \"issue\"",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
 	{ 0 }
 };
 
