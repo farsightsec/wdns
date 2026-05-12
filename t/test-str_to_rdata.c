@@ -196,7 +196,7 @@ static const struct test tdata[] = {
 	{ "fsi.io", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
 	{ "fsi.io..", WDNS_TYPE_CNAME, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ ".", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "\x00", 1, wdns_res_success},
-	{ "", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "", 0, wdns_res_success},
+	{ "", WDNS_TYPE_CNAME, WDNS_CLASS_IN, "", 0, wdns_res_parse_error},
 	{ "\"hardware\" \"os\"", WDNS_TYPE_HINFO, WDNS_CLASS_IN, "\x08hardware\x02os", 12, wdns_res_success},
 	{ "hardware os", WDNS_TYPE_HINFO, WDNS_CLASS_IN, "\x08hardware\x02os", 12, wdns_res_success},
 	{ "hardware\\\" os", WDNS_TYPE_HINFO, WDNS_CLASS_IN, "\x09hardware\"\x02os", 13, wdns_res_success},
@@ -207,12 +207,12 @@ static const struct test tdata[] = {
 	{ "hardware os\\", WDNS_TYPE_HINFO, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "hardware os\x01", WDNS_TYPE_HINFO, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "fsi.io. farsightsecurity.com", WDNS_TYPE_MINFO, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x10""farsightsecurity\x03""com\x00", 30, wdns_res_success },
-	{ "fsi.io.", WDNS_TYPE_MINFO, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success },
-	{ "", WDNS_TYPE_MINFO, WDNS_CLASS_IN, "", 0, wdns_res_success },
+	{ "fsi.io.", WDNS_TYPE_MINFO, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error },
+	{ "", WDNS_TYPE_MINFO, WDNS_CLASS_IN, "", 0, wdns_res_parse_error },
 	{ "5 mail.fsi.io.", WDNS_TYPE_MX, WDNS_CLASS_IN, "\x00\x05\x04mail\x03""fsi\x02io\x00", 15, wdns_res_success },
 	{ "foo mail.fsi.io.", WDNS_TYPE_MX, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error },
-	{ "5", WDNS_TYPE_MX, WDNS_CLASS_IN, "\x00\x05", 2, wdns_res_success },
-	{ "", WDNS_TYPE_MX, WDNS_CLASS_IN, 0, 0, wdns_res_success },
+	{ "5", WDNS_TYPE_MX, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error },
+	{ "", WDNS_TYPE_MX, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error },
 	{ "", WDNS_TYPE_NULL, WDNS_CLASS_IN, "", 0, wdns_res_success},
 	{ "05", WDNS_TYPE_NULL, WDNS_CLASS_IN, "\x05", 1, wdns_res_success},
 	{ "FF05", WDNS_TYPE_NULL, WDNS_CLASS_IN, "\xff\x05", 2, wdns_res_success},
@@ -245,7 +245,7 @@ static const struct test tdata[] = {
 	{ "::", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 16, wdns_res_success},
 	{ "1234:4567::abcd:ef01", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "\x12\x34\x45\x67\x00\x00\x00\x00\x00\x00\x00\x00\xab\xcd\xef\x01", 16, wdns_res_success},
 	{ "::abcd:ef01", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xab\xcd\xef\x01", 16, wdns_res_success },
-	{ "", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "", 0, wdns_res_success},
+	{ "", WDNS_TYPE_AAAA, WDNS_CLASS_IN, "", 0, wdns_res_parse_error},
 	{ "127.0.0.1", WDNS_TYPE_AAAA, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "fsi.io", WDNS_TYPE_AAAA, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "65535 64 01 ZGVhZGJlZWY=", WDNS_TYPE_DNSKEY, WDNS_CLASS_IN, "\xff\xff@\x01""deadbeef", 12, wdns_res_success},
@@ -253,7 +253,7 @@ static const struct test tdata[] = {
 	{ "65535 64 01 ZGVhZGJlZWY", WDNS_TYPE_DNSKEY, WDNS_CLASS_IN, "\xff\xff@\x01""deadbeef", 12, wdns_res_success},
 	{ "65535 64 01 ZGVhZGJlZWZz", WDNS_TYPE_DNSKEY, WDNS_CLASS_IN, "\xff\xff@\x01""deadbeefs", 13, wdns_res_success},
 	{ "fsi.io A NS MX", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x02\x60\x01", 12, wdns_res_success},
-	{ "fsi.io", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00", 8, wdns_res_success},
+	{ "fsi.io", WDNS_TYPE_NSEC, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	/* Test for not outputing an empty bitmap and test parsing a TYPE### RRtype*/
 	{ "fsi.io URI CAA TYPE258", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x01\x01\xe0", 11, wdns_res_success},
 	{ "fsi.io A NS MD MF CNAME SOA MB MG MR WKS PTR HINFO MINFO MX TXT RP AFSDB URI CAA", WDNS_TYPE_NSEC, WDNS_CLASS_IN, "\x03""fsi\x02io\x00\x00\x03\x7f\xdf\xe0\x01\x01\xc0", 16, wdns_res_success},
@@ -267,7 +267,7 @@ static const struct test tdata[] = {
 	{ "1 2 3 deadbeef-", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "1 2 3 gg", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "1 2 3 --", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
-	{ "1 2 3", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, "\x01\x02\x00\x03", 4, wdns_res_success },
+	{ "1 2 3", WDNS_TYPE_NSEC3PARAM, WDNS_CLASS_IN, 0, 0, wdns_res_parse_error},
 	{ "1 1 10 7225a239d4230bba7be2 O4K23SKVI7PTGVR5LRITC8IDIQ6KJVA0 NS DS RRSIG", WDNS_TYPE_NSEC3, WDNS_CLASS_IN, "\x01\x01\x00\x0a\x0ar%\xa2""9\xd4#\x0b\xba{\xe2\x14\xc1(!\xf2\x9f\x91\xf3\xd8\x7f""e\xae\xe5\xd6\"M\x96\x8dI\xfd@\x00\x06 \x00\x00\x00\x00\x12", 44, wdns_res_success },
 	{ "1 1 0 - 00 A SOA", WDNS_TYPE_NSEC3, WDNS_CLASS_IN, "\x01\x01\x00\x00\x00\x01\x00\x00\x01\x42", 10, wdns_res_success },
 	{ "NSEC 5 5 7200 1442949945 1440354345 34572 5.in-addr.arpa. aTPqHqvtDsdyY6acy5BzbmjzJcdNWeFW2laTYY/+NJsMAedSryvDJKkA evVh4Fv4G+o9Ts3XKhYUihW2qXp7bbhHmlIvSY3qX67/Ti9DzRPymirt m5ffESFO7+4H2QFd5xIpoJH/WQysNWzCyLt+JeguH4/7PU5C9K30cqqd vJk=", WDNS_TYPE_RRSIG, WDNS_CLASS_IN, "\x00/\x05\x05\x00\x00\x1c V\x01\xab""9U\xda\x10)\x87\x0c\x01""5\x07in-addr\x04""arpa\x00i3\xea\x1e\xab\xed\x0e\xc7rc\xa6\x9c\xcb\x90snh\xf3%\xc7MY\xe1V\xdaV\x93""a\x8f\xfe""4\x9b\x0c\x01\xe7R\xaf+\xc3$\xa9\x00z\xf5""a\xe0[\xf8\x1b\xea=N\xcd\xd7*\x16\x14\x8a\x15\xb6\xa9z{m\xb8G\x9aR/I\x8d\xea_\xae\xffN/C\xcd\x13\xf2\x9a*\xed\x9b\x97\xdf\x11!N\xef\xee\x07\xd9\x01]\xe7\x12)\xa0\x91\xffY\x0c\xac""5l\xc2\xc8\xbb~%\xe8.\x1f\x8f\xfb=NB\xf4\xad\xf4r\xaa\x9d\xbc\x99", 162, wdns_res_success },
@@ -701,6 +701,173 @@ static const struct test tdata[] = {
 		.expected_len = 19,
 		.expected_res = wdns_res_success,
         },
+
+	/*
+	 * INCOMPLETE RECORD TESTS
+	 * These test cases verify that incomplete DNS records are properly rejected.
+	 * They should fail (return parse_error), not succeed with partial data.
+	 */
+
+	/*
+	 * SOA record with all required fields (valid)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SOA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "ns.example.com. admin.example.com. 2024 3600 1800 604800 3600",
+		.expected =
+			"\x02" "ns" "\x07" "example" "\x03" "com" "\x00"
+			"\x05" "admin" "\x07" "example" "\x03" "com" "\x00"
+			"\x00\x00\x07\xe8"  /* serial 2024 */
+			"\x00\x00\x0e" "\x10"  /* refresh 3600 */
+			"\x00\x00\x07\x08"  /* retry 1800 */
+			"\x00\x09\x3a\x80"  /* expire 604800 */
+			"\x00\x00\x0e" "\x10", /* minimum 3600 */
+		.expected_len = 35 + 20,
+		.expected_res = wdns_res_success,
+	},
+
+	/*
+	 * SOA record with only mname and rname (missing serial, refresh, retry, expire, minimum)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SOA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "ns.example.com. admin.example.com.",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * SOA record with only mname, rname, and serial (missing refresh, retry, expire, minimum)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SOA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "ns.example.com. admin.example.com. 2024",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * MX record with preference and exchange (valid)
+	 */
+	{
+		.rrtype = WDNS_TYPE_MX,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10 mail.example.com.",
+		.expected =
+			"\x00\x0a"  /* preference 10 */
+			"\x04" "mail" "\x07" "example" "\x03" "com" "\x00",
+		.expected_len = 20,
+		.expected_res = wdns_res_success,
+	},
+
+	/*
+	 * MX record with only preference (missing exchange/target)
+	 */
+	{
+		.rrtype = WDNS_TYPE_MX,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * MX record with no preference or exchange
+	 */
+	{
+		.rrtype = WDNS_TYPE_MX,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * SRV record with all fields (valid)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SRV,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10 20 80 srv.example.com.",
+		.expected =
+			"\x00\x0a"  /* priority 10 */
+			"\x00\x14"  /* weight 20 */
+			"\x00\x50"  /* port 80 */
+			"\x03" "srv" "\x07" "example" "\x03" "com" "\x00",
+		.expected_len = 23,
+		.expected_res = wdns_res_success,
+	},
+
+	/*
+	 * SRV record with only priority and weight (missing port and target)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SRV,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10 20",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * SRV record with only priority (missing weight, port, target)
+	 */
+	{
+		.rrtype = WDNS_TYPE_SRV,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "10",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * CAA record with flags, tag, and value (valid)
+	 */
+	{
+		.rrtype = WDNS_TYPE_CAA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "0 \"issue\" \"letsencrypt.org\"",
+		.expected =
+			"\x00"  /* flags */
+			"\x05" "issue"  /* tag length + tag */
+			"letsencrypt.org",  /* value (length implicit) */
+		.expected_len = 22,
+		.expected_res = wdns_res_success,
+	},
+
+	/*
+	 * CAA record with only flags (missing tag and value)
+	 */
+	{
+		.rrtype = WDNS_TYPE_CAA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "0",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
+	/*
+	 * CAA record with flags and tag (missing value)
+	 */
+	{
+		.rrtype = WDNS_TYPE_CAA,
+		.rrclass = WDNS_CLASS_IN,
+		.input = "0 \"issue\"",
+		.expected = NULL,
+		.expected_len = 0,
+		.expected_res = wdns_res_parse_error,
+	},
+
 	{ 0 }
 };
 

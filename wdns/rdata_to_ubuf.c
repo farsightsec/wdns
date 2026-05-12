@@ -347,7 +347,9 @@ _wdns_rdata_to_ubuf(ubuf *u, const uint8_t *rdata, uint16_t rdlen,
 	src_bytes = (ssize_t) rdlen;
 
 	for (const uint8_t *t = &descr->types[0]; *t != rdf_end; t++) {
-		if (src_bytes == 0)
+	    if (*t == rdf_optional_end)
+			continue;
+	    if (src_bytes == 0)
 			break;
 
 		switch (*t) {

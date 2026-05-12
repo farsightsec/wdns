@@ -140,6 +140,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 	uint8_t domain_name[WDNS_MAXLEN_NAME];
 	uint8_t oclen;
 	wdns_res res;
+	bool past_required = false;
 
 	u = ubuf_new();
 	src = rdata;
@@ -158,6 +159,10 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 		    descr->record_class == rr->rrclass))
 	{
 		for (t = &descr->types[0]; *t != rdf_end; t++) {
+    		if (*t == rdf_optional_end) {
+    			past_required = true;
+    			continue;
+    		}
 			if (src_bytes == 0)
 				break;
 
@@ -237,6 +242,7 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 					oclen ++;
 				}
 				copy_bytes(oclen + 1);
+
 				break;
 			}
 
@@ -317,6 +323,10 @@ _wdns_parse_rdata(wdns_rr_t *rr, const uint8_t *p, const uint8_t *eop,
 				abort();
 			}
 
+		}
+		if (*t != rdf_end && !past_required) {
+			res = wdns_res_parse_error;
+			goto parse_error;
 		}
 		if (src_bytes != 0) {
 			res = wdns_res_out_of_bounds;

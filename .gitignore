@@ -36,6 +36,8 @@ t/test-str_to_rdata
 t/test-str_to_rrtype
 t/test-rdata
 t/test-name_to_str
+t/test-fast_inet_ntop
+t/test-parse-message
 t/*.log
 t/*.trs
 examples/wdns-print-version

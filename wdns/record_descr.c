@@ -51,7 +51,7 @@ const record_descr record_descr_array[] = {
 		{ class_un, { rdf_name, rdf_end } },
 
 	[WDNS_TYPE_NULL] =
-		{ class_un, { rdf_bytes, rdf_end } },
+		{ class_un, { rdf_optional_end, rdf_bytes, rdf_end } },
 
 	[WDNS_TYPE_PTR] =
 		{ class_un, { rdf_name, rdf_end } },
@@ -61,7 +61,7 @@ const record_descr record_descr_array[] = {
 				rdf_int32, rdf_int32, rdf_end } },
 
 	[WDNS_TYPE_TXT] =
-		{ class_un, { rdf_repstring, rdf_end } },
+		{ class_un, { rdf_optional_end, rdf_repstring, rdf_end } },
 
 	/* RFC 1035 Internet class well-known types */
 
@@ -101,7 +101,7 @@ const record_descr record_descr_array[] = {
 	/* post-RFC 1035 Internet class types */
 
 	[WDNS_TYPE_A6] =
-		{ class_in, { rdf_ipv6prefix, rdf_uname, rdf_end } },
+		{ class_in, { rdf_ipv6prefix, rdf_optional_end, rdf_uname, rdf_end } },
 
 	[WDNS_TYPE_AAAA] =
 		{ class_in, { rdf_ipv6, rdf_end } },
@@ -241,6 +241,7 @@ const record_descr record_descr_array[] = {
 					   the alias target (for AliasMode) or
 					   the alternative endpoint (for
 					   ServiceMode) */
+			rdf_optional_end,
 			rdf_svcparams,	/* SvcParams (optional): A list of
 					   key=value pairs describing the
 					   alternative endpoint at TargetName
@@ -256,6 +257,7 @@ const record_descr record_descr_array[] = {
 		{
 			rdf_int16,	/* SvcFieldPriority*/
 			rdf_name,	/* SvcDomainName*/
+			rdf_optional_end,
 			rdf_svcparams,	/* SvcFieldValue */
 			rdf_end,
 		}

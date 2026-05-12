@@ -424,7 +424,13 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 		return (wdns_res_success);
 	}
 
-	for (const uint8_t *t = &descr->types[0]; *t != rdf_end; t++) {
+	bool past_required = false;
+	const uint8_t *t;
+	for (t = &descr->types[0]; *t != rdf_end; t++) {
+	    if (*t == rdf_optional_end) {
+    		past_required = true;
+    		continue;
+    	}
 		if (str == NULL) {
 			break;
 		}
@@ -1129,6 +1135,11 @@ _wdns_str_to_rdata_ubuf(ubuf *u, const char *str,
 			goto err;
 		}
 		} /* switch */
+	}
+
+	if (*t != rdf_end && !past_required) {
+		res = wdns_res_parse_error;
+		goto err;
 	}
 
 	return wdns_res_success;

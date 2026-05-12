@@ -48,6 +48,7 @@ typedef enum {
 	rdf_hash,		/* length-prefixed hash value (base32 presentation) */
 	rdf_svcparams,		/* list of space separated key=value pairs */
 	rdf_edns_opt_rdata,	/* byte array of {attribute, value} pairs */
+	rdf_optional_end,
 	rdf_end,		/* sentinel (terminal) */
 } rdf_type;
 

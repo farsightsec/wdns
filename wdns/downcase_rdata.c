@@ -73,6 +73,8 @@ wdns_downcase_rdata(wdns_rdata_t *rdata, uint16_t rrtype, uint16_t rrclass)
 	    descr->record_class == rrclass)
 	{
 		for (t = &descr->types[0]; *t != rdf_end; t++) {
+		    if (*t == rdf_optional_end)
+				continue;
 			if (bytes_remaining == 0)
 				break;
 
