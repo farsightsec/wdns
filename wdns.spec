@@ -8,7 +8,7 @@ URL:            https://github.com/farsightsec/wdns
 Source0:        https://dl.farsightsecurity.com/dist/%{name}/%{name}-%{version}.tar.gz
 
 BuildRequires:  gcc
-#Requires:       
+#Requires:
 
 %description
 wdns is a low-level DNS library. It contains a fast DNS message parser

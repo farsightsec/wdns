@@ -20,9 +20,9 @@ wdns_message_to_str(wdns_message_t *m)
 {
 	const char *opcode;
 	const char *rcode;
-	char *ret;
 	size_t retsz;
 	ubuf *u;
+	uint8_t *ubuf_str = NULL;
 
 	u = ubuf_new();
 
@@ -96,7 +96,8 @@ wdns_message_to_str(wdns_message_t *m)
 	_wdns_rrset_array_to_ubuf(u, &m->sections[WDNS_MSG_SEC_ADDITIONAL], WDNS_MSG_SEC_ADDITIONAL);
 
 	ubuf_cterm(u);
-	ubuf_detach(u, (uint8_t **) &ret, &retsz);
+	ubuf_detach(u, &ubuf_str, &retsz);
 	ubuf_destroy(&u);
-	return (ret);
+
+	return ((char *)ubuf_str);
 }
