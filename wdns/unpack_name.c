@@ -55,13 +55,7 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 
 			if (cptr > eop)
 				return (wdns_res_invalid_compression_pointer);
-
-			if (cptr == src - 1 && (*(src - 1) == 0)) {
-				/* if a compression pointer points to exactly one octet
-				 * before itself, then the only valid domain name pointee
-				 * is the zero-octet root label. */
-				src = cptr;
-			} else if (cptr > src - 2) {
+			if (cptr > src - 2) {
 				return (wdns_res_invalid_compression_pointer);
 			} else {
 				src = cptr;
