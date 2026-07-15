@@ -1,3 +1,5 @@
+BUILT_SOURCES = wdns/rcode_to_str.c wdns/rrclass_to_str.c wdns/rrtype_to_str.c
+
 bin_PROGRAMS =
 check_PROGRAMS =
 noinst_PROGRAMS =

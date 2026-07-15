@@ -7,7 +7,7 @@ License:        Apache-2.0
 URL:            https://github.com/farsightsec/wdns
 Source0:        https://dl.farsightsecurity.com/dist/%{name}/%{name}-%{version}.tar.gz
 
-BuildRequires:  gcc
+BuildRequires:  gcc autoconf automake libtool
 #Requires:
 
 %description
