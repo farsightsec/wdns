@@ -45,7 +45,7 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 		if (c >= 192) {
 			uint16_t offset;
 
-			if (src > eop)
+			if (src >= eop)
 				return (wdns_res_out_of_bounds);
 
 			/* offset is the lower 14 bits of the 2 octet sequence */
