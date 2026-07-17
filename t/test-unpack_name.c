@@ -39,6 +39,9 @@ static const uint8_t msg_truncated_pointer[] = { 0xC0 };
 /* A compression pointer to the root label at offset 0. */
 static const uint8_t msg_valid_pointer[] = { 0x00, 0xC0, 0x00 };
 
+/* A compression pointer whose target is exactly one past the message. */
+static const uint8_t msg_pointer_to_end[] = { 0x00, 0xC0, 0x03 };
+
 /* An uncompressed name: www.example.com */
 static const uint8_t msg_uncompressed[] = {
 	3, 'w', 'w', 'w',
@@ -67,6 +70,11 @@ static struct test tdata[] = {
 		"compression pointer to root label",
 		msg_valid_pointer, sizeof(msg_valid_pointer), 1,
 		wdns_res_success, msg_valid_pointer, 1
+	},
+	{
+		"compression pointer target at end of message",
+		msg_pointer_to_end, sizeof(msg_pointer_to_end), 1,
+		wdns_res_invalid_compression_pointer, NULL, 0
 	},
 	{
 		"uncompressed name",
