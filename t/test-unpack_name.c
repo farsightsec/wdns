@@ -81,6 +81,11 @@ static struct test tdata[] = {
 		msg_uncompressed, sizeof(msg_uncompressed), 0,
 		wdns_res_success, msg_uncompressed, sizeof(msg_uncompressed)
 	},
+	{
+		"uncompressed name with terminating label after eop",
+		msg_uncompressed, sizeof(msg_uncompressed)-1, 0,
+		wdns_res_out_of_bounds, NULL, 0
+	},
 	{ NULL, NULL, 0, 0, wdns_res_success, NULL, 0 }
 };
 

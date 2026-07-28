@@ -67,7 +67,7 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 			total_len += c;
 			if (total_len >= WDNS_MAXLEN_NAME)
 				return (wdns_res_name_overflow);
-			if (src + c > eop)
+			if (src + c >= eop)
 				return (wdns_res_out_of_bounds);
 			memcpy(dst, src, c);
 
