@@ -53,8 +53,6 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 
 			cptr = p + offset;
 
-			if (cptr >= eop)
-				return (wdns_res_invalid_compression_pointer);
 			if (cptr > src - 2) {
 				return (wdns_res_invalid_compression_pointer);
 			} else {
