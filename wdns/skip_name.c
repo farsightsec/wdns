@@ -33,7 +33,7 @@ wdns_skip_name(const uint8_t **data, const uint8_t *eod)
 	size_t bytes_skipped;
 	uint8_t c;
 
-	while (src <= eod && (c = *src) != 0) {
+	while (src < eod && (c = *src) != 0) {
 		if (c >= 192) {
 			/* compression pointers occupy two octets */
 			src++;
