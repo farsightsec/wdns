@@ -50,6 +50,32 @@ static const uint8_t msg_uncompressed[] = {
 	0
 };
 
+/* A compression pointer which to an earlier label in the same name. */
+static const uint8_t msg_nameloop[] = { 1, 'a', 1, 'b', 0xc0, 0 };
+
+/* A self-referential compression pointer which will not overflow the output name. */
+static const uint8_t msg_hardloop[] = { 0xc0, 0 };
+
+/* A compressesion pointer to a non-root label. */
+static const uint8_t msg_compressed[] = {
+	3, 'c', 'o', 'm',
+	0,
+	3, 'w', 'w', 'w',
+	7, 'e', 'x', 'a', 'm', 'p', 'l', 'e',
+	0xc0, 0
+};
+
+/* A compression pointer to an overlapping label */
+static const uint8_t msg_overlap[] = {
+   3, 'a', 3, 'c', 0, 'm', 0xc0, 0
+};
+
+static const uint8_t overlap_uncompressed[] = {
+  3, 'c', 0, 'm',
+  3, 'a', 3, 'c',
+  0
+};
+
 struct test {
 	const char *descr;
 	const uint8_t *msg;
@@ -85,6 +111,26 @@ static struct test tdata[] = {
 		"uncompressed name with terminating label after eop",
 		msg_uncompressed, sizeof(msg_uncompressed)-1, 0,
 		wdns_res_out_of_bounds, NULL, 0
+	},
+	{
+		"compression loop",
+		msg_nameloop, sizeof(msg_nameloop), 2,
+		wdns_res_name_overflow, NULL, 0
+	},
+	{
+		"compression loop, no overflow",
+		msg_hardloop, sizeof(msg_hardloop), 0,
+		wdns_res_invalid_compression_pointer, NULL, 0
+	},
+	{
+		"valid compressed name",
+		msg_compressed, sizeof(msg_compressed), 5,
+		wdns_res_success, msg_uncompressed, sizeof(msg_uncompressed)
+	},
+	{
+		"compression overlap",
+		msg_overlap, sizeof(msg_overlap), 2,
+		wdns_res_success, overlap_uncompressed, sizeof(overlap_uncompressed)
 	},
 	{ NULL, NULL, 0, 0, wdns_res_success, NULL, 0 }
 };

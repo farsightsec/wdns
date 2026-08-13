@@ -35,6 +35,7 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 {
 	const uint8_t *cptr;
 	uint8_t c;
+	int cptr_remain = 255;
 
 	size_t total_len = 0;
 
@@ -45,6 +46,9 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 		if (c >= 192) {
 			uint16_t offset;
 
+			if (--cptr_remain < 0)
+				return (wdns_res_invalid_compression_pointer);
+
 			if (src >= eop)
 				return (wdns_res_out_of_bounds);
 
@@ -53,11 +57,11 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 
 			cptr = p + offset;
 
-			if (cptr > src - 2) {
+			if (cptr >= eop)
 				return (wdns_res_invalid_compression_pointer);
-			} else {
-				src = cptr;
-			}
+
+			src = cptr;
+
 		} else if (c <= 63) {
 			total_len++;
 			if (total_len >= WDNS_MAXLEN_NAME)
