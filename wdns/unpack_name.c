@@ -33,7 +33,7 @@ wdns_res
 wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 		 uint8_t *dst, size_t *sz)
 {
-	const uint8_t *cptr;
+	const uint8_t *cptr, *start = src;
 	uint8_t c;
 
 	size_t total_len = 0;
@@ -53,11 +53,17 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 
 			cptr = p + offset;
 
-			if (cptr > src - 2) {
+			/*
+			 * The compression offset points to a "prior occurrence" of a name
+			 * in the message. We enforce this requirement here by ensuring the
+			 * referenced name starts before the start of the name fragment we are
+			 * currently unpacking, which catches compression pointer loops.
+			 */
+			if (cptr >= start)
 				return (wdns_res_invalid_compression_pointer);
-			} else {
-				src = cptr;
-			}
+
+			src = start = cptr;
+
 		} else if (c <= 63) {
 			total_len++;
 			if (total_len >= WDNS_MAXLEN_NAME)
