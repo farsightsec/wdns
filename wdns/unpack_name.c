@@ -53,6 +53,21 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 
 			cptr = p + offset;
 
+			/*
+			 * We require the compression pointer to point to an earlier
+			 * octet in the message, per RFC 1035's description of a compression
+			 * pointer pointing to a "prior occurrence" of a name.
+			 *
+			 * This requirement prevents compression pointer cycles, and cycles
+			 * between a (nonzero) label length and compression pointer will
+			 * terminate due to limited name length (WDNS_MAXLEN_NAME).
+			 *
+			 * This requirement could be stricter, as a well-formed compression
+			 * pointer should point to a name beginning and ending before the
+			 * sequence of labels ending in the pointer. However, such a restriction
+			 * is stricter than most extant DNS software and would result in wdns
+			 * rejecting DNS messages most other DNS software would accept.
+			 */
 			if (cptr > src - 2) {
 				return (wdns_res_invalid_compression_pointer);
 			} else {
