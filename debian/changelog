@@ -3,9 +3,9 @@ wdns (0.13.0) debian-fsi; urgency=medium
   * Remove strict aliasing violations.
   * Replace Python dependency with shell script.
   * Fix various off-by-one errors in bounds checking.
-  * Various small build fixes.
+  * Various small build and test fixes.
 
- -- DomainTools LLC <software@domaintools.com>  Wed, 15 Jul 2026 09:34:57 -0500
+ -- DomainTools LLC <software@domaintools.com>  Tue, 01 Sep 2026 14:29:08 -0500
 
 wdns (0.12.0-1) debian-fsi; urgency=medium
 
