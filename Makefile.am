@@ -1,3 +1,5 @@
+BUILT_SOURCES = wdns/rcode_to_str.c wdns/rrclass_to_str.c wdns/rrtype_to_str.c
+
 bin_PROGRAMS =
 check_PROGRAMS =
 noinst_PROGRAMS =
@@ -68,17 +70,18 @@ DISTCLEANFILES += wdns/rrtype_to_str.c \
 	wdns/rrclass_to_str.c
 
 wdns/rcode_to_str.c: wdns/wdns.h wdns/gen_rcode_to_str
-	$(PYTHON) $(top_srcdir)/wdns/gen_rcode_to_str wdns/wdns.h wdns/rcode_to_str.c
+	$(top_srcdir)/wdns/gen_rcode_to_str wdns/wdns.h > wdns/rcode_to_str.c
 
 wdns/rrclass_to_str.c: wdns/wdns.h wdns/gen_rrclass_to_str
-	$(PYTHON) $(top_srcdir)/wdns/gen_rrclass_to_str wdns/wdns.h wdns/rrclass_to_str.c
+	$(top_srcdir)/wdns/gen_rrclass_to_str wdns/wdns.h > wdns/rrclass_to_str.c
 
 wdns/rrtype_to_str.c: wdns/wdns.h wdns/gen_rrtype_to_str
-	$(PYTHON) $(top_srcdir)/wdns/gen_rrtype_to_str wdns/wdns.h wdns/rrtype_to_str.c
+	$(top_srcdir)/wdns/gen_rrtype_to_str wdns/wdns.h > wdns/rrtype_to_str.c
 
 wdns_libwdns_la_CPPFLAGS = \
 	-include $(top_builddir)/wdns/wdns-private.h
 wdns_libwdns_la_LDFLAGS = $(AM_LDFLAGS) \
+	-no-undefined \
 	-version-info $(LIBWDNS_CURRENT):$(LIBWDNS_REVISION):$(LIBWDNS_AGE)
 if HAVE_LD_VERSION_SCRIPT
 wdns_libwdns_la_LDFLAGS += \
@@ -252,3 +255,8 @@ t_test_str_to_rrtype_LDADD = wdns/libwdns.la
 TESTS += t/test-fast_inet_ntop
 check_PROGRAMS += t/test-fast_inet_ntop
 t_test_fast_inet_ntop_SOURCES = t/test-fast_inet_ntop.c t/test-common.c
+
+TESTS += t/test-unpack_name
+check_PROGRAMS += t/test-unpack_name
+t_test_unpack_name_SOURCES = t/test-unpack_name.c t/test-common.c
+t_test_unpack_name_LDADD = wdns/libwdns.la

@@ -17,14 +17,15 @@
 char *
 wdns_rrset_to_str(wdns_rrset_t *rrset, unsigned sec)
 {
-	char *ret;
 	size_t retsz;
 	ubuf *u;
+	uint8_t *ubuf_str = NULL;
 
 	u = ubuf_new();
 	_wdns_rrset_to_ubuf(u, rrset, sec);
 	ubuf_cterm(u);
-	ubuf_detach(u, (uint8_t **) &ret, &retsz);
+	ubuf_detach(u, &ubuf_str, &retsz);
 	ubuf_destroy(&u);
-	return (ret);
+
+	return ((char *)ubuf_str);
 }

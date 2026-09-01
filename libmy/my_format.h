@@ -13,13 +13,6 @@
 size_t my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst, size_t dst_size);
 
 /*
- * Format num as a NUL-terminated hex string of up to dst_size bytes.
- *
- * Returns the size of the formatted string.
- */
-size_t my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst, size_t dst_size);
-
-/*
  * Format num as a numerical NUL-terminated string of up to dst_size bytes.
  * If start is non-NULL, it will receive a pointer to the first digit in
  * the formatted string. The formatted string will end at the end of the

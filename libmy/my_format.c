@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-#include <arpa/inet.h>
-
 #include "libmy/my_format.h"
 
 
@@ -46,14 +44,6 @@ my_bytes_to_hex_str(const uint8_t *src, size_t len, bool is_upper, char *dst, si
 	dst[n * 2] = '\x00';
 
 	return len * 2;
-}
-
-size_t
-my_uint16_to_hex_str(uint16_t num, bool is_upper, char *dst, size_t dst_size)
-{
-	uint16_t nval = htons(num);
-
-	return my_bytes_to_hex_str((const uint8_t *) &nval, sizeof(nval), is_upper, dst, dst_size);
 }
 
 size_t

@@ -45,7 +45,7 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 		if (c >= 192) {
 			uint16_t offset;
 
-			if (src > eop)
+			if (src >= eop)
 				return (wdns_res_out_of_bounds);
 
 			/* offset is the lower 14 bits of the 2 octet sequence */
@@ -53,15 +53,22 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 
 			cptr = p + offset;
 
-			if (cptr > eop)
-				return (wdns_res_invalid_compression_pointer);
-
-			if (cptr == src - 1 && (*(src - 1) == 0)) {
-				/* if a compression pointer points to exactly one octet
-				 * before itself, then the only valid domain name pointee
-				 * is the zero-octet root label. */
-				src = cptr;
-			} else if (cptr > src - 2) {
+			/*
+			 * We require the compression pointer to point to an earlier
+			 * octet in the message, per RFC 1035's description of a compression
+			 * pointer pointing to a "prior occurrence" of a name.
+			 *
+			 * This requirement prevents compression pointer cycles, and cycles
+			 * between a (nonzero) label length and compression pointer will
+			 * terminate due to limited name length (WDNS_MAXLEN_NAME).
+			 *
+			 * This requirement could be stricter, as a well-formed compression
+			 * pointer should point to a name beginning and ending before the
+			 * sequence of labels ending in the pointer. However, such a restriction
+			 * is stricter than most extant DNS software and would result in wdns
+			 * rejecting DNS messages most other DNS software would accept.
+			 */
+			if (cptr > src - 2) {
 				return (wdns_res_invalid_compression_pointer);
 			} else {
 				src = cptr;
@@ -75,7 +82,7 @@ wdns_unpack_name(const uint8_t *p, const uint8_t *eop, const uint8_t *src,
 			total_len += c;
 			if (total_len >= WDNS_MAXLEN_NAME)
 				return (wdns_res_name_overflow);
-			if (src + c > eop)
+			if (src + c >= eop)
 				return (wdns_res_out_of_bounds);
 			memcpy(dst, src, c);
 

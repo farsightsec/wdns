@@ -1,5 +1,5 @@
 Name:           wdns
-Version:        0.12.0
+Version:        0.13.0
 Release:        1%{?dist}
 Summary:        low-level DNS library
 
@@ -7,8 +7,8 @@ License:        Apache-2.0
 URL:            https://github.com/farsightsec/wdns
 Source0:        https://dl.farsightsecurity.com/dist/%{name}/%{name}-%{version}.tar.gz
 
-BuildRequires:  gcc
-#Requires:       
+BuildRequires:  gcc autoconf automake libtool
+#Requires:
 
 %description
 wdns is a low-level DNS library. It contains a fast DNS message parser
@@ -31,8 +31,8 @@ This package contains the static library and header file for libwdns.
 
 
 %build
-%set_build_flags
-%if %{rhel} == 7
+%{?set_build_flags:%set_build_flags}
+%if 0%{?rhel} == 7
   CFLAGS="$CFLAGS -std=c99 -D_GNU_SOURCE"
 %endif
 [ -x configure ] || autoreconf -fvi

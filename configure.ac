@@ -1,7 +1,7 @@
 AC_PREREQ(2.64)
 
 m4_define(wdns_major_version, 0)
-m4_define(wdns_minor_version, 12)
+m4_define(wdns_minor_version, 13)
 m4_define(wdns_patchlevel_version, 0)
 m4_define(wdns_version,
           wdns_major_version.wdns_minor_version.wdns_patchlevel_version)
@@ -69,9 +69,6 @@ AC_CHECK_LIB([pcap], [pcap_loop],
 AM_CONDITIONAL([LIBPCAP], [test "$have_libpcap" = "true"])
 
 gl_LD_VERSION_SCRIPT
-
-AM_PATH_PYTHON(,, [:])
-AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 
 AC_ARG_WITH(coverage,
 [ --with-coverage[=PROGRAM] enable gtest and coverage target using the specified lcov], lcov="$withval", lcov="no")
